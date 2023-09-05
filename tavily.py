@@ -39,9 +39,9 @@ class Client:
         """
         return self._search(query, search_depth="basic", **kwargs)
 
-    def in_depth_search(self, query, **kwargs):
+    def advanced_search(self, query, **kwargs):
         """
         In-depth search method.
         """
-        return self._search(query, search_depth="in-depth", **kwargs)
+        return self._search(query, search_depth="advanced", **kwargs)
 

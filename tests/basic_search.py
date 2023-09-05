@@ -10,7 +10,7 @@ tavily = tavily.Client(api_key="123456")
 q = "how does the law protect judicial impartiality against individual judges' biases"
 
 # Run API Call
-response = tavily.basic_search(q, num_results=10, include_raw_content=False)
+response = tavily.basic_search(q, num_results=10, include_raw_content=True)
 
 # Print Results
 print(json.dumps(response, indent=4))
