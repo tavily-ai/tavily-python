@@ -10,7 +10,7 @@ class Client:
             # any other headers you want
         }
 
-    def _search(self, query, search_depth="basic", num_results=5,
+    def _search(self, query, search_depth="basic", num_results=2,
                 include_domains=None, exclude_domains=None,
                 include_answer=False, include_raw_content=False):
         """
@@ -43,5 +43,6 @@ class Client:
         """
         In-depth search method.
         """
+
         return self._search(query, search_depth="advanced", **kwargs)
 
