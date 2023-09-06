@@ -26,7 +26,7 @@ class Client:
             "exclude_domains": exclude_domains or [],
             "api_key": self.api_key
         }
-        response = requests.post(self.base_url, data=json.dumps(data), headers=self.headers)
+        response = requests.post(self.base_url, data=json.dumps(data), headers=self.headers, timeout=100)
 
         if response.status_code == 200:
             return response.json()
