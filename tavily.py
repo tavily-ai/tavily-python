@@ -3,7 +3,7 @@ import json
 
 class Client:
     def __init__(self, api_key):
-        self.base_url = "http://tavilyapi.us-east-1.elasticbeanstalk.com/smart-search"
+        self.base_url = "https://api.tavily.com/smart-search"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
