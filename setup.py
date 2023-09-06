@@ -4,7 +4,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='tavily',
+    name='tavily-python',
     version='0.1.3',
     url='https://github.com/assafelovic/tavily-python',
     author='Assaf Elovic',
