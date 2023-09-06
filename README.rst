@@ -31,9 +31,9 @@ The ``Client`` class is the entry point to interacting with the Tavily API. Inst
 Methods
 -------
 
-- ``basic_search(query, **kwargs)``: Performs a basic search on the Tavily API with the specified query and additional parameters as keyword arguments.
+- ``basic_search(query, **kwargs)``: Performs a basic, smart search optimized for performance (quick response time) the specified query and additional parameters as keyword arguments.
   
-- ``advanced_search(query, **kwargs)``: Performs an advanced, in-depth search on the Tavily API with the specified query and additional parameters as keyword arguments.
+- ``advanced_search(query, **kwargs)``: Performs an advanced, in-depth search optimized for quality (factual and unbiased) with the specified query and additional parameters as keyword arguments.
 
 Keyword Arguments
 -----------------
