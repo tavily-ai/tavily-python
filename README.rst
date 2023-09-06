@@ -57,11 +57,6 @@ Error Handling
 
 In case of an unsuccessful HTTP request, a ``HTTPError`` will be raised.
 
-Contribution
-============
-
-If this is an open-source project, you might want to include guidelines for how others can contribute to the project.
-
 License
 =======
 
