@@ -10,7 +10,7 @@ class Client:
             # any other headers you want
         }
 
-    def _search(self, query, search_depth="basic", num_results=2,
+    def _search(self, query, search_depth="basic", num_results=3,
                 include_domains=None, exclude_domains=None,
                 include_answer=False, include_raw_content=False):
         """
