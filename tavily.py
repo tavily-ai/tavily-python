@@ -44,5 +44,5 @@ class Client:
         In-depth search method.
         """
 
-        return self._search(query, search_depth="in-depth", **kwargs)
+        return self._search(query, search_depth="advanced", **kwargs)
 
