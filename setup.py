@@ -1,12 +1,17 @@
 from setuptools import setup, find_packages
 
+with open('README.rst', 'r', encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
-    name='tavily-python',
-    version='0.1.0',
+    name='tavily',
+    version='0.1.3',
     url='https://github.com/assafelovic/tavily-python',
     author='Assaf Elovic',
     author_email='assaf.elovic@gmail.com',
     description='Python wrapper for the Tavily API',
+    long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=find_packages(),
     install_requires=['requests'],
     classifiers=[
