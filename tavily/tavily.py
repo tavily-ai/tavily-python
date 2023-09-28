@@ -3,14 +3,14 @@ import json
 
 class Client:
     def __init__(self, api_key):
-        self.base_url = "https://api.tavily.com/smart-search"
+        self.base_url = "https://api.tavily.com/search"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
             # any other headers you want
         }
 
-    def _search(self, query, search_depth="basic", num_results=3,
+    def _search(self, query, search_depth="basic", max_results=10,
                 include_domains=None, exclude_domains=None,
                 include_answer=False, include_raw_content=False):
         """
@@ -21,7 +21,7 @@ class Client:
             "search_depth": search_depth,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
-            "num_results": num_results,
+            "max_results": max_results,
             "include_domains": include_domains or [],
             "exclude_domains": exclude_domains or [],
             "api_key": self.api_key
@@ -33,16 +33,8 @@ class Client:
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 
-    def basic_search(self, query, **kwargs):
+    def search(self, query, search_depth="basic", **kwargs):
         """
-        Basic search method.
+        Combined search method. Set search_depth to either "basic" or "advanced".
         """
-        return self._search(query, search_depth="basic", **kwargs)
-
-    def advanced_search(self, query, **kwargs):
-        """
-        In-depth search method.
-        """
-
-        return self._search(query, search_depth="advanced", **kwargs)
-
+        return self._search(query, search_depth=search_depth, **kwargs)
