@@ -12,7 +12,7 @@ class Client:
 
     def _search(self, query, search_depth="basic", max_results=10,
                 include_domains=None, exclude_domains=None,
-                include_answer=False, include_raw_content=False):
+                include_answer=False, include_raw_content=False, include_images=False):
         """
         Internal search method to send the request to the API.
         """
@@ -24,6 +24,7 @@ class Client:
             "max_results": max_results,
             "include_domains": include_domains or [],
             "exclude_domains": exclude_domains or [],
+            "include_images": include_images,
             "api_key": self.api_key
         }
         response = requests.post(self.base_url, data=json.dumps(data), headers=self.headers, timeout=100)
