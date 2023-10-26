@@ -19,9 +19,20 @@ Usage
     from tavily import Client
     tavily = Client(api_key="YOUR_API_KEY")
     # For basic search:
-    tavily.search(query="Should I invest in Apple in 2024?")
+    tavily.search(query="Should I invest in Apple right now?")
     # For advanced search:
-    tavily.search(query="Should I invest in Apple in 2024?", search_depth="advanced")
+    tavily.search(query="Should I invest in Apple right now?", search_depth="advanced")
+
+Additional Methods
+~~~~~~~~~~~~~~~~~~
+.. code-block:: python
+
+    # You can easily get search result context based on any max tokens straight into your RAG.
+    # The response is a string of the context within the max_token limit.
+    tavily.get_search_context(query="What happened in the burning man floods?", search_depth="advanced", max_tokens=1500)
+
+    # You can also get a simple answer to a question including relevant sources all with a simple function call:
+    tavily.qna_search(query="Where does Messi play right now?")
 
 API Methods
 -----------
@@ -34,7 +45,10 @@ The ``Client`` class is the entry point to interacting with the Tavily API. Kick
 Methods
 ~~~~~~~
 
-- ``search(query, search_depth="basic", **kwargs)``: Performs a search using the specified query. The depth of the search can be controlled by the `search_depth` parameter.
+- ``search(query, search_depth, **kwargs)``: Performs a search using the specified query. The depth of the search can be controlled by the `search_depth` parameter.
+- ``get_search_context(query, search_depth, max_tokens, **kwargs)``: Performs a search and returns a string of content and sources within token limit. Useful for getting only related content from retrieved websites
+        without having to deal with context extraction and token management.
+- ``qna_search(query, **kwargs)``: Performs a search and returns a string containing an answer to the original query including relevant sources. Optimal to be used as a tool for AI agents.
 
 Keyword Arguments
 ~~~~~~~~~~~~~~~~~
