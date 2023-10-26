@@ -36,4 +36,4 @@ def get_max_items_from_list(data: [], max_tokens: int = DEFAULT_MAX_TOKENS):
         else:
             result.append(item_str)
             current_tokens = new_total_tokens
-    return ', '.join(result)
+    return json.dumps(result)

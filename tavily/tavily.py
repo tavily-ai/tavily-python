@@ -50,7 +50,14 @@ class Client:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-        search_response = self._search(query, search_depth, **kwargs)
-        sources = search_response.get("results", [])
+        search_result = self._search(query, search_depth, **kwargs)
+        sources = search_result.get("results", [])
         context = [{"url": obj["url"], "content": obj["content"]} for obj in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
+
+    def qna_search(self, query, search_depth="advanced", **kwargs):
+        """
+        Q&A search method. Search depth is advanced by default to get the best answer.
+        """
+        search_result = self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
+        return search_result.get("answer", "")
