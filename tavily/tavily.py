@@ -1,5 +1,6 @@
 import requests
 import json
+from utils import get_max_items_from_list
 
 class Client:
     def __init__(self, api_key):
@@ -39,3 +40,17 @@ class Client:
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
         return self._search(query, search_depth=search_depth, **kwargs)
+
+    def get_search_context(self, query, search_depth="basic", max_tokens=4000, **kwargs):
+        """
+        Get the search context for a query. Useful for getting only related content from retrieved websites
+        without having to deal with context extraction and limitation yourself.
+
+        max_tokens: The maximum number of tokens to return (based on openai token compute). Defaults to 4000.
+
+        Returns a string of JSON containing the search context up to context limit.
+        """
+        search_response = self._search(query, search_depth, **kwargs)
+        sources = search_response.get("results", [])
+        context = [{"url": obj["url"], "content": obj["content"]} for obj in sources]
+        return json.dumps(get_max_items_from_list(context, max_tokens))
