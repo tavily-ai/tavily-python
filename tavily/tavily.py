@@ -2,13 +2,12 @@ import requests
 import json
 from .utils import get_max_items_from_list
 
-class Client:
+class TavilyClient:
     def __init__(self, api_key):
         self.base_url = "https://api.tavily.com/search"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
-            # any other headers you want
         }
 
     def _search(self, query, search_depth="basic", max_results=10,

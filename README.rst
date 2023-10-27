@@ -16,8 +16,8 @@ Usage
 
 .. code-block:: python
 
-    from tavily import Client
-    tavily = Client(api_key="YOUR_API_KEY")
+    from tavily import TavilyClient
+    tavily = TavilyClient(api_key="YOUR_API_KEY")
     # For basic search:
     tavily.search(query="Should I invest in Apple right now?")
     # For advanced search:
