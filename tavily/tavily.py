@@ -1,6 +1,6 @@
 import requests
 import json
-from utils import get_max_items_from_list
+from .utils import get_max_items_from_list
 
 class Client:
     def __init__(self, api_key):
