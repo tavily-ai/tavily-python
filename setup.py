@@ -5,7 +5,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='tavily-python',
-    version='0.1.9',
+    version='0.2.0',
     url='https://github.com/assafelovic/tavily-python',
     author='Assaf Elovic',
     author_email='assaf.elovic@gmail.com',
@@ -13,7 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     packages=find_packages(),
-    install_requires=['requests', 'tiktoken'],
+    install_requires=['requests', 'tiktoken==0.5.1'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
