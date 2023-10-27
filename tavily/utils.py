@@ -1,6 +1,6 @@
 import tiktoken
 import json
-from config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
+from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
 
 
 def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL_ENCODING) -> int:
