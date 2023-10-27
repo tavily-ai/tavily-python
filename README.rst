@@ -45,7 +45,7 @@ The ``Client`` class is the entry point to interacting with the Tavily API. Kick
 Methods
 ~~~~~~~
 
-- ``search(query, search_depth, **kwargs)``: Performs a search using the specified query. The depth of the search can be controlled by the `search_depth` parameter.
+- ``search(query, search_depth, **kwargs)``: Performs a search using the specified query. The depth of the search can be controlled by the ``search_depth`` parameter.
 - ``get_search_context(query, search_depth, max_tokens, **kwargs)``: Performs a search and returns a string of content and sources within token limit. Useful for getting only related content from retrieved websites
         without having to deal with context extraction and token management.
 - ``qna_search(query, **kwargs)``: Performs a search and returns a string containing an answer to the original query including relevant sources. Optimal to be used as a tool for AI agents.
