@@ -1,5 +1,6 @@
 import requests
 import json
+import warnings
 from .utils import get_max_items_from_list
 
 class TavilyClient:
@@ -60,3 +61,8 @@ class TavilyClient:
         """
         search_result = self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
         return search_result.get("answer", "")
+
+class Client(TavilyClient):
+    def __init__(self, *args, **kwargs):
+        warnings.warn("Client is deprecated, please use TavilyClient instead", DeprecationWarning, stacklevel=2)
+        super().__init__(*args, **kwargs)

@@ -58,6 +58,7 @@ Keyword Arguments
 - ``exclude_domains`` (list): A list of domains to specifically exclude from the search results. Default is None, which doesn't exclude any domains.
 - ``include_answer`` (bool): Whether or not to include answers in the search results. Default is False.
 - ``include_raw_content`` (bool): Whether or not to include raw content in the search results. Default is False.
+- ``include_images`` (bool): Whether or not to include images in the search results. Default is False.
 
 Both methods internally call the ``_search`` method to communicate with the API.
 
