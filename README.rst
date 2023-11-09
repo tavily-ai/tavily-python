@@ -53,12 +53,14 @@ Keyword Arguments
 ~~~~~~~~~~~~~~~~~
 
 - ``search_depth`` (str): The depth of the search. It can be "basic" or "advanced". Default is "basic".
+- ``topic`` (str): The topic of the search - can be "general", "finance", "code", and "news". Default is "general".
 - ``max_results`` (int): The number of search results to return. Default is 10.
 - ``include_domains`` (list): A list of domains to specifically include in the search results. Default is None, which includes all domains.
 - ``exclude_domains`` (list): A list of domains to specifically exclude from the search results. Default is None, which doesn't exclude any domains.
 - ``include_answer`` (bool): Whether or not to include answers in the search results. Default is False.
 - ``include_raw_content`` (bool): Whether or not to include raw content in the search results. Default is False.
 - ``include_images`` (bool): Whether or not to include images in the search results. Default is False.
+- ``use_cache`` (bool): Whether or not to use tavily's cache for faster results. Default is True.
 
 Both methods internally call the ``_search`` method to communicate with the API.
 

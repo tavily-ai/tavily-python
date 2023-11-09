@@ -11,22 +11,25 @@ class TavilyClient:
             "Content-Type": "application/json",
         }
 
-    def _search(self, query, search_depth="basic", max_results=10,
+    def _search(self, query, search_depth="basic", topic="general", max_results=5,
                 include_domains=None, exclude_domains=None,
-                include_answer=False, include_raw_content=False, include_images=False):
+                include_answer=False, include_raw_content=False, include_images=False,
+                use_cache=True):
         """
         Internal search method to send the request to the API.
         """
         data = {
             "query": query,
             "search_depth": search_depth,
+            "topic": topic,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
             "max_results": max_results,
-            "include_domains": include_domains or [],
-            "exclude_domains": exclude_domains or [],
+            "include_domains": include_domains or None,
+            "exclude_domains": exclude_domains or None,
             "include_images": include_images,
-            "api_key": self.api_key
+            "api_key": self.api_key,
+            "use_cache": use_cache,
         }
         response = requests.post(self.base_url, data=json.dumps(data), headers=self.headers, timeout=100)
 
