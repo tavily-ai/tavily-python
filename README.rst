@@ -34,6 +34,9 @@ Additional Methods
     # You can also get a simple answer to a question including relevant sources all with a simple function call:
     tavily.qna_search(query="Where does Messi play right now?")
 
+    # By leveraging our topic API, you can search for an aggregation of company information such as news, financial and more in one call:
+    tavily.get_company_info(query="Information about Nvidia nvidia.com", search_depth="advanced", max_results=7)
+
 API Methods
 -----------
 
@@ -48,6 +51,7 @@ Methods
 - ``search(query, search_depth, **kwargs)``: Performs a search using the specified query. The depth of the search can be controlled by the ``search_depth`` parameter.
 - ``get_search_context(query, search_depth, max_tokens, **kwargs)``: Performs a search and returns a string of content and sources within token limit. Useful for getting only related content from retrieved websites without having to deal with context extraction and token management.
 - ``qna_search(query, **kwargs)``: Performs a search and returns a string containing an answer to the original query including relevant sources. Optimal to be used as a tool for AI agents.
+- ``get_company_info(query, **kwargs)``: Performs a cross topic (news, financial, etc) search about a given company.
 
 Keyword Arguments
 ~~~~~~~~~~~~~~~~~

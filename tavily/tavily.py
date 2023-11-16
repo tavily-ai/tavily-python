@@ -1,7 +1,9 @@
 import requests
 import json
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
+
 
 class TavilyClient:
     def __init__(self, api_key):
@@ -64,6 +66,32 @@ class TavilyClient:
         """
         search_result = self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
         return search_result.get("answer", "")
+
+    def get_company_info(self, query, search_depth="advanced", max_results=5, **kwargs):
+        """ Q&A search method. Search depth is advanced by default to get the best answer. """
+
+        def _perform_search(topic):
+            return self._search(query, search_depth=search_depth, topic=topic,
+                                max_results=max_results, include_answer=False, **kwargs)
+
+        with ThreadPoolExecutor() as executor:
+            # Initiate the search for each topic in parallel
+            future_to_topic = {executor.submit(_perform_search, topic): topic for topic in
+                               ["news", "general", "finance"]}
+
+            all_results = []
+
+            # Process the results as they become available
+            for future in as_completed(future_to_topic):
+                data = future.result()
+                if 'results' in data:
+                    all_results.extend(data['results'])
+
+        # Sort all the results by score in descending order and take the top 'max_results' items
+        sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)[:max_results]
+
+        return sorted_results
+
 
 class Client(TavilyClient):
     def __init__(self, *args, **kwargs):
