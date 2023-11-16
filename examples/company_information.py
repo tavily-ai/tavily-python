@@ -12,7 +12,7 @@ print(f"Calling Tavily company retrieval with query: {query}...\n[Note]: Using '
 context = tavily_client.get_company_info(query=query, search_depth="advanced", max_results=7)
 
 PROMPT = f"""
-You are a business analyst tasked with collecting and summarizing company information and insights.
+You are a business analyst tasked with collecting and summarizing company information and insights from a given context.
 Anything between the following `context` html blocks is retrieved from a knowledge bank, and you MUST only use it to extract information.
 
 <context>
