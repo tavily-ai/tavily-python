@@ -5,7 +5,7 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 
 setup(
     name='tavily-python',
-    version='0.2.6',
+    version='0.2.7',
     url='https://github.com/assafelovic/tavily-python',
     author='Assaf Elovic',
     author_email='assaf.elovic@gmail.com',
