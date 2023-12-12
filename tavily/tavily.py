@@ -13,7 +13,7 @@ class TavilyClient:
             "Content-Type": "application/json",
         }
 
-    def _search(self, query, search_depth="basic", topic="general", max_results=5,
+    def _search(self, query, search_depth="basic", topic="general", days=2, max_results=5,
                 include_domains=None, exclude_domains=None,
                 include_answer=False, include_raw_content=False, include_images=False,
                 use_cache=True):
@@ -24,6 +24,7 @@ class TavilyClient:
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
+            "days": days,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
             "max_results": max_results,
