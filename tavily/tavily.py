@@ -68,7 +68,7 @@ class TavilyClient:
         search_result = self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
         return search_result.get("answer", "")
 
-    def get_company_info(self, query, search_depth="advanced", max_results=5, **kwargs):
+    def get_company_info(self, query, search_depth="basic", max_results=5, **kwargs):
         """ Q&A search method. Search depth is advanced by default to get the best answer. """
 
         def _perform_search(topic):

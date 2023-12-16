@@ -1,15 +1,21 @@
 import os
 from openai import OpenAI
 from tavily import TavilyClient
+import time
 
 # Initialize clients with API keys
-openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+#openai_client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+#tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+openai_client = OpenAI(api_key="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")
+tavily_client = TavilyClient(api_key="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")
 
 query = "Information about Nvidia (nvidia.com)"
 
 print(f"Calling Tavily company retrieval with query: {query}...\n[Note]: Using 'advanced' may take up to 10 seconds.")
-context = tavily_client.get_company_info(query=query, search_depth="advanced", max_results=7)
+
+start_time = time.time()
+context = tavily_client.get_company_info(query=query, search_depth="basic", max_results=7)
+print(f"Retrieved context in {time.time() - start_time} seconds.")
 
 PROMPT = f"""
 You are a business analyst tasked with collecting and summarizing company information and insights from a given context.
