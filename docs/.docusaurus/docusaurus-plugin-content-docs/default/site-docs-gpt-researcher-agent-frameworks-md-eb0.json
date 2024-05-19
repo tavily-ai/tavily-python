@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/agent_frameworks",
+  "id": "gpt-researcher/agent_frameworks",
+  "isDocsHomePage": false,
+  "title": "Multi Agent Frameworks",
+  "description": "We are strong advocates for the future of AI agents, envisioning a world where autonomous agents communicate and collaborate as a cohesive team to undertake and complete complex tasks.",
+  "source": "@site/docs/gpt-researcher/agent_frameworks.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/agent_frameworks",
+  "permalink": "/docs/gpt-researcher/agent_frameworks",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/agent_frameworks.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Tailored Research",
+    "permalink": "/docs/gpt-researcher/tailored-research"
+  },
+  "next": {
+    "title": "PIP Package",
+    "permalink": "/docs/gpt-researcher/pip-package"
+  }
+}

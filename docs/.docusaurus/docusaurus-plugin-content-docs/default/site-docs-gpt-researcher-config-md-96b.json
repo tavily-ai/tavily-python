@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/config",
+  "id": "gpt-researcher/config",
+  "isDocsHomePage": false,
+  "title": "Customization",
+  "description": "The config.py enables you to customize GPT Researcher to your specific needs and preferences.",
+  "source": "@site/docs/gpt-researcher/config.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/config",
+  "permalink": "/docs/gpt-researcher/config",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/config.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/docs/gpt-researcher/getting-started"
+  },
+  "next": {
+    "title": "Agent Example",
+    "permalink": "/docs/gpt-researcher/example"
+  }
+}

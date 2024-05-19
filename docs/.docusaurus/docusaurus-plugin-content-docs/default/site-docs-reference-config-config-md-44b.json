@@ -1,0 +1,23 @@
+{
+  "unversionedId": "reference/config/config",
+  "id": "reference/config/config",
+  "isDocsHomePage": false,
+  "title": "config.config",
+  "description": "Configuration class to store the state of bools for different scripts access.",
+  "source": "@site/docs/reference/config/config.md",
+  "sourceDirName": "reference/config",
+  "slug": "/reference/config/config",
+  "permalink": "/docs/reference/config/config",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/reference/config/config.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "sidebar_label": "config",
+    "title": "config.config"
+  },
+  "sidebar": "referenceSideBar",
+  "next": {
+    "title": "singleton",
+    "permalink": "/docs/reference/config/singleton"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/llamaindex",
+  "id": "tavily-api/llamaindex",
+  "isDocsHomePage": false,
+  "title": "LlamaIndex",
+  "description": "This tool has a more extensive example usage documented in a Jupyter notebook here",
+  "source": "@site/docs/tavily-api/llamaindex.md",
+  "sourceDirName": "tavily-api",
+  "slug": "/tavily-api/llamaindex",
+  "permalink": "/docs/tavily-api/llamaindex",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/tavily-api/llamaindex.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Langchain",
+    "permalink": "/docs/tavily-api/langchain"
+  },
+  "next": {
+    "title": "Examples",
+    "permalink": "/docs/examples/examples"
+  }
+}

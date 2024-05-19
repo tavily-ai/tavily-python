@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/pip-package",
+  "id": "gpt-researcher/pip-package",
+  "isDocsHomePage": false,
+  "title": "PIP Package",
+  "description": "🌟 Exciting News! Now, you can integrate gpt-researcher with your apps seamlessly!",
+  "source": "@site/docs/gpt-researcher/pip-package.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/pip-package",
+  "permalink": "/docs/gpt-researcher/pip-package",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/pip-package.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Multi Agent Frameworks",
+    "permalink": "/docs/gpt-researcher/agent_frameworks"
+  },
+  "next": {
+    "title": "Troubleshooting",
+    "permalink": "/docs/gpt-researcher/troubleshooting"
+  }
+}

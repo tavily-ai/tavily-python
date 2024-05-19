@@ -1,0 +1,20 @@
+{
+  "unversionedId": "welcome",
+  "id": "welcome",
+  "isDocsHomePage": false,
+  "title": "Introduction",
+  "description": "Hey there! 👋",
+  "source": "@site/docs/welcome.md",
+  "sourceDirName": ".",
+  "slug": "/welcome",
+  "permalink": "/docs/welcome",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/welcome.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "next": {
+    "title": "Introduction",
+    "permalink": "/docs/gpt-researcher/introduction"
+  }
+}

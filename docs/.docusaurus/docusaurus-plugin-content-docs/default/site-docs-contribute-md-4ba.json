@@ -1,0 +1,20 @@
+{
+  "unversionedId": "contribute",
+  "id": "contribute",
+  "isDocsHomePage": false,
+  "title": "Contribute",
+  "description": "We highly welcome contributions! Please check out contributing if you're interested.",
+  "source": "@site/docs/contribute.md",
+  "sourceDirName": ".",
+  "slug": "/contribute",
+  "permalink": "/docs/contribute",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/contribute.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Examples",
+    "permalink": "/docs/examples/examples"
+  }
+}

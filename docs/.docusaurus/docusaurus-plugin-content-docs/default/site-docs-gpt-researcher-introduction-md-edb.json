@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/introduction",
+  "id": "gpt-researcher/introduction",
+  "isDocsHomePage": false,
+  "title": "Introduction",
+  "description": "GPT Researcher is an autonomous agent designed for comprehensive online research on a variety of tasks.",
+  "source": "@site/docs/gpt-researcher/introduction.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/introduction",
+  "permalink": "/docs/gpt-researcher/introduction",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/introduction.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/docs/welcome"
+  },
+  "next": {
+    "title": "Getting Started",
+    "permalink": "/docs/gpt-researcher/getting-started"
+  }
+}

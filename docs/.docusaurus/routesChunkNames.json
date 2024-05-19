@@ -1,0 +1,213 @@
+{
+  "/blog-30c": {
+    "component": "a6aa9e1f",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1527b239"
+      },
+      {
+        "content": "c7d22e29"
+      }
+    ],
+    "metadata": "b2b675dd"
+  },
+  "/blog/archive-f4c": {
+    "component": "9e4087bc",
+    "archive": "b2f554cd"
+  },
+  "/blog/building-gpt-researcher-dcf": {
+    "component": "ccc49370",
+    "sidebar": "814f3328",
+    "content": "6222f147"
+  },
+  "/blog/building-openai-assistant-7ba": {
+    "component": "ccc49370",
+    "sidebar": "814f3328",
+    "content": "d3f86d34"
+  },
+  "/blog/tags-e13": {
+    "component": "01a85c17",
+    "sidebar": "814f3328",
+    "tags": "a7023ddc"
+  },
+  "/blog/tags/assistant-api-3c8": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1527b239"
+      }
+    ],
+    "metadata": "9bc9a8f7"
+  },
+  "/blog/tags/autonomous-agent-093": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "c7d22e29"
+      }
+    ],
+    "metadata": "33e7285c"
+  },
+  "/blog/tags/github-e38": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "c7d22e29"
+      }
+    ],
+    "metadata": "78060cbc"
+  },
+  "/blog/tags/gpt-researcher-d45": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "c7d22e29"
+      }
+    ],
+    "metadata": "667a64de"
+  },
+  "/blog/tags/openai-4e6": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1527b239"
+      }
+    ],
+    "metadata": "415f4636"
+  },
+  "/blog/tags/opensource-43b": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "c7d22e29"
+      }
+    ],
+    "metadata": "f3eeb784"
+  },
+  "/blog/tags/search-api-cd3": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1527b239"
+      }
+    ],
+    "metadata": "6081ee74"
+  },
+  "/blog/tags/tavily-ddb": {
+    "component": "6875c492",
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1527b239"
+      }
+    ],
+    "metadata": "d1355481"
+  },
+  "/search-79a": {
+    "component": "1a4e3797"
+  },
+  "/docs-764": {
+    "component": "1be78505",
+    "versionMetadata": "935f2afb"
+  },
+  "/docs/contribute-e6a": {
+    "component": "17896441",
+    "content": "4ba7e5a3"
+  },
+  "/docs/examples/examples-8df": {
+    "component": "17896441",
+    "content": "c6694585"
+  },
+  "/docs/faq-e60": {
+    "component": "17896441",
+    "content": "0480b142"
+  },
+  "/docs/gpt-researcher/agent_frameworks-774": {
+    "component": "17896441",
+    "content": "eb00f0b1"
+  },
+  "/docs/gpt-researcher/config-fdc": {
+    "component": "17896441",
+    "content": "96b8d7da"
+  },
+  "/docs/gpt-researcher/example-b99": {
+    "component": "17896441",
+    "content": "618de1d8"
+  },
+  "/docs/gpt-researcher/getting-started-e85": {
+    "component": "17896441",
+    "content": "6afd4aac"
+  },
+  "/docs/gpt-researcher/introduction-18c": {
+    "component": "17896441",
+    "content": "edbfcf93"
+  },
+  "/docs/gpt-researcher/pip-package-47d": {
+    "component": "17896441",
+    "content": "f82d070b"
+  },
+  "/docs/gpt-researcher/roadmap-1db": {
+    "component": "17896441",
+    "content": "4ed95741"
+  },
+  "/docs/gpt-researcher/tailored-research-713": {
+    "component": "17896441",
+    "content": "6331da57"
+  },
+  "/docs/gpt-researcher/troubleshooting-261": {
+    "component": "17896441",
+    "content": "495881a6"
+  },
+  "/docs/reference/config/config-0fa": {
+    "component": "17896441",
+    "content": "44b7ef8d"
+  },
+  "/docs/reference/config/singleton-dd1": {
+    "component": "17896441",
+    "content": "b205135c"
+  },
+  "/docs/reference/processing/html-84d": {
+    "component": "17896441",
+    "content": "ae92dbda"
+  },
+  "/docs/reference/processing/text-dda": {
+    "component": "17896441",
+    "content": "de289047"
+  },
+  "/docs/tavily-api/introduction-203": {
+    "component": "17896441",
+    "content": "1b23b26d"
+  },
+  "/docs/tavily-api/langchain-907": {
+    "component": "17896441",
+    "content": "459b58e6"
+  },
+  "/docs/tavily-api/llamaindex-387": {
+    "component": "17896441",
+    "content": "941c4742"
+  },
+  "/docs/tavily-api/python-sdk-76f": {
+    "component": "17896441",
+    "content": "9ca7b068"
+  },
+  "/docs/tavily-api/rest_api-83b": {
+    "component": "17896441",
+    "content": "f7de8cd8"
+  },
+  "/docs/welcome-177": {
+    "component": "17896441",
+    "content": "ebfee794"
+  },
+  "/-deb": {
+    "component": "c4f5d8e4",
+    "config": "5e9f5e1a"
+  }
+}

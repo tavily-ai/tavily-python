@@ -1,0 +1,126 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "welcome",
+          "docs": [
+            {
+              "id": "contribute",
+              "path": "/docs/contribute",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "examples/examples",
+              "path": "/docs/examples/examples",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "faq",
+              "path": "/docs/faq"
+            },
+            {
+              "id": "gpt-researcher/agent_frameworks",
+              "path": "/docs/gpt-researcher/agent_frameworks",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/config",
+              "path": "/docs/gpt-researcher/config",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/example",
+              "path": "/docs/gpt-researcher/example",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/getting-started",
+              "path": "/docs/gpt-researcher/getting-started",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/introduction",
+              "path": "/docs/gpt-researcher/introduction",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/pip-package",
+              "path": "/docs/gpt-researcher/pip-package",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/roadmap",
+              "path": "/docs/gpt-researcher/roadmap"
+            },
+            {
+              "id": "gpt-researcher/tailored-research",
+              "path": "/docs/gpt-researcher/tailored-research",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "gpt-researcher/troubleshooting",
+              "path": "/docs/gpt-researcher/troubleshooting",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "reference/config/config",
+              "path": "/docs/reference/config/config",
+              "sidebar": "referenceSideBar"
+            },
+            {
+              "id": "reference/config/singleton",
+              "path": "/docs/reference/config/singleton",
+              "sidebar": "referenceSideBar"
+            },
+            {
+              "id": "reference/processing/html",
+              "path": "/docs/reference/processing/html",
+              "sidebar": "referenceSideBar"
+            },
+            {
+              "id": "reference/processing/text",
+              "path": "/docs/reference/processing/text",
+              "sidebar": "referenceSideBar"
+            },
+            {
+              "id": "tavily-api/introduction",
+              "path": "/docs/tavily-api/introduction",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "tavily-api/langchain",
+              "path": "/docs/tavily-api/langchain",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "tavily-api/llamaindex",
+              "path": "/docs/tavily-api/llamaindex",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "tavily-api/python-sdk",
+              "path": "/docs/tavily-api/python-sdk",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "tavily-api/rest_api",
+              "path": "/docs/tavily-api/rest_api",
+              "sidebar": "docsSidebar"
+            },
+            {
+              "id": "welcome",
+              "path": "/docs/welcome",
+              "sidebar": "docsSidebar"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

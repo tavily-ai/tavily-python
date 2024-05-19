@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/getting-started",
+  "id": "gpt-researcher/getting-started",
+  "isDocsHomePage": false,
+  "title": "Getting Started",
+  "description": "Step 0 - Install Python 3.11 or later. See here for a step-by-step guide.",
+  "source": "@site/docs/gpt-researcher/getting-started.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/getting-started",
+  "permalink": "/docs/gpt-researcher/getting-started",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/getting-started.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/docs/gpt-researcher/introduction"
+  },
+  "next": {
+    "title": "Customization",
+    "permalink": "/docs/gpt-researcher/config"
+  }
+}
