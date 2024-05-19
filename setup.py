@@ -13,7 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     packages=find_packages(),
-    install_requires=['requests', 'tiktoken==0.5.1', 'httpx'],
+    install_requires=['requests', 'tiktoken>=0.5.1', 'httpx'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
