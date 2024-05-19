@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/introduction",
+  "id": "tavily-api/introduction",
+  "isDocsHomePage": false,
+  "title": "Introduction",
+  "description": "Tavily Search API is a search engine optimized for LLMs and RAG, aimed at efficient, quick and persistent search results. Unlike other search APIs such as Serp or Google, Tavily focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden in searching, scraping, filtering and extracting the most relevant information from online sources. All in a single API call!",
+  "source": "@site/docs/tavily-api/introduction.md",
+  "sourceDirName": "tavily-api",
+  "slug": "/tavily-api/introduction",
+  "permalink": "/docs/tavily-api/introduction",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/tavily-api/introduction.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Troubleshooting",
+    "permalink": "/docs/gpt-researcher/troubleshooting"
+  },
+  "next": {
+    "title": "Python SDK",
+    "permalink": "/docs/tavily-api/python-sdk"
+  }
+}

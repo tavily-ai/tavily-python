@@ -1,0 +1,23 @@
+{
+  "unversionedId": "reference/processing/text",
+  "id": "reference/processing/text",
+  "isDocsHomePage": false,
+  "title": "processing.text",
+  "description": "Text processing functions",
+  "source": "@site/docs/reference/processing/text.md",
+  "sourceDirName": "reference/processing",
+  "slug": "/reference/processing/text",
+  "permalink": "/docs/reference/processing/text",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/reference/processing/text.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "sidebar_label": "text",
+    "title": "processing.text"
+  },
+  "sidebar": "referenceSideBar",
+  "previous": {
+    "title": "html",
+    "permalink": "/docs/reference/processing/html"
+  }
+}

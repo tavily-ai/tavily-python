@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/Topics/introduction",
+  "id": "tavily-api/Topics/introduction",
+  "isDocsHomePage": false,
+  "title": "Introduction",
+  "description": "We know that each AI application requires a different set of realtime data.",
+  "source": "@site/docs/tavily-api/Topics/introduction.md",
+  "sourceDirName": "tavily-api/Topics",
+  "slug": "/tavily-api/Topics/introduction",
+  "permalink": "/docs/tavily-api/Topics/introduction",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/edit/main/docs/docs/tavily-api/Topics/introduction.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Finance",
+    "permalink": "/docs/tavily-api/Topics/finance"
+  },
+  "next": {
+    "title": "News",
+    "permalink": "/docs/tavily-api/Topics/news"
+  }
+}

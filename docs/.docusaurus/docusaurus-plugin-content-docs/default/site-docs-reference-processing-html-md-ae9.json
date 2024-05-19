@@ -1,0 +1,27 @@
+{
+  "unversionedId": "reference/processing/html",
+  "id": "reference/processing/html",
+  "isDocsHomePage": false,
+  "title": "processing.html",
+  "description": "HTML processing functions",
+  "source": "@site/docs/reference/processing/html.md",
+  "sourceDirName": "reference/processing",
+  "slug": "/reference/processing/html",
+  "permalink": "/docs/reference/processing/html",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/reference/processing/html.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "sidebar_label": "html",
+    "title": "processing.html"
+  },
+  "sidebar": "referenceSideBar",
+  "previous": {
+    "title": "singleton",
+    "permalink": "/docs/reference/config/singleton"
+  },
+  "next": {
+    "title": "text",
+    "permalink": "/docs/reference/processing/text"
+  }
+}

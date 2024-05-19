@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/topics/people",
+  "id": "tavily-api/topics/people",
+  "isDocsHomePage": false,
+  "title": "people",
+  "description": "",
+  "source": "@site/docs/tavily-api/topics/people.md",
+  "sourceDirName": "tavily-api/topics",
+  "slug": "/tavily-api/topics/people",
+  "permalink": "/docs/tavily-api/topics/people",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/edit/main/docs/docs/tavily-api/topics/people.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "news",
+    "permalink": "/docs/tavily-api/topics/news"
+  },
+  "next": {
+    "title": "contribute",
+    "permalink": "/docs/contribute"
+  }
+}

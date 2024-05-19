@@ -1,0 +1,25 @@
+{
+  "unversionedId": "gpt-researcher/troubleshooting",
+  "id": "gpt-researcher/troubleshooting",
+  "isDocsHomePage": false,
+  "title": "Troubleshooting",
+  "description": "We're constantly working to provide a more stable version. If you're running into any issues, please first check out the resolved issues or ask us via our Discord community.",
+  "source": "@site/docs/gpt-researcher/04-troubleshooting.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/troubleshooting",
+  "permalink": "/docs/gpt-researcher/troubleshooting",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/edit/main/docs/docs/gpt-researcher/04-troubleshooting.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 4,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "PIP Package",
+    "permalink": "/docs/gpt-researcher/pip-package"
+  },
+  "next": {
+    "title": "Introduction",
+    "permalink": "/docs/tavily-api/introduction"
+  }
+}

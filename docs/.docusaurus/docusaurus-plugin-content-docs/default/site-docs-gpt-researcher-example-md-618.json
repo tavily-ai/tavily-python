@@ -1,0 +1,24 @@
+{
+  "unversionedId": "gpt-researcher/example",
+  "id": "gpt-researcher/example",
+  "isDocsHomePage": false,
+  "title": "Agent Example",
+  "description": "If you're interested in using GPT Researcher as a standalone agent, you can easily import it into any existing Python project. Below, is an example of calling the agent to generate a research report:",
+  "source": "@site/docs/gpt-researcher/example.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/example",
+  "permalink": "/docs/gpt-researcher/example",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/example.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Customization",
+    "permalink": "/docs/gpt-researcher/config"
+  },
+  "next": {
+    "title": "Tailored Research",
+    "permalink": "/docs/gpt-researcher/tailored-research"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "unversionedId": "gpt-researcher/getting-started",
+  "id": "gpt-researcher/getting-started",
+  "isDocsHomePage": false,
+  "title": "Getting Started",
+  "description": "Quickstart",
+  "source": "@site/docs/gpt-researcher/02-getting-started.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/getting-started",
+  "permalink": "/docs/gpt-researcher/getting-started",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/02-getting-started.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/docs/gpt-researcher/introduction"
+  },
+  "next": {
+    "title": "PIP Package",
+    "permalink": "/docs/gpt-researcher/pip-package"
+  }
+}

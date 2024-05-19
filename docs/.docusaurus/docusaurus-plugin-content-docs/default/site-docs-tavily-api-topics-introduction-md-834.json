@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/topics/introduction",
+  "id": "tavily-api/topics/introduction",
+  "isDocsHomePage": false,
+  "title": "introduction",
+  "description": "Introducing Tavily Search Topics",
+  "source": "@site/docs/tavily-api/topics/introduction.md",
+  "sourceDirName": "tavily-api/topics",
+  "slug": "/tavily-api/topics/introduction",
+  "permalink": "/docs/tavily-api/topics/introduction",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/edit/main/docs/docs/tavily-api/topics/introduction.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "finance",
+    "permalink": "/docs/tavily-api/topics/finance"
+  },
+  "next": {
+    "title": "news",
+    "permalink": "/docs/tavily-api/topics/news"
+  }
+}

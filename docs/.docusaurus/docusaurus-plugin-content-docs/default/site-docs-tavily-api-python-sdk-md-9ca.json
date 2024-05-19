@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/python-sdk",
+  "id": "tavily-api/python-sdk",
+  "isDocsHomePage": false,
+  "title": "Python SDK",
+  "description": "The Python library allows for easy interaction with the Tavily API, offering both basic and advanced search functionalities directly from your Python programs. Easily integrate smart search capabilities into your applications, harnessing Tavily's powerful search features.",
+  "source": "@site/docs/tavily-api/python-sdk.md",
+  "sourceDirName": "tavily-api",
+  "slug": "/tavily-api/python-sdk",
+  "permalink": "/docs/tavily-api/python-sdk",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/tavily-api/python-sdk.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/docs/tavily-api/introduction"
+  },
+  "next": {
+    "title": "Rest API",
+    "permalink": "/docs/tavily-api/rest_api"
+  }
+}

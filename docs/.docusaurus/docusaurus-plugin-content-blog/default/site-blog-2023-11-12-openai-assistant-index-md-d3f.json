@@ -1,0 +1,41 @@
+{
+  "permalink": "/blog/building-openai-assistant",
+  "source": "@site/blog/2023-11-12-openai-assistant/index.md",
+  "title": "How to build an OpenAI Assistant with Internet access",
+  "description": "OpenAI has done it again with a groundbreaking DevDay showcasing some of the latest improvements to the OpenAI suite of tools, products and services. One major release was the new Assistants API that makes it easier for developers to build their own assistive AI apps that have goals and can call models and tools.",
+  "date": "2023-11-12T00:00:00.000Z",
+  "formattedDate": "November 12, 2023",
+  "tags": [
+    {
+      "label": "tavily",
+      "permalink": "/blog/tags/tavily"
+    },
+    {
+      "label": "search-api",
+      "permalink": "/blog/tags/search-api"
+    },
+    {
+      "label": "openai",
+      "permalink": "/blog/tags/openai"
+    },
+    {
+      "label": "assistant-api",
+      "permalink": "/blog/tags/assistant-api"
+    }
+  ],
+  "readingTime": 5.855,
+  "truncated": false,
+  "authors": [
+    {
+      "name": "Assaf Elovic",
+      "title": "Creator @ GPT Researcher",
+      "url": "https://github.com/assafelovic",
+      "imageURL": "https://lh3.googleusercontent.com/a/ACg8ocJtrLku69VG_2Y0sJa5mt66gIGNaEBX5r_mgE6CRPEb7A=s96-c",
+      "key": "assafe"
+    }
+  ],
+  "nextItem": {
+    "title": "How we built GPT Researcher",
+    "permalink": "/blog/building-gpt-researcher"
+  }
+}

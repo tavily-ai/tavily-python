@@ -1,0 +1,25 @@
+{
+  "unversionedId": "gpt-researcher/pip-package",
+  "id": "gpt-researcher/pip-package",
+  "isDocsHomePage": false,
+  "title": "PIP Package",
+  "description": "",
+  "source": "@site/docs/gpt-researcher/03-pip-package.md",
+  "sourceDirName": "gpt-researcher",
+  "slug": "/gpt-researcher/pip-package",
+  "permalink": "/docs/gpt-researcher/pip-package",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/gpt-researcher/03-pip-package.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 3,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Getting Started",
+    "permalink": "/docs/gpt-researcher/getting-started"
+  },
+  "next": {
+    "title": "Troubleshooting",
+    "permalink": "/docs/gpt-researcher/troubleshooting"
+  }
+}

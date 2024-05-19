@@ -1,0 +1,25 @@
+{
+  "unversionedId": "tavily-api/Topics/introduction",
+  "id": "tavily-api/Topics/introduction",
+  "isDocsHomePage": false,
+  "title": "Introduction",
+  "description": "We know that each AI application requires a different set of realtime data.",
+  "source": "@site/docs/tavily-api/Topics/01-introduction.md",
+  "sourceDirName": "tavily-api/Topics",
+  "slug": "/tavily-api/Topics/introduction",
+  "permalink": "/docs/tavily-api/Topics/introduction",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs/docs/tavily-api/Topics/01-introduction.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "LlamaIndex",
+    "permalink": "/docs/tavily-api/llamaindex"
+  },
+  "next": {
+    "title": "Code",
+    "permalink": "/docs/tavily-api/Topics/code"
+  }
+}

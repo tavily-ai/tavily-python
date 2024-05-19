@@ -1,0 +1,24 @@
+{
+  "unversionedId": "tavily-api/topics/code",
+  "id": "tavily-api/topics/code",
+  "isDocsHomePage": false,
+  "title": "code",
+  "description": "",
+  "source": "@site/docs/tavily-api/topics/code.md",
+  "sourceDirName": "tavily-api/topics",
+  "slug": "/tavily-api/topics/code",
+  "permalink": "/docs/tavily-api/topics/code",
+  "editUrl": "https://github.com/assafelovic/gpt-researcher/edit/main/docs/docs/tavily-api/topics/code.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docsSidebar",
+  "previous": {
+    "title": "Search API Documentation",
+    "permalink": "/docs/tavily-api/rest_api"
+  },
+  "next": {
+    "title": "finance",
+    "permalink": "/docs/tavily-api/topics/finance"
+  }
+}
