@@ -1,2 +1,2 @@
-from .tavily import TavilyClient
-from .tavily import Client
+from .async_tavily import AsyncTavilyClient
+from .tavily import Client, TavilyClient

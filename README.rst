@@ -73,6 +73,21 @@ Error Handling
 
 In case of an unsuccessful HTTP request, a ``HTTPError`` will be raised.
 
+Notes
+--------------
+
+An async version of the Client exists as well:
+
+.. code-block:: python
+
+    from tavily import TavilyAsyncClient
+    tavily = TavilyAsyncClient(api_key="YOUR_API_KEY")
+    # For basic search:
+    await tavily.search(query="Should I invest in Apple right now?")
+    # For advanced search:
+    await tavily.search(query="Should I invest in Apple right now?", search_depth="advanced")
+
+
 License
 -------
 
