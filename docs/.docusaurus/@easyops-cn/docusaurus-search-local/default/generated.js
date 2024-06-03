@@ -1,4 +1,4 @@
-import lunr from "/Users/assafel/Sites/gpt-researcher/docs/node_modules/lunr/lunr.js";
+import lunr from "/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/node_modules/lunr/lunr.js";
 export const language = ["en"];
 export const removeDefaultStopWordFilter = false;
 export const Mark = null;

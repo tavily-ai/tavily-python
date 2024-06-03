@@ -1,6 +1,6 @@
 export default [
-  require("/Users/assafel/Sites/gpt-researcher/docs/node_modules/infima/dist/css/default/default.css"),
-  require("/Users/assafel/Sites/gpt-researcher/docs/node_modules/@docusaurus/theme-classic/lib/prism-include-languages"),
-  require("/Users/assafel/Sites/gpt-researcher/docs/node_modules/@docusaurus/theme-classic/lib/admonitions.css"),
-  require("/Users/assafel/Sites/gpt-researcher/docs/src/css/custom.css"),
+  require("/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/node_modules/infima/dist/css/default/default.css"),
+  require("/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/node_modules/@docusaurus/theme-classic/lib/prism-include-languages"),
+  require("/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/node_modules/@docusaurus/theme-classic/lib/admonitions.css"),
+  require("/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/src/css/custom.css"),
 ];

@@ -1,14 +1,14 @@
 export default {
-  "title": "Tavily",
-  "tagline": "Tavily is the leading search engine optimized for LLMs",
+  "title": "Tavily AI",
+  "tagline": "Tavily AI is the leading search engine optimized for LLMs",
   "url": "https://docs.tavily.com",
   "baseUrl": "/",
   "onBrokenLinks": "ignore",
   "onBrokenMarkdownLinks": "warn",
   "favicon": "img/favicon.ico",
-  "organizationName": "assafelovic",
+  "organizationName": "tavily-ai",
   "trailingSlash": false,
-  "projectName": "gpt-researcher",
+  "projectName": "tavily-ai.github.io",
   "themeConfig": {
     "navbar": {
       "logo": {
@@ -120,8 +120,8 @@ export default {
       "@docusaurus/preset-classic",
       {
         "docs": {
-          "sidebarPath": "/Users/assafel/Sites/gpt-researcher/docs/sidebars.js",
-          "editUrl": "https://github.com/assafelovic/gpt-researcher/tree/master/docs",
+          "sidebarPath": "/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/sidebars.js",
+          "editUrl": "https://github.com/tavily-ai/tavily-python/tree/master/docs",
           "remarkPlugins": [
             null
           ],
@@ -130,7 +130,7 @@ export default {
           ]
         },
         "theme": {
-          "customCss": "/Users/assafel/Sites/gpt-researcher/docs/src/css/custom.css"
+          "customCss": "/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/src/css/custom.css"
         }
       }
     ]
@@ -144,7 +144,7 @@ export default {
   ],
   "plugins": [
     [
-      "/Users/assafel/Sites/gpt-researcher/docs/node_modules/@easyops-cn/docusaurus-search-local/dist/server/server/index.js",
+      "/mnt/c/Users/carlv/Projects/tavily/tavily-python/docs/node_modules/@easyops-cn/docusaurus-search-local/dist/server/server/index.js",
       {
         "hashed": true,
         "blogDir": "./blog/"

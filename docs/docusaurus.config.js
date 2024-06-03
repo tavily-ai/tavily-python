@@ -11,9 +11,9 @@ module.exports = {
   //deploymentBranch: 'master',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'assafelovic',
+  organizationName: 'tavily-ai',
   trailingSlash: false,
-  projectName: 'tavily-python',
+  projectName: 'tavily-ai.github.io',
   themeConfig: {
     navbar: {
       //title: 'Tavily',
@@ -102,7 +102,7 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl:
-            'https://github.com/assafelovic/gpt-researcher/tree/master/docs',
+            'https://github.com/tavily-ai/tavily-python/tree/master/docs',
           remarkPlugins: [math],
           rehypePlugins: [katex],
         },
