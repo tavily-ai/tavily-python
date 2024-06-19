@@ -47,7 +47,7 @@ module.exports = {
             label: 'Contact',
         },
         {
-          href: 'https://github.com/assafelovic/gpt-researcher',
+          href: 'https://github.com/tavily-ai/tavily-python',
           label: 'GitHub',
           position: 'right',
         },

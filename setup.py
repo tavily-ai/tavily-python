@@ -6,9 +6,9 @@ with open('README.rst', 'r', encoding='utf-8') as f:
 setup(
     name='tavily-python',
     version='0.2.8',
-    url='https://github.com/assafelovic/tavily-python',
-    author='Assaf Elovic',
-    author_email='assaf.elovic@gmail.com',
+    url='https://github.com/tavily-ai/tavily-python',
+    author='Tavily AI',
+    author_email='support@tavily.com',
     description='Python wrapper for the Tavily API',
     long_description=long_description,
     long_description_content_type='text/x-rst',
