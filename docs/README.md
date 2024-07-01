@@ -13,19 +13,27 @@ npm install --global yarn
 
 ## Installation
 
+Navigate to the docs folder and run:
+
 ```console
-pip install pydoc-markdown
-cd website
-yarn install
+npm i
 ```
 
 ## Local Development
 
-Navigate to the website folder and run:
+In the docs folder, run:
 
 ```console
-pydoc-markdown
-yarn start
+npm start
 ```
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+
+## Building
+
+In the docs folder, run:
+
+```console
+npm run build
+npm run serve
+```
