@@ -5,16 +5,6 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'GPT Researcher',
-    Svg: require('../../static/img/gptresearcher.png').default,
-    docLink: './docs/gpt-researcher/getting-started',
-    description: (
-      <>
-        GPT Researcher is an open source autonomous agent designed for comprehensive online research on a variety of tasks.
-      </>
-    ),
-  },
-  {
     title: 'Tavily Search API',
     Svg: require('../../static/img/tavily.png').default,
     docLink: './docs/tavily-api/introduction',
@@ -31,6 +21,16 @@ const FeatureList = [
     description: (
       <>
           Check out Tavily API in action across multiple frameworks and use cases
+      </>
+    ),
+  },
+  {
+    title: 'GPT Researcher',
+    Svg: require('../../static/img/gptresearcher.png').default,
+    docLink: './docs/gpt-researcher/getting-started',
+    description: (
+      <>
+        GPT Researcher is an open source autonomous agent designed for comprehensive online research on a variety of tasks.
       </>
     ),
   },

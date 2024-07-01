@@ -4,7 +4,7 @@ Tavily Search API is a search engine optimized for LLMs and RAG, aimed at effici
 
 The search API can also be used return answers to questions (for use cases such as multi-agent frameworks like autogen) and can complete comprehensive research tasks in seconds. Moreover, Tavily leverages proprietary financial, code, news, and other data internal data sources to complement online information. 
 
-To try our API in action, you can now use GPT Researcher on our hosted version [here](https://app.tavily.com/chat) or on our [API Playground](https://app.tavily.com/playground).
+To try our API in action, you can now use the Tavily Research Assistant on our hosted version [here](https://app.tavily.com/chat) or use our [API Playground](https://app.tavily.com/playground).
 
 ## Why Choose Tavily Search API?
 

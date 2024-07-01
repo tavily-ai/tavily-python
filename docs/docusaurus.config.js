@@ -29,7 +29,7 @@ module.exports = {
           label: 'Docs',
         },
 
-        {to: 'blog', label: 'Blog', position: 'left'},
+        // {to: 'blog', label: 'Blog', position: 'left'},
         {
           type: 'doc',
           docId: 'faq',
