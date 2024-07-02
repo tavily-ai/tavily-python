@@ -109,7 +109,7 @@ Tavily Search uses API keys to allow access to the API. You can register a new A
 
 ## Rate Limiting
 
-Tavily Search API has a rate limit of 20 requests per minute.
+Tavily Search API has a rate limit of 100 requests per minute.
 
 ## Support
 
