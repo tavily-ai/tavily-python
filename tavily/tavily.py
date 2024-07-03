@@ -1,9 +1,27 @@
 import requests
 import json
 import warnings
+from typing import Literal, Sequence
+from dataclasses import dataclass, asdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
 
+@dataclass
+class TavilyResult:
+    title: str
+    url: str
+    content: str
+    score: float
+    raw_content: str
+
+@dataclass
+class TavilyResponse:
+    query: str
+    follow_up_questions: Sequence[str]
+    answer: str
+    images: Sequence[str]
+    results: Sequence[TavilyResult]
+    response_time: float
 
 class TavilyClient:
     def __init__(self, api_key):
@@ -13,10 +31,18 @@ class TavilyClient:
             "Content-Type": "application/json",
         }
 
-    def _search(self, query, search_depth="basic", topic="general", max_results=5,
-                include_domains=None, exclude_domains=None,
-                include_answer=False, include_raw_content=False, include_images=False,
-                use_cache=True):
+    def _search(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "basic",
+                topic: Literal["general", "news"] = "general",
+                max_results: int = 5,
+                include_domains: Sequence[str] = None,
+                exclude_domains: Sequence[str] = None,
+                include_answer: bool = False,
+                include_raw_content: bool = False,
+                include_images: bool = False,
+                use_cache: bool = True
+                ) -> dict:
         """
         Internal search method to send the request to the API.
         """
@@ -40,11 +66,36 @@ class TavilyClient:
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 
-    def search(self, query, search_depth="basic", **kwargs):
+    def search(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "basic",
+                topic: Literal["general", "news"] = "general",
+                max_results: int = 5,
+                include_domains: Sequence[str] = None,
+                exclude_domains: Sequence[str] = None,
+                include_answer: bool = False,
+                include_raw_content: bool = False,
+                include_images: bool = False,
+                use_cache: bool = True,
+                **kwargs
+                ) -> TavilyResponse:
         """
-        Combined search method. Set search_depth to either "basic" or "advanced".
+        Combined search method.
         """
-        return self._search(query, search_depth=search_depth, **kwargs)
+        response_dict = self._search(query,
+                            search_depth=search_depth,
+                            topic=topic,
+                            max_results=max_results,
+                            include_domains=include_domains,
+                            exclude_domains=exclude_domains,
+                            include_answer=include_answer,
+                            include_raw_content=include_raw_content,
+                            include_images=include_images,
+                            use_cache=use_cache,
+                            **kwargs
+                            )
+        
+        return TavilyResponse(**response_dict)
 
     def get_search_context(self, query, search_depth="basic", max_tokens=4000, **kwargs):
         """
@@ -55,7 +106,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-        search_result = self._search(query, search_depth, **kwargs)
+        search_result = self._search(query, search_depth=search_depth, **kwargs)
         sources = search_result.get("results", [])
         context = [{"url": obj["url"], "content": obj["content"]} for obj in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
