@@ -1,6 +1,9 @@
 import tiktoken
 import json
+from typing import Sequence
+from dataclasses import asdict
 from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
+from datatypes import TavilyContextResult
 
 
 def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL_ENCODING) -> int:
@@ -22,14 +25,14 @@ def get_max_tokens_from_string(string: str, max_tokens: int, encoding_name: str 
     return b"".join(token_bytes).decode()
 
 
-def get_max_items_from_list(data: [], max_tokens: int = DEFAULT_MAX_TOKENS):
+def get_max_items_from_list(data: Sequence[TavilyContextResult], max_tokens: int = DEFAULT_MAX_TOKENS) -> str:
     """
         Get max items from list of items based on defined max tokens (based on openai compute)
     """
     result = []
     current_tokens = 0
     for item in data:
-        item_str = json.dumps(item)
+        item_str = json.dumps(asdict(item))
         new_total_tokens = current_tokens + get_total_tokens_from_string(item_str)
         if new_total_tokens > max_tokens:
             break
