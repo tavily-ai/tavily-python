@@ -79,7 +79,7 @@ class AsyncTavilyClient:
                 include_images: bool = False,
                 use_cache: bool = True,
                 **kwargs
-                ) -> dict:
+                ) -> TavilyResponse:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
