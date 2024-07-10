@@ -138,20 +138,49 @@ class TavilyClient:
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
 
-    def qna_search(self, query, search_depth="advanced", **kwargs):
+    def qna_search(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "advanced",
+                topic: Literal["general", "news"] = "general",
+                max_results: int = 5,
+                include_domains: Sequence[str] = None,
+                exclude_domains: Sequence[str] = None,
+                use_cache: bool = True,
+                **kwargs
+                ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
-        search_result = self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
-        return search_result.get("answer", "")
+        response_dict = self._search(query,
+                    search_depth=search_depth,
+                    topic=topic,
+                    max_results=max_results,
+                    include_domains=include_domains,
+                    exclude_domains=exclude_domains,
+                    include_raw_content=False,
+                    include_images=False,
+                    include_answer=True,
+                    use_cache=use_cache,
+                    **kwargs
+                    )
+        return response_dict.get("answer", "")
 
 
-    def get_company_info(self, query, search_depth="advanced", max_results=5, **kwargs):
-        """ Q&A search method. Search depth is advanced by default to get the best answer. """
+    def get_company_info(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "advanced",
+                max_results: int = 5,
+                **kwargs
+                ) -> Sequence[TavilyResult]:
+        """ Company information search method. Search depth is advanced by default to get the best answer. """
 
         def _perform_search(topic):
-            return self._search(query, search_depth=search_depth, topic=topic,
-                                max_results=max_results, include_answer=False, **kwargs)
+            return self._search(query,
+                                search_depth=search_depth,
+                                topic=topic,
+                                max_results=max_results,
+                                include_answer=False,
+                                **kwargs)
 
         with ThreadPoolExecutor() as executor:
             # Initiate the search for each topic in parallel
@@ -169,7 +198,9 @@ class TavilyClient:
         # Sort all the results by score in descending order and take the top 'max_results' items
         sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)[:max_results]
 
-        return sorted_results
+        final_results = [TavilyResult(**result) for result in sorted_results]
+
+        return final_results
 
 
 class Client(TavilyClient):

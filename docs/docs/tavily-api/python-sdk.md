@@ -58,6 +58,8 @@ The Client class is the entry point to interacting with the Tavily API. Kickstar
 
 * **search_depth (str)**: The depth of the search. It can be "basic" or "advanced". Default is "basic" for basic_search and "advanced" for advanced_search.
 
+* **topic (str)**: The category of the search. This will determine which of our agents will be used for the search. Currently, only "general" and "news" are supported. Default is "general".
+
 * **max_results (int)**: The number of maximum search results to return. Default is 5.
 
 * **include_images (bool)**: Include a list of query related images in the response. Default is False.
@@ -70,8 +72,14 @@ The Client class is the entry point to interacting with the Tavily API. Kickstar
 
 * **exclude_domains (list)**: A list of domains to specifically exclude from the search results. Default is None, which doesn't exclude any domains.
 
+* **use_cache (bool)**: Use the cached web search results. Default is True. If False is passed, a new web search will be done before generating your search results.
+
 ### Response Example
 To learn more see [REST API](https://app.tavily.com/documentation/api) documentation.
+
+```json
+
+
 ## Error Handling ⚠️
 
 In case of an unsuccessful HTTP request, a HTTPError will be raised.
