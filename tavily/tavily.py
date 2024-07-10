@@ -4,7 +4,6 @@ import warnings
 from typing import Literal, Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
-from datatypes import TavilyContextResult, TavilyResponse, TavilyResult
 
 class TavilyClient:
     """
@@ -68,8 +67,7 @@ class TavilyClient:
                 include_raw_content: bool = False,
                 include_images: bool = False,
                 use_cache: bool = True,
-                **kwargs
-                ) -> TavilyResponse:
+                ) -> dict:
         """
         Combined search method.
         """
@@ -84,7 +82,6 @@ class TavilyClient:
                             include_raw_content=include_raw_content,
                             include_images=include_images,
                             use_cache=use_cache,
-                            **kwargs
                             )
         
         tavily_results = response_dict.get("results", [])
@@ -95,10 +92,9 @@ class TavilyClient:
                 if "published date" in tavily_result:
                     tavily_result["published_date"] = tavily_result.pop("published date")
 
-        results = [TavilyResult(**result) for result in tavily_results]
-        response_dict["results"] = results
+        response_dict["results"] = tavily_results
 
-        return TavilyResponse(**response_dict)
+        return response_dict
 
 
     def get_search_context(self,
@@ -110,7 +106,6 @@ class TavilyClient:
                            exclude_domains: Sequence[str] = None,
                            use_cache: bool = True,
                            max_tokens: int = 4000,
-                           **kwargs
                            ) -> str:
         """
         Get the search context for a query. Useful for getting only related content from retrieved websites
@@ -131,10 +126,9 @@ class TavilyClient:
                             include_raw_content=False,
                             include_images=False,
                             use_cache=use_cache,
-                            **kwargs
                             )
         sources = response_dict.get("results", [])
-        context = [TavilyContextResult(url=source["url"], content=source["content"]) for source in sources]
+        context = [{"url": source["url"], "content": source["content"]} for source in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
 
@@ -146,7 +140,6 @@ class TavilyClient:
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
                 use_cache: bool = True,
-                **kwargs
                 ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
@@ -161,7 +154,6 @@ class TavilyClient:
                     include_images=False,
                     include_answer=True,
                     use_cache=use_cache,
-                    **kwargs
                     )
         return response_dict.get("answer", "")
 
@@ -170,8 +162,7 @@ class TavilyClient:
                 query: str,
                 search_depth: Literal["basic", "advanced"] = "advanced",
                 max_results: int = 5,
-                **kwargs
-                ) -> Sequence[TavilyResult]:
+                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
 
         def _perform_search(topic):
@@ -179,8 +170,7 @@ class TavilyClient:
                                 search_depth=search_depth,
                                 topic=topic,
                                 max_results=max_results,
-                                include_answer=False,
-                                **kwargs)
+                                include_answer=False,)
 
         with ThreadPoolExecutor() as executor:
             # Initiate the search for each topic in parallel
@@ -198,9 +188,7 @@ class TavilyClient:
         # Sort all the results by score in descending order and take the top 'max_results' items
         sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)[:max_results]
 
-        final_results = [TavilyResult(**result) for result in sorted_results]
-
-        return final_results
+        return sorted_results
 
 
 class Client(TavilyClient):
@@ -209,6 +197,6 @@ class Client(TavilyClient):
 
     WARNING! This class is deprecated. Please use TavilyClient instead.
     """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, kwargs):
         warnings.warn("Client is deprecated, please use TavilyClient instead", DeprecationWarning, stacklevel=2)
-        super().__init__(*args, **kwargs)
+        super().__init__(kwargs)

@@ -6,9 +6,6 @@ import httpx
 
 from tavily.utils import get_max_items_from_list
 
-from datatypes import TavilyContextResult, TavilyResponse, TavilyResult
-
-
 class AsyncTavilyClient:
     """
     Async Tavily API client class.
@@ -78,8 +75,7 @@ class AsyncTavilyClient:
                 include_raw_content: bool = False,
                 include_images: bool = False,
                 use_cache: bool = True,
-                **kwargs
-                ) -> TavilyResponse:
+                ) -> dict:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
@@ -93,7 +89,6 @@ class AsyncTavilyClient:
                                   include_raw_content=include_raw_content,
                                   include_images=include_images,
                                   use_cache=use_cache,
-                                  **kwargs
                                   )
         
         tavily_results = response_dict.get("results", [])
@@ -104,10 +99,9 @@ class AsyncTavilyClient:
                 if "published date" in tavily_result:
                     tavily_result["published_date"] = tavily_result.pop("published date")
 
-        results = [TavilyResult(**result) for result in tavily_results]
-        response_dict["results"] = results
+        response_dict["results"] = tavily_results
 
-        return TavilyResponse(**response_dict)
+        return response_dict
 
     async def get_search_context(self,
                                 query: str,
@@ -118,7 +112,6 @@ class AsyncTavilyClient:
                                 exclude_domains: Sequence[str] = None,
                                 use_cache: bool = True,
                                 max_tokens: int = 4000,
-                                **kwargs
                                 ) -> str:
         """
         Get the search context for a query. Useful for getting only related content from retrieved websites
@@ -138,10 +131,9 @@ class AsyncTavilyClient:
                             include_raw_content=False,
                             include_images=False,
                             use_cache=use_cache,
-                            **kwargs
                             )
         sources = response_dict.get("results", [])
-        context = [TavilyContextResult(url=source["url"], content=source["content"]) for source in sources]
+        context = [{"url": source["url"], "content": source["content"]} for source in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
     async def qna_search(self,
@@ -152,7 +144,6 @@ class AsyncTavilyClient:
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
                 use_cache: bool = True,
-                **kwargs
                 ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
@@ -167,7 +158,6 @@ class AsyncTavilyClient:
                     include_images=False,
                     include_answer=True,
                     use_cache=use_cache,
-                    **kwargs
                     )
         return response_dict.get("answer", "")
 
@@ -175,8 +165,7 @@ class AsyncTavilyClient:
                 query: str,
                 search_depth: Literal["basic", "advanced"] = "advanced",
                 max_results: int = 5,
-                **kwargs
-                ) -> Sequence[TavilyResult]:
+                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
 
         async def _perform_search(topic: str):
@@ -184,8 +173,7 @@ class AsyncTavilyClient:
                                 search_depth=search_depth,
                                 topic=topic,
                                 max_results=max_results,
-                                include_answer=False,
-                                **kwargs)
+                                include_answer=False,)
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):
