@@ -4,10 +4,14 @@ from typing import Literal, Sequence
 
 import httpx
 
-from tavily.utils import get_max_items_from_list
-
+from .utils import get_max_items_from_list
 
 class AsyncTavilyClient:
+    """
+    Async Tavily API client class.
+    """
+
+
     def __init__(self, api_key: str, company_info_tags: Sequence[str] = ("news", "general", "finance")):
         self._base_data = {
             "api_key": api_key,
@@ -47,28 +51,62 @@ class AsyncTavilyClient:
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
             "max_results": max_results,
-            "include_domains": include_domains or None,
-            "exclude_domains": exclude_domains or None,
+            "include_domains": include_domains,
+            "exclude_domains": exclude_domains,
             "include_images": include_images,
             "use_cache": use_cache,
         }
         async with self._client_creator() as client:
-            response = await client.post("/search", data=json.dumps(data))
+            response = await client.post("/search", content=json.dumps(data))
 
         if response.status_code == 200:
             return response.json()
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 
-    async def search(self, query: str, search_depth: Literal["basic", "advanced"] = "basic", **kwargs) -> dict:
+    async def search(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "basic",
+                topic: Literal["general", "news"] = "general",
+                max_results: int = 5,
+                include_domains: Sequence[str] = None,
+                exclude_domains: Sequence[str] = None,
+                include_answer: bool = False,
+                include_raw_content: bool = False,
+                include_images: bool = False,
+                use_cache: bool = True,
+                ) -> dict:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
-        return await self._search(query, search_depth=search_depth, **kwargs)
+        response_dict = await self._search(query,
+                                  search_depth=search_depth,
+                                  topic=topic,
+                                  max_results=max_results,
+                                  include_domains=include_domains,
+                                  exclude_domains=exclude_domains,
+                                  include_answer=include_answer,
+                                  include_raw_content=include_raw_content,
+                                  include_images=include_images,
+                                  use_cache=use_cache,
+                                  )
+        
+        tavily_results = response_dict.get("results", [])
 
-    async def get_search_context(
-        self, query: str, search_depth: Literal["basic", "advanced"] = "basic", max_tokens=4000, **kwargs
-    ):
+        response_dict["results"] = tavily_results
+
+        return response_dict
+
+    async def get_search_context(self,
+                                query: str,
+                                search_depth: Literal["basic", "advanced"] = "basic",
+                                topic: Literal["general", "news"] = "general",
+                                max_results: int = 5,
+                                include_domains: Sequence[str] = None,
+                                exclude_domains: Sequence[str] = None,
+                                use_cache: bool = True,
+                                max_tokens: int = 4000,
+                                ) -> str:
         """
         Get the search context for a query. Useful for getting only related content from retrieved websites
         without having to deal with context extraction and limitation yourself.
@@ -77,27 +115,59 @@ class AsyncTavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-        search_result = await self._search(query, search_depth, **kwargs)
-        sources = search_result.get("results", [])
-        context = [{"url": obj["url"], "content": obj["content"]} for obj in sources]
+        response_dict = await self._search(query,
+                            search_depth=search_depth,
+                            topic=topic,
+                            max_results=max_results,
+                            include_domains=include_domains,
+                            exclude_domains=exclude_domains,
+                            include_answer=False,
+                            include_raw_content=False,
+                            include_images=False,
+                            use_cache=use_cache,
+                            )
+        sources = response_dict.get("results", [])
+        context = [{"url": source["url"], "content": source["content"]} for source in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
-    async def qna_search(self, query: str, search_depth: Literal["basic", "advanced"] = "advanced", **kwargs) -> str:
+    async def qna_search(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "advanced",
+                topic: Literal["general", "news"] = "general",
+                max_results: int = 5,
+                include_domains: Sequence[str] = None,
+                exclude_domains: Sequence[str] = None,
+                use_cache: bool = True,
+                ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
-        search_result = await self._search(query, search_depth=search_depth, include_answer=True, **kwargs)
-        return search_result.get("answer", "")
+        response_dict = await self._search(query,
+                    search_depth=search_depth,
+                    topic=topic,
+                    max_results=max_results,
+                    include_domains=include_domains,
+                    exclude_domains=exclude_domains,
+                    include_raw_content=False,
+                    include_images=False,
+                    include_answer=True,
+                    use_cache=use_cache,
+                    )
+        return response_dict.get("answer", "")
 
-    async def get_company_info(
-        self, query: str, search_depth: Literal["basic", "advanced"] = "basic", max_results=5, **kwargs
-    ) -> list[dict]:
-        """Q&A search method. Search depth is advanced by default to get the best answer."""
+    async def get_company_info(self,
+                query: str,
+                search_depth: Literal["basic", "advanced"] = "advanced",
+                max_results: int = 5,
+                ) -> Sequence[dict]:
+        """ Company information search method. Search depth is advanced by default to get the best answer. """
 
         async def _perform_search(topic: str):
-            return await self._search(
-                query, search_depth=search_depth, topic=topic, max_results=max_results, include_answer=False, **kwargs
-            )
+            return await self._search(query,
+                                search_depth=search_depth,
+                                topic=topic,
+                                max_results=max_results,
+                                include_answer=False,)
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):

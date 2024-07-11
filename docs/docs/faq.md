@@ -15,7 +15,7 @@ Lastly, by using RAG and other techniques, we ensure that the information is rel
 ### What is Tavily API?
 Tavily search API is a search engine optimized for LLMs, aimed at efficient, quick and persistent search results. Unlike other search APIs such as Serp or Google, Tavily focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden in searching, scraping, filtering and extracting the most relevant information from online sources. All in a single API call!
 
-The search API can also be used return answers to questions (for use cases such as multi-agent frameworks like autogen) and can complete comprehensive research tasks in seconds. Moreover, Tavily leverages proprietary financial, code, news, and other data internal data sources to complement online information.
+The search API can also be used return answers to questions (for use cases such as multi-agent frameworks like autogen) and can complete comprehensive research tasks in seconds. Moreover, Tavily leverages proprietary financial, code, news, and other internal data sources to complement online information.
 
 To learn more about Tavily search API, check out the [documentation page](/docs/tavily-api/introduction).
 
