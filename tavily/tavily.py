@@ -85,12 +85,6 @@ class TavilyClient:
                             )
         
         tavily_results = response_dict.get("results", [])
-        # TODO CRITICAL Make sure to have good behavior for 'published_date' and 'published date'
-       
-        if topic == "news":
-            for tavily_result in tavily_results:
-                if "published date" in tavily_result:
-                    tavily_result["published_date"] = tavily_result["published date"]
 
         response_dict["results"] = tavily_results
 
