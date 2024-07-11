@@ -4,7 +4,7 @@ from typing import Literal, Sequence
 
 import httpx
 
-from tavily.utils import get_max_items_from_list
+from .utils import get_max_items_from_list
 
 class AsyncTavilyClient:
     """
@@ -57,7 +57,7 @@ class AsyncTavilyClient:
             "use_cache": use_cache,
         }
         async with self._client_creator() as client:
-            response = await client.post("/search", data=json.dumps(data))
+            response = await client.post("/search", content=json.dumps(data))
 
         if response.status_code == 200:
             return response.json()

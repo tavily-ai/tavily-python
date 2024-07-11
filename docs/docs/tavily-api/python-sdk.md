@@ -35,6 +35,8 @@ tavily.qna_search(query="Where does Messi play right now?")
 
 ## API Methods 📚
 
+> **NEW!** We are releasing a beta of our asynchronous Tavily client. It is already available in the source code through the AsyncTavilyClient class and will be added to the PyPI package very soon. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous.
+
 ### Client
 The Client class is the entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key.
 

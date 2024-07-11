@@ -90,7 +90,7 @@ class TavilyClient:
         if topic == "news":
             for tavily_result in tavily_results:
                 if "published date" in tavily_result:
-                    tavily_result["published_date"] = tavily_result.pop("published date")
+                    tavily_result["published_date"] = tavily_result["published date"]
 
         response_dict["results"] = tavily_results
 

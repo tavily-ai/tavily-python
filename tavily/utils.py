@@ -1,7 +1,6 @@
 import tiktoken
 import json
 from typing import Sequence
-from dataclasses import asdict
 from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
 
 
