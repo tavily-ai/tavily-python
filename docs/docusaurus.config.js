@@ -60,8 +60,8 @@ module.exports = {
           title: 'Community',
           items: [
             {
-              label: 'Discord',
-              href: 'https://discord.gg/8YkBcCED5y',
+              label: 'Developer Community',
+              href: 'https://community.tavily.com',
             },
             {
               label: 'Twitter',
