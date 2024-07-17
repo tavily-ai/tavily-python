@@ -1,6 +1,6 @@
 
 # Python SDK
-The [Python library](https://github.com/tavily-ai/tavily-python) allows for easy interaction with the Tavily API, offering the full range of our search functionality directly from your Python programs. Easily integrate smart search capabilities into your applications, harnessing Tavily's powerful search features.
+The Python SDK allows for easy interaction with the Tavily API, offering the full range of our search functionality directly from your Python programs. Easily integrate smart search capabilities into your applications, harnessing Tavily's powerful search features.
 
 ## 📦 Installing
 
@@ -158,7 +158,46 @@ response = {
 
 ## ⚠️ Error Handling 
 
-In case of an unsuccessful request to our API, an `HTTPError` will be raised. It is up to you to handle that error.
+The Tavily Python SDK includes comprehensive error handling to ensure smooth interaction with the API. Below are the specific exceptions that might be raised during usage:
+
+1. **Missing API Key**: If no API key is provided when initializing the `TavilyClient`, a `tavily.MissingAPIKeyError` will be raised. Ensure you pass a valid API key to the `TavilyClient` during instantiation.
+   
+   ```python
+   from tavily import TavilyClient, MissingAPIKeyError
+
+   try:
+       tavily_client = TavilyClient(api_key="")
+   except MissingAPIKeyError:
+       print("API key is missing. Please provide a valid API key.")
+   ```
+
+2. **Invalid API Key**: If the API key provided is invalid, a `tavily.InvalidAPIKeyError` will be raised when sending a search query. Double-check that your API key is correct and active.
+
+   ```python
+   from tavily import TavilyClient, InvalidAPIKeyError
+
+   tavily_client = TavilyClient(api_key="invalid-api-key")
+
+   try:
+       response = tavily_client.search("Who is Leo Messi?")
+   except InvalidAPIKeyError:
+       print("Invalid API key provided. Please check your API key.")
+   ```
+
+3. **Usage Limit Exceeded**: If the API key provided is valid but the request fails due to exceeding the rate limit, surpassing the plan's monthly limit, or hitting the key's pre-set monthly limit, a `tavily.UsageLimitExceededError` will be raised. Consider upgrading your plan or checking your usage limits.
+
+   ```python
+   from tavily import TavilyClient, UsageLimitExceededError
+
+   tavily_client = TavilyClient(api_key="valid-api-key")
+
+   try:
+       response = tavily_client.search("Who is Leo Messi?")
+   except UsageLimitExceededError:
+       print("Usage limit exceeded. Please check your plan's usage limits or consider upgrading.")
+   ```
+
+These errors ensure that you are aware of the specific issues related to your API key usage, allowing you to take appropriate actions to resolve them.
 
 ## 📝 License
 
