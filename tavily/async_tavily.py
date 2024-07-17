@@ -1,10 +1,12 @@
 import asyncio
 import json
-from typing import Literal, Sequence
+import os
+from typing import Literal, Sequence, Optional
 
 import httpx
 
 from .utils import get_max_items_from_list
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError
 
 class AsyncTavilyClient:
     """
@@ -12,7 +14,13 @@ class AsyncTavilyClient:
     """
 
 
-    def __init__(self, api_key: str, company_info_tags: Sequence[str] = ("news", "general", "finance")):
+    def __init__(self, api_key: Optional[str] = None, company_info_tags: Sequence[str] = ("news", "general", "finance")):
+        if api_key is None:
+            api_key = os.getenv("TAVILY_API_KEY")
+        
+        if not api_key:
+            raise MissingAPIKeyError()
+        
         self._base_data = {
             "api_key": api_key,
         }
@@ -61,6 +69,16 @@ class AsyncTavilyClient:
 
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 429:
+            detail = 'Too many requests.'
+            try:
+                detail = response.json()['detail']['error']
+            except:
+                pass
+            
+            raise UsageLimitExceededError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError()
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 

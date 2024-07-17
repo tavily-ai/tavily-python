@@ -1,9 +1,11 @@
 import requests
 import json
 import warnings
-from typing import Literal, Sequence
+import os
+from typing import Literal, Sequence, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError
 
 class TavilyClient:
     """
@@ -11,7 +13,13 @@ class TavilyClient:
     """
 
 
-    def __init__(self, api_key):
+    def __init__(self, api_key: Optional[str] = None):
+        if api_key is None:
+            api_key = os.getenv("TAVILY_API_KEY")
+            
+        if not api_key:
+            raise MissingAPIKeyError()
+        
         self.base_url = "https://api.tavily.com/search"
         self.api_key = api_key
         self.headers = {
@@ -48,10 +56,21 @@ class TavilyClient:
             "api_key": self.api_key,
             "use_cache": use_cache,
         }
+        
         response = requests.post(self.base_url, data=json.dumps(data), headers=self.headers, timeout=100)
 
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 429:
+            detail = 'Too many requests.'
+            try:
+                detail = response.json()['detail']['error']
+            except:
+                pass
+            
+            raise UsageLimitExceededError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError()
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 
