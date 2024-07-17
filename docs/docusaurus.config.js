@@ -13,7 +13,7 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'tavily-ai',
   trailingSlash: false,
-  projectName: 'tavily-ai.github.io',
+  projectName: 'tavily-python',
   themeConfig: {
     navbar: {
       //title: 'Tavily',
