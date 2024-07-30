@@ -9,7 +9,7 @@ This sample shows you how to perform a Tavily Search call through our REST API u
 ```bash
 curl -X POST https://api.tavily.com/search \
 -H "Content-Type: application/json" \
--d '{"api_key": "tvly-YOUR_API_KEY", "query": "Who is Leo Messi?"}
+-d '{"api_key": "tvly-YOUR_API_KEY", "query": "Who is Leo Messi?"}'
 ```
 
 Then, you should get a response that looks like this:
