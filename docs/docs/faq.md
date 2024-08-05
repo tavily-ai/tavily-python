@@ -3,9 +3,10 @@
 ### How do I get started?
 It really depends on what you're aiming for. 
 
-If you're looking to connect your AI application to the internet with our tailored API, check out the [Tavily API](/docs/tavily-api/introduction) documentation. 
+If you're looking to connect your AI application to the internet with our tailored API, check out the [Python](/docs/python-sdk/getting-started) or [REST API](/docs/rest-api/api-reference) documentation. 
+You can also check out demos and examples for inspiration [here](/docs/python-sdk/examples).
+
 If you're looking to build and deploy our open source autonomous research agent GPT Researcher, please see [GPT Researcher](/docs/gpt-researcher/introduction) documentation.
-You can also check out demos and examples for inspiration [here](/docs/examples/introduction).
 
 ### How do you ensure the report is factual and accurate?
 We do our best to ensure that the information we provide is factual and accurate. We do this by using multiple sources, and by using proprietary AI to score and rank the most relevant and accurate information. We also use proprietary AI to filter out irrelevant information and sources.
@@ -15,20 +16,19 @@ Lastly, by using RAG and other techniques, we ensure that the information is rel
 ### What is Tavily API?
 Tavily search API is a search engine optimized for LLMs, aimed at efficient, quick and persistent search results. Unlike other search APIs such as Serp or Google, Tavily focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden in searching, scraping, filtering and extracting the most relevant information from online sources. All in a single API call!
 
-The search API can also be used return answers to questions (for use cases such as multi-agent frameworks like autogen) and can complete comprehensive research tasks in seconds. Moreover, Tavily leverages proprietary financial, code, news, and other internal data sources to complement online information.
-
-To learn more about Tavily search API, check out the [documentation page](/docs/tavily-api/introduction).
+The search API can also be used return answers to questions (for use cases such as multi-agent frameworks like autogen) and can complete comprehensive research tasks in seconds. Moreover, Tavily leverages proprietary news, weather, and other internal data sources to complement online information.
 
 To try the API in action, you can now use our hosted version [here](https://app.tavily.com/chat) or on our [API Playground](https://app.tavily.com/playground).
 ### How is Tavily different from other search APIs?
 Current search APIs such as Google, Serp and Bing retrieve search results based on user query. However, the results are sometimes irrelevant to the goal of the search, and return simple site URLs and snippets of content which are not always relevant. Because of this, any developer would need to then scrape the sites for relevant content, filter irrelevant information, optimize the content to fit LLM context limits, and more. This tasks is a burden and requires skills to get right.
 
-Tavily Search API aggregates 20+ sites per a single API call, and uses  AI to score, filter and rank the top most relevant sources and content to your task, query or goal. In addition, Tavily allows developers to add custom fields such as context and limit response tokens to enable the optimal search experience for LLMs.
+Tavily Search API aggregates up to 20 sites per a single API call, and uses AI to score, filter and rank the top most relevant sources and content to your task, query or goal. In addition, Tavily allows developers to add custom fields such as context and limit response tokens to enable the optimal search experience for LLMs.
 Lastly, Tavily indexes and ranks search results based on factors such as trusted sources, content quality, and more. This allows for a more accurate and relevant search experience for AI agents.
 
 Remember: With LLM hallucinations, it's crucial to optimize for RAG with the right context and information.
-### What is Tavily API pricing?
-Tavily is free to use for up to 1,000 API calls per month. Check out our [pricing page](https://tavily.com/#pricing) for more information.
+
+### What is the Tavily API pricing?
+Tavily is free to use for up to 1,000 API calls per month. Check out our [pricing page](https://tavily.com/#pricing) to see our other pricing plans.
 
 ### What are your plans for the future?
 We're constantly working on improving our products and services. We're currently working on improving our search API together with design partners, and adding more data sources to our search engine.

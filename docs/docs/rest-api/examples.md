@@ -1,4 +1,4 @@
-# REST API
+# Examples
 
 ## Code Snippets
 
@@ -60,4 +60,4 @@ Then, you should get a response that looks like this:
 }
 ```
 
-Congrats! You know now how to use the Tavily Search REST API. Make sure to check our detailed [REST API documentation](../tavily-api/rest_api) to learn how to tune the API calls to best match your needs.
+Congrats! You know now how to use the Tavily Search REST API. Make sure to check our detailed REST [API Reference](/docs/rest-api/api-reference) to learn how to tune the API calls to best match your needs.

@@ -1,4 +1,4 @@
-# Rest API
+# API Reference
 
 ## Overview
 

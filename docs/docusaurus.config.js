@@ -37,20 +37,21 @@ module.exports = {
           label: 'FAQ',
         },
         {
+          href: 'https://community.tavily.com',
+          label: 'Developer Community',
+          position: 'left',
+        },
+        {
+          href: 'mailto:support@tavily.com',
+          position: 'right',
+          label: 'Contact',
+        },
+        {
             href: 'https://app.tavily.com',
             position: 'right',
             label: 'Get API Key',
         },
-        {
-            href: 'mailto:support@tavily.com',
-            position: 'left',
-            label: 'Contact',
-        },
-        {
-          href: 'https://github.com/tavily-ai/tavily-python',
-          label: 'GitHub',
-          position: 'right',
-        },
+
       ],
     },
     footer: {
