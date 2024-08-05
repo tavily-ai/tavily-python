@@ -68,7 +68,7 @@ You should then get a response that looks like the following:
 }
 ```
 
-Congrats! You know now how to use the Tavily Search API through our Python package. Yes, it's that simple! Make sure to check our detailed [Python documentation](../tavily-api/python-sdk) to learn how to tune the API calls to best match your needs.
+Congrats! You now know how to use the Tavily Search API through our Python package. Yes, it's that simple! Make sure to check our detailed [Python documentation](../tavily-api/python-sdk) to learn how to tune your API calls to best match your needs.
 
 ### Sample 1: Research Report using Tavily and GPT-4 with Langchain
 ```python
