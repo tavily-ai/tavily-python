@@ -31,13 +31,14 @@ class TavilyClient:
                 query: str,
                 search_depth: Literal["basic", "advanced"] = "basic",
                 topic: Literal["general", "news"] = "general",
+                days: int = 2,
                 max_results: int = 5,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
                 include_answer: bool = False,
                 include_raw_content: bool = False,
                 include_images: bool = False,
-                use_cache: bool = True
+                use_cache: bool = True,
                 ) -> dict:
         """
         Internal search method to send the request to the API.
@@ -47,6 +48,7 @@ class TavilyClient:
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
+            "days": days,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
             "max_results": max_results,
@@ -86,6 +88,7 @@ class TavilyClient:
                 include_raw_content: bool = False,
                 include_images: bool = False,
                 use_cache: bool = True,
+                **kwargs,
                 ) -> dict:
         """
         Combined search method.
@@ -101,6 +104,7 @@ class TavilyClient:
                             include_raw_content=include_raw_content,
                             include_images=include_images,
                             use_cache=use_cache,
+                            **kwargs,
                             )
         
         tavily_results = response_dict.get("results", [])

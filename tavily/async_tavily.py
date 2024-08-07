@@ -93,21 +93,23 @@ class AsyncTavilyClient:
                 include_raw_content: bool = False,
                 include_images: bool = False,
                 use_cache: bool = True,
+                **kwargs,
                 ) -> dict:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
         response_dict = await self._search(query,
-                                  search_depth=search_depth,
-                                  topic=topic,
-                                  max_results=max_results,
-                                  include_domains=include_domains,
-                                  exclude_domains=exclude_domains,
-                                  include_answer=include_answer,
-                                  include_raw_content=include_raw_content,
-                                  include_images=include_images,
-                                  use_cache=use_cache,
-                                  )
+                                search_depth=search_depth,
+                                topic=topic,
+                                max_results=max_results,
+                                include_domains=include_domains,
+                                exclude_domains=exclude_domains,
+                                include_answer=include_answer,
+                                include_raw_content=include_raw_content,
+                                include_images=include_images,
+                                use_cache=use_cache,
+                                **kwargs,
+                                )
         
         tavily_results = response_dict.get("results", [])
 
