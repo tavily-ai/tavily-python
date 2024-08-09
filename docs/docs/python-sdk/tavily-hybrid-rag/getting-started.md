@@ -1,4 +1,4 @@
-# Getting Started
+# Getting Started with Tavily Hybrid RAG
 
 > We're excited to announce the release of the Tavily Hybrid RAG feature in version 0.3.7 of our Python package! We're looking forward to seeing what you build with it! Please note that this feature is still in beta. If you encounter any bugs, please report them to support@tavily.com.
 

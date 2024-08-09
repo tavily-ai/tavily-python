@@ -1,4 +1,4 @@
-# Getting started
+# Getting Started with Tavily Search
 The Python SDK allows for easy interaction with the Tavily API, offering the full range of our search functionality directly from your Python programs. Easily integrate smart search capabilities into your applications, harnessing Tavily's powerful search features.
 
 ## 📦 Installing

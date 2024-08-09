@@ -22,7 +22,11 @@
           type: 'category',
           label: 'Tavily Search',
           items: [
-            'python-sdk/tavily-search/getting-started',
+            {
+              type: 'doc',
+              id: 'python-sdk/tavily-search/getting-started',
+              label: 'Getting Started',
+            },
             'python-sdk/tavily-search/api-reference',
             'python-sdk/tavily-search/examples',
           ],
@@ -31,7 +35,11 @@
           type: 'category',
           label: 'Tavily Hybrid RAG (beta)',
           items: [
-            'python-sdk/tavily-hybrid-rag/getting-started',
+             {
+              type: 'doc',
+              id: 'python-sdk/tavily-hybrid-rag/getting-started',
+              label: 'Getting Started',
+             },
             'python-sdk/tavily-hybrid-rag/api-reference',
             'python-sdk/tavily-hybrid-rag/examples',
           ],
