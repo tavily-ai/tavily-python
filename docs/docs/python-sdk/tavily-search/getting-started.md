@@ -58,6 +58,8 @@ print(answer)
 ```
 This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
 
+This snippet shows you how to set up a Tavily Hybrid RAG Client and connect it to a MongoDB database to perform a simple Hybrid RAG query! For more information on how to set up your
+
 ## 📝 License
 
 This project is licensed under the terms of the MIT license.

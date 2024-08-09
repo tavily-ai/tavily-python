@@ -1,15 +1,13 @@
 # API Reference
 
-## 📚 API Methods
-
-### Client
+## Client
 
 The `TavilyClient` class is the entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key. Once you do so, you're ready to search the Web in one line of code! All you need is to pass a `str` as a `query` to one of our methods (detailed below) and you'll start searching!
 
-#### Asynchronous Client
+### Asynchronous Client
 If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous.
 
-### Methods
+## Methods
 * **`search`**(query, **kwargs)
   * Performs a Tavily Search query and returns the response as a well-structured `dict`.
   * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `use_cache`. 

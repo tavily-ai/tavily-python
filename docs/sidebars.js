@@ -18,9 +18,24 @@
       collapsible: true,
       collapsed: true,
       items: [
-        'python-sdk/getting-started',
-        'python-sdk/api-reference',
-        'python-sdk/examples',
+        {
+          type: 'category',
+          label: 'Tavily Search',
+          items: [
+            'python-sdk/tavily-search/getting-started',
+            'python-sdk/tavily-search/api-reference',
+            'python-sdk/tavily-search/examples',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Tavily Hybrid RAG (beta)',
+          items: [
+            'python-sdk/tavily-hybrid-rag/getting-started',
+            'python-sdk/tavily-hybrid-rag/api-reference',
+            'python-sdk/tavily-hybrid-rag/examples',
+          ],
+        }
       ],
     },
     {
