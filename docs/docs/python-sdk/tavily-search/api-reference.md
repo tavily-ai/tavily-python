@@ -1,75 +1,13 @@
+# API Reference
 
-# Python SDK
-The Python SDK allows for easy interaction with the Tavily API, offering the full range of our search functionality directly from your Python programs. Easily integrate smart search capabilities into your applications, harnessing Tavily's powerful search features.
+## Client
 
-## 📦 Installing
+The `TavilyClient` class is the entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key. Once you do so, you're ready to search the Web in one line of code! All you need is to pass a `str` as a `query` to one of our methods (detailed below) and you'll start searching!
 
-```bash
-pip install tavily-python
-```
+### Asynchronous Client
+If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous.
 
-## 🛠️ Usage
-Below are some code snippets that show you how to interact with our API. The different steps and components of this code are explained in more detail in the [API Methods](#-api-methods) section.
-
-### Getting and printing the full Search API response
-
-```python
-from tavily import TavilyClient
-
-# Step 1. Instantiating your TavilyClient
-tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
-
-# Step 2. Executing a simple search query
-response = tavily_client.search("Who is Leo Messi?")
-
-# Step 3. That's it! You've done a Tavily Search!
-print(result)
-```
-This is equivalent to directly querying our REST API.
-
-### Generating context for a RAG Application
-
-```python
-from tavily import TavilyClient
-
-# Step 1. Instantiating your TavilyClient
-tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
-
-# Step 2. Executing a context search query
-context = tavily_client.get_search_context(query="What happened during the Burning Man floods?")
-
-# Step 3. That's it! You now have a context string that you can feed directly into your RAG Application
-print(context)
-```
-This is how you can generate precise and fact-based context for your RAG application in one line of code.
-
-### Getting a quick answer to a question
-
-```python
-from tavily import TavilyClient
-
-# Step 1. Instantiating your TavilyClient
-tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
-
-# Step 2. Executing a Q&A search query
-answer = tavily_client.qna_search(query="Who is Leo Messi?")
-
-# Step 3. That's it! Your question has been answered!
-print(answer)
-```
-This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
-
-## 📚 API Methods
-
-### Client
-
-> **NEW!** We have released a Beta of our asynchronous Tavily client. It is available in version `0.3.4` of our Python package. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous. Try it now with the `AsyncTavilyClient` class!
-
-The `TavilyClient` class is the entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key. If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead.
-
-Once you do so, you're ready to search the Web in one line of code! All you need is to pass a `str` as a `query` to one of our methods (detailed below) and you'll start searching!
-
-### Methods
+## Methods
 * **`search`**(query, **kwargs)
   * Performs a Tavily Search query and returns the response as a well-structured `dict`.
   * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `use_cache`. 
@@ -82,7 +20,7 @@ Once you do so, you're ready to search the Web in one line of code! All you need
   * **Returns** a `str` containing the content and sources of the results. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 * **`qna_search`**(query, **kwargs)
-  * Performs a search and returns a string containing an answer to the original query. This is optimal to be used as a tool for AI agents.
+  * Performs a search and returns a `str` containing an answer to the original query. This is optimal to be used as a tool for AI agents.
   * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `max_results`, `include_domains`, `exclude_domains`, `use_cache`, 
   * **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
@@ -198,14 +136,3 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
    ```
 
 These errors ensure that you are aware of the specific issues related to your API key usage, allowing you to take appropriate actions to resolve them.
-
-## 📝 License
-
-This project is licensed under the terms of the MIT license.
-
-## 💌 Contact
-
-If you are encountering issues while using Tavily, please email us at support@tavily.com. We'll be happy to help you.
-
-If you want to stay updated on the latest Tavily news and releases, head to our [Developer Community](https://community.tavily.com) to learn more!
-
