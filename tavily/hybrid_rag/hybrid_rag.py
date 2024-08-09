@@ -1,14 +1,11 @@
-'''
-WARNING
-Tavily Hybrid Search, as it is currently known internally, is a work-in-progress feature and may change in the future.
-Use at your own risk.
-'''
-
 import os
-from tavily import TavilyClient
-import cohere
+from typing import Union, Optional, Literal
 
-co = cohere.Client(os.getenv("COHERE_API_KEY"))
+import cohere
+from pymongo.collection import Collection
+from tavily import TavilyClient
+
+co = cohere.Client()
 
 def _validate_index(client):
     """
@@ -68,8 +65,31 @@ def _cohere_rerank(query, documents, top_n):
     ]
 
 class TavilyHybridClient():
-    def __init__(self, api_key, db_provider, collection, index, embeddings_field='embeddings',
-                 content_field='content'):
+    def __init__(
+            self,
+            api_key: Union[str, None],
+            db_provider: Literal['mongodb'],
+            collection: Collection,
+            index: str,
+            embeddings_field: str = 'embeddings',
+            content_field: str = 'content',
+            embedding_function: Optional[callable] = None,
+            ranking_function: Optional[callable] = None
+        ):
+        '''
+        A client for performing hybrid RAG using both the Tavily API and a local database collection.
+        
+        Parameters:
+        api_key (str): The Tavily API key. If this is set to None, it will be loaded from the environment variable TAVILY_API_KEY.
+        db_provider (str): The database provider. Currently only 'mongodb' is supported.
+        collection (str): The name of the collection in the database that will be used for local search.
+        index (str): The name of the collection's vector search index.
+        embeddings_field (str): The name of the field in the collection that contains the embeddings.
+        content_field (str): The name of the field in the collection that contains the content.
+        embedding_function (callable): If provided, this function will be used to generate embeddings for the search query and documents.
+        ranking_function (callable): If provided, this function will be used to rerank the combined results.
+        '''
+        
         self.tavily = TavilyClient(api_key)
         
         if db_provider != 'mongodb':
@@ -79,8 +99,9 @@ class TavilyHybridClient():
         self.index = index
         self.embeddings_field = embeddings_field
         self.content_field = content_field
-        self.embedding_function = _cohere_embed
-        self.ranking_function = _cohere_rerank
+        
+        self.embedding_function = _cohere_embed if embedding_function is None else embedding_function
+        self.ranking_function = _cohere_rerank if ranking_function is None else ranking_function
         
         _validate_index(self)
 
@@ -124,7 +145,8 @@ class TavilyHybridClient():
                     "content": f"${self.content_field}",
                     "score": {
                         "$meta": "vectorSearchScore"
-                    }
+                    },
+                    "origin": "local"
                 }
             }
         ]))
@@ -139,7 +161,8 @@ class TavilyHybridClient():
         projected_foreign_results = [
             {
                 'content': result['content'],
-                'score': result['score']
+                'score': result['score'],
+                'origin': 'foreign'
             }
             for result in foreign_results
         ]

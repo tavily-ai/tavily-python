@@ -7,7 +7,7 @@ const FeatureList = [
   {
     title: 'Tavily Search API',
     Svg: require('../../static/img/tavily.png').default,
-    docLink: './docs/tavily-api/introduction',
+    docLink: './docs/python-sdk/tavily-search/getting-started',
     description: (
       <>
         Tavily Search API is a search engine optimized for LLMs, optimized for a factual, efficient, and persistent search experience

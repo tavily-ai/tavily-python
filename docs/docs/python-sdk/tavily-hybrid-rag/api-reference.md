@@ -7,9 +7,9 @@ The `TavilyHybridClient` class is your gateway to Tavily Hybrid RAG. There are a
 ### Constructor parameters
 * **`api_key`: str** - Your Tavily API Key
 
-* **`db_provider`: str** - Your database provider. Currently, only `"mongodb"` is supported. Default is `"mongodb"`.
+* **`db_provider`: str** - Your database provider. Currently, only `"mongodb"` is supported.
 
-* **`collection`: str** - The name of the collection you want to perform vector search on (for local data).
+* **`collection`: Collection** - A reference to the MongoDB collection that will be used for local search.
 
 * **`index`: str** - The name of the vector index to be used for vector search on the specified `collection`.
 
@@ -26,26 +26,13 @@ The `TavilyHybridClient` class is your gateway to Tavily Hybrid RAG. There are a
 
 ## Methods
 
-* **`search`**(query, **kwargs)
-  * Performs a Tavily Hybrid RAG query and returns the retrieved documents as a `list[dict]` where the documents are sorted by decreasing relevancy to your query. Each returned document will have two properties - `content`, which is a `str`, and `score`, which is a `float`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `max_local`, `max_foreign`, `save_foreign`, `include_domains`, `exclude_domains`, `use_cache`.
+* **`search`**(query, max_results=10, max_local=None, max_foreign=None, save_foreign=False, **kwargs)
+  * Performs a Tavily Hybrid RAG query and returns the retrieved documents as a `list[dict]` where the documents are sorted by decreasing relevancy to your query. Each returned document will have three properties - `content` (`str`), `score` (`float`), and `origin`, which is either `local` or `foreign`.
+  * **Core Parameters**
+    * **`query`: str** - The query you want to search for.
+    * **`max_results`: int** - The maximum number of total search results to return. Default is `10`.
+    * **`max_local`: int** - The maximum number of local search results to return. Default is `None`, which defaults to `max_results`.
+    * **`max_foreign`: int** - The maximum number of web search results to return. Default is `None`, which defaults to `max_results`.
+    * **`save_foreign`: Union[bool, function]** - Save documents from the web search in the local database. If `True` is passed, our default saving function (which only saves the content `str` and the embedding `list[float]` will be used.) If `False` is passed, no web search result documents will be saved in the local database. If a function is passed, that function MUST take in a `dict` as a parameter, and return another `dict`. The input `dict` contains all properties of the returned Tavily result object. The output dict is the final document that will be inserted in the database. You are free to add to it any fields that are supported by the database, as well as remove any of the default ones. **If this function returns `None`, the document will not be saved in the database.**
 
-### Keyword Arguments (optional)
-
-* **`search_depth`: str** - The depth of the web search. It can be `"basic"` or `"advanced"`. Default is `"basic"` unless specified otherwise in a given method.
-
-* **`topic`: str** - The category of the web search. This will determine which of our agents will be used for the search. Currently, only `"general"` and `"news"` are supported. Default is `"general"`.
-
-* **`max_results`: int** -  The maximum number of total search results to return. Default is `10`.
-
-* **`max_foreign`: int** -  The maximum number of total search results to return. Default is `None`, which defaults to `max_results`.
-
-* **`max_local`: int** -  The maximum number of total search results to return. Default is `None`, which defaults to `max_results`.
-
-* **`include_domains`: list[str]** -  A list of domains to specifically include in the search results. Default is `None`, which includes all domains. Please note that this feature is only available when using the `"general"` search `topic`.
-
-* **`exclude_domains`: list[str]** -  A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains. Please note that this feature is only available when using the `"general"` search `topic`.
-
-* **`use_cache`: bool** - Use the cached web search results. Default is `True`. If `False` is passed, a new web search will be done before generating your search results.
-
-* **`save_foreign`: Union[bool, function]** - Save documents from the web search in the local database. If `True` is passed, our default saving function (which only saves the content `str` and the embedding `list[float]` will be used.) If `False` is passed, no web search result documents will be saved in the local database. If a function is passed, that function MUST take in a `dict` as a parameter, and return another `dict`. The input `dict` will represent a document, and will have two properties - `content`, which is a `str`, and `embedding`, which is a `list[float]`. The output dict is the final document that will be inserted in the database. You are free to add to it any fields that are supported by the database, as well as remove any of the default ones.
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `include_raw_content`, `include_domains`, `exclude_domains`, `use_cache`. Refer to the [Tavily Search API Reference](/docs/python-sdk/tavily-search/api-reference#keyword-arguments-optional) for more information on these parameters.
