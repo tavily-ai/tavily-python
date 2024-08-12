@@ -68,6 +68,15 @@
     },
     {
       type: 'category',
+      label: 'Use Cases',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        'use-cases/data-enrichment/data-enrichment',
+      ],
+    },
+    {
+      type: 'category',
       label: 'GPT Researcher',
       collapsible: true,
       collapsed: true,
