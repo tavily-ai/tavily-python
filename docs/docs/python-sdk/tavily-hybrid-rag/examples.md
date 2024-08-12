@@ -1,7 +1,7 @@
 # Examples
 
 ## Setup
-Follow the setup instructions in [Getting Started](/docs/python-sdk/tavily-hybrid-rag)
+Follow the setup instructions in [Getting Started](/docs/python-sdk/tavily-hybrid-rag/getting-started)
 
 ## Samples
 
