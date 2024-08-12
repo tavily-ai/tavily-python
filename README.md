@@ -72,18 +72,18 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 ### Methods
 * **`search`**(query, **kwargs)
   * Performs a Tavily Search query and returns the response as a well-structured `dict`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `use_cache`. 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`. 
   * **Returns** a `dict` with all related response fields. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `dict`. The details of the exact response format are given in the Search Responses section further down.
   
 * **`get_search_context`**(query, **kwargs)
   * Performs a Tavily Search query and returns a `str` of content and sources within the provided token limit. It's useful for getting only related content from retrieved websites without having to deal with context extraction and token management.
   * The **core parameter** for this function is `max_tokens`, an `int`. It defaults to `4000`. It is provided as a keyword argument.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `use_cache`.
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`.
   * **Returns** a `str` containing the content and sources of the results. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 * **`qna_search`**(query, **kwargs)
   * Performs a search and returns a string containing an answer to the original query. This is optimal to be used as a tool for AI agents.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `max_results`, `include_domains`, `exclude_domains`, `use_cache`, 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `max_results`, `include_domains`, `exclude_domains`. 
   * **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 ### Keyword Arguments (optional)
@@ -103,8 +103,6 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 * **`include_domains`: list[str]** -  A list of domains to specifically include in the search results. Default is `None`, which includes all domains. Please note that this feature is only available when using the `"general"` search `topic`.
 
 * **`exclude_domains`: list[str]** -  A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains. Please note that this feature is only available when using the `"general"` search `topic`.
-
-* **`use_cache`: bool** -  Use the cached web search results. Default is `True`. If `False` is passed, a new web search will be done before generating your search results.
 
 ### Search Responses
 

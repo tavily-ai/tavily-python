@@ -17,7 +17,7 @@ const FeatureList = [
   {
     title: 'Examples and Demos',
     Svg: require('../../static/img/examples.png').default,
-    docLink: './docs/examples/examples',
+    docLink: './docs/python-sdk/tavily-search/examples',
     description: (
       <>
           Check out Tavily API in action across multiple frameworks and use cases

@@ -8,7 +8,7 @@ pip install tavily-python
 ```
 
 ## 🛠️ Usage
-Below are some code snippets that show you how to interact with our API. The different steps and components of this code are explained in more detail on the Python [API Reference](/docs/python-sdk/api-reference) page.
+Below are some code snippets that show you how to interact with our API. The different steps and components of this code are explained in more detail on the Python [API Reference](/docs/python-sdk/tavily-search/api-reference) page.
 
 ### Getting and printing the full Search API response
 
@@ -66,6 +66,6 @@ This project is licensed under the terms of the MIT license.
 
 ## 💌 Contact
 
-If you are encountering issues while using Tavily, please email us at support@tavily.com. We'll be happy to help you.
+If you are encountering issues while using Tavily, please email us at [support@tavily.com](mailto:support@tavily.com). We'll be happy to help you.
 
 If you want to stay updated on the latest Tavily news and releases, head to our [Developer Community](https://community.tavily.com) to learn more!

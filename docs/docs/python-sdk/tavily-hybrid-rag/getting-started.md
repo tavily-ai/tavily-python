@@ -1,11 +1,11 @@
 # Getting Started with Tavily Hybrid RAG
 
-> We're excited to announce the release of the Tavily Hybrid RAG feature in version 0.3.7 of our Python package! We're looking forward to seeing what you build with it! Please note that this feature is still in beta. If you encounter any bugs, please report them to support@tavily.com.
+> We're excited to announce the release of the Tavily Hybrid RAG feature in version 0.3.7 of our Python package! We're looking forward to seeing what you build with it! Please note that this feature is still in beta. If you encounter any bugs, please report them to [support@tavily.com](mailto:support@tavily.com).
 
 Tavily Hybrid RAG is an extension of the Tavily Search API built to retrieve relevant data from both the web and an existing database collection. This way, a RAG agent can combine web sources and locally available data to perform its tasks. Additionally, data queried from the web that is not yet in the database can optionally be inserted into it. This will allow similar searches in the future to be answered faster, without the need to query the web again.
 
 ## 📦 Installing
-You'll need to [install our Python package](/docs/python-sdk/getting-started), as well as a Python database client. Currently, we only support MongoDB through [PyMongo](https://pypi.org/project/pymongo/).
+You'll need to [install our Python package](/docs/python-sdk/tavily-search/getting-started), as well as a Python database client. Currently, we only support MongoDB through [PyMongo](https://pypi.org/project/pymongo/).
 
 ## 🛠️ Setup
 

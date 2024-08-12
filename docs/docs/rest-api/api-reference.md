@@ -33,9 +33,6 @@ Search for data based on a query.
 
 * **`exclude_domains`: list<string\> (optional)** -  A list of domains to specifically exclude from the search results. Default is `[]`, which doesn't exclude any domains. Please note that this feature is only available when using the `"general"` search `topic`.
 
-* **`use_cache`: bool (optional)** -  Use the cached web search results. Default is `true`. If `false` is passed, a new web search will be done before generating your search results.
-
-
 
 ### Response
 
