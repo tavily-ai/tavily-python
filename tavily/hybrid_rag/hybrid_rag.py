@@ -1,11 +1,14 @@
 import os
 from typing import Union, Optional, Literal
 
-import cohere
 from pymongo.collection import Collection
 from tavily import TavilyClient
 
-co = cohere.Client()
+try:
+    import cohere
+    co = cohere.Client()
+except:
+    co = None
 
 def _validate_index(client):
     """
