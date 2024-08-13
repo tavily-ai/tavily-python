@@ -23,7 +23,7 @@ tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 response = tavily_client.search("Who is Leo Messi?")
 
 # Step 3. That's it! You've done a Tavily Search!
-print(result)
+print(response)
 ```
 This is equivalent to directly querying our REST API.
 
