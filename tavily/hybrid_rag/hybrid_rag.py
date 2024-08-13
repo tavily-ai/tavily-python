@@ -1,7 +1,6 @@
 import os
 from typing import Union, Optional, Literal
 
-from pymongo.collection import Collection
 from tavily import TavilyClient
 
 try:
@@ -72,7 +71,7 @@ class TavilyHybridClient():
             self,
             api_key: Union[str, None],
             db_provider: Literal['mongodb'],
-            collection: Collection,
+            collection,
             index: str,
             embeddings_field: str = 'embeddings',
             content_field: str = 'content',
