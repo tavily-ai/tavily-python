@@ -18,6 +18,14 @@ The system employs the LangGraph Framework to orchestrate the workflow, managing
 
 ![Alt Text](flow.png)
 
+[//]: # (<div align="center">)
+
+[//]: # ()
+[//]: # (<img src="./flow.png" alt="small flow" height="300" />)
+
+[//]: # ()
+[//]: # (</div>)
+
 ### Overview of the Enrich Agent Class
 
 Below is a partial implementation of the `EnrichAgent` class, highlighting its key components without showing all the internal details:
