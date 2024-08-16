@@ -21,6 +21,8 @@ Search for data based on a query.
 
 * **`topic`: string (optional)** - The category of the search. This will determine which of our agents will be used for the search. Currently: only `"general"` and `"news"` are supported. Default is `"general"`.
 
+* **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `2`.
+
 * **`max_results`: int (optional)** -  The maximum number of search results to return. Default is `5`.
 
 * **`include_images`: bool (optional)** -  Include a list of query-related images in the response. Default is `false`.
@@ -29,9 +31,9 @@ Search for data based on a query.
 
 * **`include_raw_content`: bool (optional)** -  Include the cleaned and parsed HTML content of each search result. Default is `false`.
 
-* **`include_domains`: list<string\> (optional)** -  A list of domains to specifically include in the search results. Default is `[]`, which includes all domains. Please note that this feature is only available when using the `"general"` search `topic`.
+* **`include_domains`: list<string\> (optional)** -  A list of domains to specifically include in the search results. Default is `[]`, which includes all domains. 
 
-* **`exclude_domains`: list<string\> (optional)** -  A list of domains to specifically exclude from the search results. Default is `[]`, which doesn't exclude any domains. Please note that this feature is only available when using the `"general"` search `topic`.
+* **`exclude_domains`: list<string\> (optional)** -  A list of domains to specifically exclude from the search results. Default is `[]`, which doesn't exclude any domains.
 
 
 ### Response
@@ -50,6 +52,7 @@ Search for data based on a query.
   - **`content`: string** - The most query related content from the scraped URL. We use proprietary AI and algorithms to extract only the most relevant content from each URL, to optimize for context quality and size.
   - **`raw_content`: string** - The parsed and cleaned HTML of the site. For now includes parsed text only.
   - **`score`: float** - The relevance score of the search result.
+  - **`published_date`: str (optional)** - The publication date of the source. This is only available if you are using `"news"` as your search `topic`.
 
 ## Example Usage
 
@@ -124,6 +127,7 @@ Search for data based on a query.
 - **`403: Forbidden`** — The endpoint requested is hidden for administrators only.
 - **`404: Not Found`** — The specified endpoint could not be found.
 - **`405: Method Not Allowed`** — You tried to access an endpoint with an invalid method.
+- **`422: Unprocessable Content`** - You submitted a request with invalid data that the server was unable to process.
 - **`429: Too Many Requests`** — You're sending too many requests! Slow down!
 - **`500: Internal Server Error`** — We had a problem with our server. Try again later.
 - **`503: Service Unavailable`** — We're temporarily offline for maintenance. Please try again later.

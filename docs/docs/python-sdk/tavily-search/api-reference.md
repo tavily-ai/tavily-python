@@ -38,9 +38,9 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 
 * **`include_raw_content`: bool** -  Include the cleaned and parsed HTML content of each search result. Default is `False`.
 
-* **`include_domains`: list[str]** -  A list of domains to specifically include in the search results. Default is `None`, which includes all domains. Please note that this feature is only available when using the `"general"` search `topic`.
+* **`include_domains`: list[str]** -  A list of domains to specifically include in the search results. Default is `None`, which includes all domains. 
 
-* **`exclude_domains`: list[str]** -  A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains. Please note that this feature is only available when using the `"general"` search `topic`.
+* **`exclude_domains`: list[str]** -  A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains. 
 
 ### Search Responses
 
