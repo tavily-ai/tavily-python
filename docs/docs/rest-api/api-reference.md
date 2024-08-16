@@ -21,7 +21,7 @@ Search for data based on a query.
 
 * **`topic`: string (optional)** - The category of the search. This will determine which of our agents will be used for the search. Currently: only `"general"` and `"news"` are supported. Default is `"general"`.
 
-* **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `2`.
+* **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
 
 * **`max_results`: int (optional)** -  The maximum number of search results to return. Default is `5`.
 

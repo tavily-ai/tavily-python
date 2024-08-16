@@ -10,18 +10,18 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 ## Methods
 * **`search`**(query, **kwargs)
   * Performs a Tavily Search query and returns the response as a well-structured `dict`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`. 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`,`max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`. 
   * **Returns** a `dict` with all related response fields. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `dict`. The details of the exact response format are given in the [Search Responses](#search-responses) section.
   
 * **`get_search_context`**(query, **kwargs)
   * Performs a Tavily Search query and returns a `str` of content and sources within the provided token limit. It's useful for getting only related content from retrieved websites without having to deal with context extraction and token management.
   * The **core parameter** for this function is `max_tokens`, an `int`. It defaults to `4000`. It is provided as a keyword argument.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `max_results`, `include_domains`, `exclude_domains`.
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`, `max_results`, `include_domains`, `exclude_domains`.
   * **Returns** a `str` containing the content and sources of the results. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 * **`qna_search`**(query, **kwargs)
   * Performs a search and returns a `str` containing an answer to the original query. This is optimal to be used as a tool for AI agents.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `max_results`, `include_domains`, `exclude_domains`. 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `days`, `max_results`, `include_domains`, `exclude_domains`. 
   * **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 ### Keyword Arguments (optional)
@@ -29,6 +29,8 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 * **`search_depth`: str** - The depth of the search. It can be `"basic"` or `"advanced"`. Default is `"basic"` unless specified otherwise in a given method.
 
 * **`topic`: str** - The category of the search. This will determine which of our agents will be used for the search. Currently, only `"general"` and `"news"` are supported. Default is `"general"`.
+
+* **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
 
 * **`max_results`: int** -  The maximum number of search results to return. Default is `5`.
 
