@@ -16,6 +16,8 @@ Tavily API offers several advantages for conducting in-depth company research:
 
 The following [Jupyter Notebook](https://github.com/tavily-ai/use-cases/blob/main/company-research/company_research.ipynb) demonstrates how to run weekly research process on companies using Tavily API, LangGraph framework, and OpenAI for content generation. This notebook outlines a comprehensive workflow that dynamically gathers relevant information on a company, processes the data, and generates a detailed PDF report.
 
+![Alt Text](flow.png)
+
 ### Workflow Overview
 
 The notebook utilizes several components to achieve its goal:
