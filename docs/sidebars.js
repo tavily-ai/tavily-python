@@ -73,6 +73,7 @@
       collapsed: true,
       items: [
         'use-cases/data-enrichment/data-enrichment',
+        'use-cases/company-research/company-research',
       ],
     },
     {
