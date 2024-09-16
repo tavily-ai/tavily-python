@@ -2,6 +2,10 @@ class UsageLimitExceededError(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
+class BadRequestError(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+
 class InvalidAPIKeyError(Exception):
     def __init__(self):
         super().__init__("The provided API key is invalid.")

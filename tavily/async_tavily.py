@@ -6,7 +6,7 @@ from typing import Literal, Sequence, Optional, List, Union
 import httpx
 
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError
 
 
 class AsyncTavilyClient:
@@ -141,6 +141,15 @@ class AsyncTavilyClient:
 
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 400:
+            detail = 'Bad request. The request was invalid or cannot be served.'
+            try:
+                detail = response.json()['detail']['error']
+            except KeyError:
+                pass
+            raise BadRequestError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError()
         elif response.status_code == 429:
             detail = 'Too many requests.'
             try:
@@ -149,8 +158,6 @@ class AsyncTavilyClient:
                 pass
 
             raise UsageLimitExceededError(detail)
-        elif response.status_code == 401:
-            raise InvalidAPIKeyError()
         else:
             response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
 
@@ -169,6 +176,7 @@ class AsyncTavilyClient:
         failed_results = response_dict.get("failed_results", [])
 
         response_dict["results"] = tavily_results
+        response_dict["failed_results"] = failed_results
 
         return response_dict
 
