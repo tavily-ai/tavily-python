@@ -27,6 +27,8 @@ Search for data based on a query.
 
 * **`include_images`: bool (optional)** -  Include a list of query-related images in the response. Default is `false`.
 
+* **`include_image_descriptions`: bool (optional)** - Include descriptions of query-related images in the response. Default is `False`.
+
 * **`include_answer`: bool (optional)** -  Include a short answer to original query. Default is `false`.
 
 * **`include_raw_content`: bool (optional)** -  Include the cleaned and parsed HTML content of each search result. Default is `false`.

@@ -36,6 +36,8 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 
 * **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
 
+* **`include_image_descriptions`: bool** - Include descriptions of query-related images in the response. Default is `False`.
+
 * **`include_answer`: bool** -  Include a short answer to original query. Default is `False`.
 
 * **`include_raw_content`: bool** -  Include the cleaned and parsed HTML content of each search result. Default is `False`.
