@@ -10,7 +10,7 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 ## Methods
 * **`search`**(query, **kwargs)
   * Performs a Tavily Search query and returns the response as a well-structured `dict`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`,`max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`. 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`,`max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `include_image_descriptions`. 
   * **Returns** a `dict` with all related response fields. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `dict`. The details of the exact response format are given in the [Search Responses](#search-responses) section.
   
 * **`get_search_context`**(query, **kwargs)
@@ -36,7 +36,7 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 
 * **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
 
-* **`include_image_descriptions`: bool** - Include descriptions of query-related images in the response. Default is `False`.
+* **`include_image_descriptions`: bool** - Include a list of query-related images and their descriptions in the response. Default is `False`.
 
 * **`include_answer`: bool** -  Include a short answer to original query. Default is `False`.
 
@@ -54,7 +54,7 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 
 * **`response_time`: float** - Your search result response time.
 
-* **`images`: list[str]** - A list of query-related image URLs.
+* **`images`: list[str]** - A list of query-related image URLs. If `include_image_descriptions` is set to `True`, the list will include both the image URLs and their descriptions
 
 * **`results`: list** - A list of sorted search results ranked by relevancy. Each result is in the following format:
   - **`title`: str** - The title of the search result URL.
@@ -73,11 +73,26 @@ response = {
   "answer" = "A short answer to the query", # This will be None if include_answer is set to False in the request
   "follow_up_questions": None, # This feature is still in development
   "images" = [
-    "Image 1 URL",
-    "Image 2 URL",
-    "Image 3 URL",
-    "Image 4 URL",
-    "Image 5 URL"
+  {
+      "url": "Image 1 URL",
+      "description": "Description"  # This will only be included if `include_image_descriptions` is set to True
+    },
+    {
+      "url": "Image 2 URL",
+      "description": "Description"
+    },
+    {
+      "url": "Image 3 URL",
+      "description": "Description"
+    },
+    {
+      "url": "Image 4 URL",
+      "description": "Description"
+    },
+    {
+      "url": "Image 5 URL",
+      "description": "Description"
+    }
   ], # This will be an empty list if include_images is not set to True
   "results" = [
     {

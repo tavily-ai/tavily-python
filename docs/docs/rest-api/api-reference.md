@@ -25,13 +25,13 @@ Search for data based on a query.
 
 * **`max_results`: int (optional)** -  The maximum number of search results to return. Default is `5`.
 
-* **`include_images`: bool (optional)** -  Include a list of query-related images in the response. Default is `false`.
+* **`include_images`: bool (optional)** -  Include a list of query-related images in the response. Default is `False`.
 
-* **`include_image_descriptions`: bool (optional)** - Include descriptions of query-related images in the response. Default is `False`.
+* **`include_image_descriptions`: bool (optional)** - Include a list of query-related images and their descriptions in the response. Default is `False`. 
 
-* **`include_answer`: bool (optional)** -  Include a short answer to original query. Default is `false`.
+* **`include_answer`: bool (optional)** -  Include a short answer to original query. Default is `False`.
 
-* **`include_raw_content`: bool (optional)** -  Include the cleaned and parsed HTML content of each search result. Default is `false`.
+* **`include_raw_content`: bool (optional)** -  Include the cleaned and parsed HTML content of each search result. Default is `False`.
 
 * **`include_domains`: list<string\> (optional)** -  A list of domains to specifically include in the search results. Default is `[]`, which includes all domains. 
 
@@ -46,7 +46,7 @@ Search for data based on a query.
 
 * **`response_time`: float** - Your search result response time.
 
-* **`images`: list<string\>** - A list of query related image urls.
+* **`images`: list<string\>** - A list of query-related image URLs. If `include_image_descriptions` is set to `True`, the list will include both the image URLs and their descriptions
 
 * **`results`: list** - A list of sorted search results ranked by relevancy. Each result is in the following format:
   - **`title`: string** - The title of the search result URL.
@@ -66,7 +66,8 @@ Search for data based on a query.
     "query": "Who is Leo Messi?",
     "search_depth": "basic",
     "include_answer": false,
-    "include_images": true,
+    "include_images": false,
+    "include_image_descriptions": false,
     "include_raw_content": false,
     "max_results": 5,
     "include_domains": [],
