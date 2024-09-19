@@ -54,7 +54,7 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
 
 * **`response_time`: float** - Your search result response time.
 
-* **`images`: list[str]** - A list of query-related image URLs. If `include_image_descriptions` is set to `True`, the list will include both the image URLs and their descriptions
+* **`images`: list[str | dict]** - A list of query-related image URLs.  If `include_image_descriptions` is set to `True` each entry will be a dictionary with `url` and `description`
 
 * **`results`: list** - A list of sorted search results ranked by relevancy. Each result is in the following format:
   - **`title`: str** - The title of the search result URL.
@@ -69,47 +69,50 @@ When you send a search query, the response `dict` you receive will be in the fol
 
 ```python
 response = {
-  "query" = "The query provided in the request",
-  "answer" = "A short answer to the query", # This will be None if include_answer is set to False in the request
-  "follow_up_questions": None, # This feature is still in development
-  "images" = [
-  {
+  "query": "The query provided in the request",
+  "answer": "A short answer to the query",  # This will be None if include_answer is set to False in the request
+  "follow_up_questions": None,  # This feature is still in development
+  "images": [ 
+    {
       "url": "Image 1 URL",
-      "description": "Description"  # This will only be included if `include_image_descriptions` is set to True
+      "description": "Image 1 Description",  
     },
     {
       "url": "Image 2 URL",
-      "description": "Description"
+      "description": "Image 2 Description",
     },
     {
       "url": "Image 3 URL",
-      "description": "Description"
+      "description": "Image 3 Description",
     },
     {
       "url": "Image 4 URL",
-      "description": "Description"
+      "description": "Image 4 Description",
     },
     {
       "url": "Image 5 URL",
-      "description": "Description"
+      "description": "Image 5 Description",
     }
-  ], # This will be an empty list if include_images is not set to True
-  "results" = [
+  ],  # This will be a list of string URLs if `include_images` is True and `include_image_descriptions` is False, or an empty list if both set to False.
+  "results": [
     {
       "title": "Source 1 Title",
       "url": "Source 1 URL",
       "content": "Source 1 Content",
-      "score": 0.99 # This is the "relevancy" score of the source. It ranges from 0 to 1.
+      "score": 0.99  # This is the "relevancy" score of the source. It ranges from 0 to 1.
     },
     {
       "title": "Source 2 Title",
       "url": "Source 2 URL",
       "content": "Source 2 Content",
       "score": 0.97
-    },
-  ] # This list will have max_results elements
+    }
+  ],  # This list will have max_results elements
+  "response_time": 1.09 # This will be your search response time
 }
 ```
+
+
 
 ## ⚠️ Error Handling 
 
