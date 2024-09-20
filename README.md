@@ -98,8 +98,8 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 
 * **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
 
-* **`include_image_descriptions`: bool** -  Include a list of query-related images and their descriptions in the response. Default is `False`.
-* 
+* **`include_image_descriptions`: bool** - When `include_images` is set to `True`, this option adds descriptive text for each image.  Default is `False`.
+
 * **`include_answer`: bool** -  Include a short answer to original query. Default is `False`.
 
 * **`include_raw_content`: bool** -  Include the cleaned and parsed HTML content of each search result. Default is `False`.

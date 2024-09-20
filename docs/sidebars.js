@@ -33,6 +33,19 @@
         },
         {
           type: 'category',
+          label: 'Tavily Extract (beta)',
+          items: [
+             {
+              type: 'doc',
+              id: 'python-sdk/tavily-extract/getting-started',
+              label: 'Getting Started',
+             },
+            'python-sdk/tavily-extract/api-reference',
+            'python-sdk/tavily-extract/examples',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Tavily Hybrid RAG (beta)',
           items: [
              {
