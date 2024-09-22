@@ -227,19 +227,18 @@ Retrieve raw web content from specified URLs.
 - **`503: Service Unavailable`** — We're temporarily offline for maintenance. Please try again later.
 - **`504: Gateway Timeout`** — We're temporarily offline for maintenance. Please try again later.
 
-## Tavily API Credits 
- 
-### Tavily Search
-  * For 1 `search_depth:"basic"`, 1 API credit is deducted from your account. 
-  * For 1 `search_depth:"advanced"`, 2 API credits are deducted from your account.
-
-### Tavily Extract
-  * For 5 successful URL extractions, 1 API credit is deducted from your account.
-
 ## Authentication
 
 Tavily Search and Extract use API keys to allow access to the API. You can register a new API key on the [Tavily Platform](https://app.tavily.com).
 
+## Tavily API Credit Deduction Overview 
+ 
+* **Tavily Search**
+  * Each basic search (`search_depth:"basic"`) will deduct 1 API credit from your account.
+  * Each advanced search (`search_depth:"advanced"`) will deduct 2 API credits from your account. 
+* **Tavily Extract**
+  * For every 5 successful URL extractions, 1 API credit will be deducted from your account.
+  
 ## Rate Limiting
 
 The Tavily Search and Extract APIs have a rate limit of 100 requests per minute.
