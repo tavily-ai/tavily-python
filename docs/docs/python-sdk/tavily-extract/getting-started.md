@@ -2,7 +2,7 @@
 
 > We’re excited to announce the release of the Tavily Extract feature in version 0.5.0 of our Python package! This feature is still in beta, so please report any bugs or send feedback to [support@tavily.com](mailto:support@tavily.com). 
 
-The Tavily Extract API allows you to effortlessly retrieve raw content from a list of websites, making it ideal for data collection, content analysis, and research. You can also combine Tavily Extract with our search method: first, obtain a list of relevant documents, then perform further processing on selected links to gather additional information and use it as context for your research tasks.
+The Tavily Extract API allows you to effortlessly retrieve raw content from a list of websites, making it ideal for data collection, content analysis, and research. You can also combine Tavily Extract with our Search method: first, obtain a list of relevant documents, then perform further processing on selected links to gather additional information and use it as context for your research tasks.
 
 Please note that for every 5 successful URL extractions, 1 API credit is deducted from your account. We look forward to seeing what you build with it!
 

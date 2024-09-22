@@ -95,63 +95,61 @@ These errors ensure that you are aware of the specific issues related to your AP
 
 4. **Bad Request Errors**: The `/extract` endpoint may return a `tavily.BadRequestError` in the following cases:
 
-**Exceeds URL Limit**: If the number of URLs in the request exceeds the maximum allowed limit of 20, a `tavily.BadRequestError` will be raised.
-   
-```python
-from tavily import TavilyClient, BadRequestError
-
-tavily_client = TavilyClient(api_key="valid-api-key")
-
-urls = [
-    "https://en.wikipedia.org/wiki/Artificial_intelligence",
-    "https://en.wikipedia.org/wiki/Machine_learning",
-    "https://en.wikipedia.org/wiki/Data_science",
-    "https://en.wikipedia.org/wiki/Quantum_computing",
-    "https://en.wikipedia.org/wiki/Climate_change",
-    "https://en.wikipedia.org/wiki/History_of_feminism",
-    "https://en.wikipedia.org/wiki/Blockchain",
-    "https://en.wikipedia.org/wiki/Biotechnology",
-    "https://en.wikipedia.org/wiki/Cybersecurity",
-    "https://en.wikipedia.org/wiki/Astronomy",
-    "https://tavily.com/privacy",
-    "https://tavily.com/#pricing",
-    "https://tavily.com/#faqs",
-    "https://www.britannica.com/technology/artificial-intelligence",
-    "https://www.britannica.com/story/incredible-facts-about-bees",
-    "https://www.britannica.com/topic/feminism",
-    "https://www.britannica.com/science/biotechnology",
-    "https://www.britannica.com/science/climate-change",
-    "https://www.britannica.com/technology/blockchain",
-    "https://www.britannica.com/money/market-timing-risks",
-    "https://blog.tavily.com/"
-]
-try:
-    response = tavily_client.extract(urls=urls)
-except BadRequestError as e:
-    print(e)
-```
-**Validation Failure:** If all URLs provided in the request fail validation, a `tavily.BadRequestError` will be raised with details on the failed URLs.
-
-```python
-from tavily import TavilyClient, BadRequestError
-
-tavily_client = TavilyClient(api_key="valid-api-key")
-
-try:
-    response = tavily_client.extract(urls=["https://invalid-url1", "https://invalid-url2"])
-except BadRequestError as e:
-    print(e)
-   ```
-   **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs, a `tavily.BadRequestError` will be raised.
-```python
-from tavily import TavilyClient, BadRequestError
-
-tavily_client = TavilyClient(api_key="valid-api-key")
-
-try:
-    response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
-except BadRequestError as e:
-    print(e)
-   ```
-   
+    - **Exceeds URL Limit**: If the number of URLs in the request exceeds the maximum allowed limit of 20, a `tavily.BadRequestError` will be raised.
+       
+        ```python
+        from tavily import TavilyClient, BadRequestError
+        
+        tavily_client = TavilyClient(api_key="valid-api-key")
+        
+        urls = [
+            "https://en.wikipedia.org/wiki/Artificial_intelligence",
+            "https://en.wikipedia.org/wiki/Machine_learning",
+            "https://en.wikipedia.org/wiki/Data_science",
+            "https://en.wikipedia.org/wiki/Quantum_computing",
+            "https://en.wikipedia.org/wiki/Climate_change",
+            "https://en.wikipedia.org/wiki/History_of_feminism",
+            "https://en.wikipedia.org/wiki/Blockchain",
+            "https://en.wikipedia.org/wiki/Biotechnology",
+            "https://en.wikipedia.org/wiki/Cybersecurity",
+            "https://en.wikipedia.org/wiki/Astronomy",
+            "https://tavily.com/privacy",
+            "https://tavily.com/#pricing",
+            "https://tavily.com/#faqs",
+            "https://www.britannica.com/technology/artificial-intelligence",
+            "https://www.britannica.com/story/incredible-facts-about-bees",
+            "https://www.britannica.com/topic/feminism",
+            "https://www.britannica.com/science/biotechnology",
+            "https://www.britannica.com/science/climate-change",
+            "https://www.britannica.com/technology/blockchain",
+            "https://www.britannica.com/money/market-timing-risks",
+            "https://blog.tavily.com/"
+        ]
+        try:
+            response = tavily_client.extract(urls=urls)
+        except BadRequestError as e:
+            print(e)
+        ```
+    - **Validation Failure:** If all URLs provided in the request fail validation, a `tavily.BadRequestError` will be raised with details on the failed URLs.
+        ```python
+        from tavily import TavilyClient, BadRequestError
+        
+        tavily_client = TavilyClient(api_key="valid-api-key")
+        
+        try:
+            response = tavily_client.extract(urls=["https://invalid-url1", "https://invalid-url2"])
+        except BadRequestError as e:
+            print(e)
+        ```
+    - **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs, a `tavily.BadRequestError` will be raised.
+        ```python
+        from tavily import TavilyClient, BadRequestError
+        
+        tavily_client = TavilyClient(api_key="valid-api-key")
+        
+        try:
+            response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
+        except BadRequestError as e:
+            print(e)
+        ```
 These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve them.
