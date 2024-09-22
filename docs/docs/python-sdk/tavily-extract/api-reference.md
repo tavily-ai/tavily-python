@@ -2,28 +2,36 @@
 
 ## Client
 
-The `TavilyClient` class is your entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key. Once you do, you're ready to extract the web in just one line of code! Simply pass a `str` for a single URL or a list of `str` for multiple URLs to the extract method (detailed below), and you'll start scraping!
-
+The `TavilyClient` class is your entry point to interacting with the Tavily API. Kickstart your journey by instantiating
+it with your API key. Once you do, you're ready to extract the web in just one line of code! Simply pass a `str` for a
+single URL or a list of `str` for multiple URLs to the extract method (detailed below), and you'll start scraping!
 
 ### Asynchronous Client
-If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous.
+
+If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead. The asynchronous
+client's interface is identical to the synchronous client's, the only difference being that all methods are
+asynchronous.
 
 ## Methods
+
 * **`extract`**(urls, **kwargs)
-  * Extracts the raw content from a given list of URLs (or a single URL string) and returns the response as a well-structured `dict`.
-  * **Returns** a `dict` with all related response fields. If using the asynchronous client, it returns a coroutine that resolves to this `dict`. For details on the response format, see the Extract Responses section.
-  
+    * Extracts the raw content from a given list of URLs (or a single URL string) and returns the response as a
+      well-structured `dict`.
+    * **Returns** a `dict` with all related response fields. If using the asynchronous client, it returns a coroutine
+      that resolves to this `dict`. For details on the response format, see the Extract Responses section.
+
 ### Extract Responses
 
 * **`results`: list**: A list of extracted content from the provided URLs. Each result is in the following format:
-  - **`url`: str** - The URL of the webpage from which content was extracted.
-  - **`raw_content`- str** - The raw content extracted from the provided URL.
+    - **`url`: str** - The URL of the webpage from which content was extracted.
+    - **`raw_content`- str** - The raw content extracted from the provided URL.
 
 
-* **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following format:
-  - **`url`: str** - The URL that failed to be processed.
-  - **`error`: str** - An error message describing why the URL could not be processed.
-  
+* **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following
+  format:
+    - **`url`: str** - The URL that failed to be processed.
+    - **`error`: str** - An error message describing why the URL could not be processed.
+
 
 * **`response_time`: float** - Your search result response time.
 
@@ -50,12 +58,15 @@ When you send a URL or a list of URLs, the response `dict` you receive will be i
     "response_time": 0.02
 }
 ```
-## ⚠️ Error Handling 
 
-The Tavily Python SDK includes comprehensive error handling to ensure smooth interaction with the API. Below are the specific exceptions that might be raised during usage:
+## ⚠️ Error Handling
 
-1. **Missing API Key**: If no API key is provided when initializing the `TavilyClient`, a `tavily.MissingAPIKeyError` will be raised. Ensure you pass a valid API key to the `TavilyClient` during instantiation.
-   
+The Tavily Python SDK includes comprehensive error handling to ensure smooth interaction with the API. Below are the
+specific exceptions that might be raised during usage:
+
+1. **Missing API Key**: If no API key is provided when initializing the `TavilyClient`, a `tavily.MissingAPIKeyError`
+   will be raised. Ensure you pass a valid API key to the `TavilyClient` during instantiation.
+
    ```python
    from tavily import TavilyClient, MissingAPIKeyError
 
@@ -65,7 +76,8 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
        print("API key is missing. Please provide a valid API key.")
    ```
 
-2. **Invalid API Key**: If the API key provided is invalid, a `tavily.InvalidAPIKeyError` will be raised when sending a search query. Double-check that your API key is correct and active.
+2. **Invalid API Key**: If the API key provided is invalid, a `tavily.InvalidAPIKeyError` will be raised when sending a
+   search query. Double-check that your API key is correct and active.
 
    ```python
    from tavily import TavilyClient, InvalidAPIKeyError
@@ -78,7 +90,9 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
        print("Invalid API key provided. Please check your API key.")
    ```
 
-3. **Usage Limit Exceeded**: If the API key provided is valid but the request fails due to exceeding the rate limit, surpassing the plan's monthly limit, or hitting the key's pre-set monthly limit, a `tavily.UsageLimitExceededError` will be raised. Consider upgrading your plan or checking your usage limits.
+3. **Usage Limit Exceeded**: If the API key provided is valid but the request fails due to exceeding the rate limit,
+   surpassing the plan's monthly limit, or hitting the key's pre-set monthly limit, a `tavily.UsageLimitExceededError`
+   will be raised. Consider upgrading your plan or checking your usage limits.
 
    ```python
    from tavily import TavilyClient, UsageLimitExceededError
@@ -90,66 +104,69 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
    except UsageLimitExceededError:
        print("Usage limit exceeded. Please check your plan's usage limits or consider upgrading.")
    ```
-   
-These errors ensure that you are aware of the specific issues related to your API key usage, allowing you to take appropriate actions to resolve them.
+
+These errors ensure that you are aware of the specific issues related to your API key usage, allowing you to take
+appropriate actions to resolve them.
 
 4. **Bad Request Errors**: The `/extract` endpoint may return a `tavily.BadRequestError` in the following cases:
-
-    - **Exceeds URL Limit**: If the number of URLs in the request exceeds the maximum allowed limit of 20, a `tavily.BadRequestError` will be raised.
-       
-        ```python
-        from tavily import TavilyClient, BadRequestError
-        
-        tavily_client = TavilyClient(api_key="valid-api-key")
-        
-        urls = [
-            "https://en.wikipedia.org/wiki/Artificial_intelligence",
-            "https://en.wikipedia.org/wiki/Machine_learning",
-            "https://en.wikipedia.org/wiki/Data_science",
-            "https://en.wikipedia.org/wiki/Quantum_computing",
-            "https://en.wikipedia.org/wiki/Climate_change",
-            "https://en.wikipedia.org/wiki/History_of_feminism",
-            "https://en.wikipedia.org/wiki/Blockchain",
-            "https://en.wikipedia.org/wiki/Biotechnology",
-            "https://en.wikipedia.org/wiki/Cybersecurity",
-            "https://en.wikipedia.org/wiki/Astronomy",
-            "https://tavily.com/privacy",
-            "https://tavily.com/#pricing",
-            "https://tavily.com/#faqs",
-            "https://www.britannica.com/technology/artificial-intelligence",
-            "https://www.britannica.com/story/incredible-facts-about-bees",
-            "https://www.britannica.com/topic/feminism",
-            "https://www.britannica.com/science/biotechnology",
-            "https://www.britannica.com/science/climate-change",
-            "https://www.britannica.com/technology/blockchain",
-            "https://www.britannica.com/money/market-timing-risks",
-            "https://blog.tavily.com/"
-        ]
-        try:
-            response = tavily_client.extract(urls=urls)
-        except BadRequestError as e:
-            print(e)
-        ```
-    - **Validation Failure:** If all URLs provided in the request fail validation, a `tavily.BadRequestError` will be raised with details on the failed URLs.
-        ```python
-        from tavily import TavilyClient, BadRequestError
-        
-        tavily_client = TavilyClient(api_key="valid-api-key")
-        
-        try:
-            response = tavily_client.extract(urls=["https://invalid-url1", "https://invalid-url2"])
-        except BadRequestError as e:
-            print(e)
-        ```
-    - **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs, a `tavily.BadRequestError` will be raised.
-        ```python
-        from tavily import TavilyClient, BadRequestError
-        
-        tavily_client = TavilyClient(api_key="valid-api-key")
-        
-        try:
-            response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
-        except BadRequestError as e:
-            print(e)
-        ```
-These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve them.
+    - **Exceeds URL Limit**: If the number of URLs in the request exceeds the maximum allowed limit of 20,
+      a `tavily.BadRequestError` will be raised.
+   ```python
+    from tavily import TavilyClient, BadRequestError
+    
+    tavily_client = TavilyClient(api_key="valid-api-key")
+    
+    urls = [
+        "https://en.wikipedia.org/wiki/Artificial_intelligence",
+        "https://en.wikipedia.org/wiki/Machine_learning",
+        "https://en.wikipedia.org/wiki/Data_science",
+        "https://en.wikipedia.org/wiki/Quantum_computing",
+        "https://en.wikipedia.org/wiki/Climate_change",
+        "https://en.wikipedia.org/wiki/History_of_feminism",
+        "https://en.wikipedia.org/wiki/Blockchain",
+        "https://en.wikipedia.org/wiki/Biotechnology",
+        "https://en.wikipedia.org/wiki/Cybersecurity",
+        "https://en.wikipedia.org/wiki/Astronomy",
+        "https://tavily.com/privacy",
+        "https://tavily.com/#pricing",
+        "https://tavily.com/#faqs",
+        "https://www.britannica.com/technology/artificial-intelligence",
+        "https://www.britannica.com/story/incredible-facts-about-bees",
+        "https://www.britannica.com/topic/feminism",
+        "https://www.britannica.com/science/biotechnology",
+        "https://www.britannica.com/science/climate-change",
+        "https://www.britannica.com/technology/blockchain",
+        "https://www.britannica.com/money/market-timing-risks",
+        "https://blog.tavily.com/"
+    ]
+    try:
+        response = tavily_client.extract(urls=urls)
+    except BadRequestError as e:
+        print(e)
+    ```
+    - **Validation Failure:** If all URLs provided in the request fail validation, a `tavily.BadRequestError` will be
+      raised with details on the failed URLs.
+   ```python
+    from tavily import TavilyClient, BadRequestError
+    
+    tavily_client = TavilyClient(api_key="valid-api-key")
+    
+    try:
+      response = tavily_client.extract(urls=["https://invalid-url1", "https://invalid-url2"])
+    except BadRequestError as e:
+      print(e)
+    ```
+    - **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs,
+      a `tavily.BadRequestError` will be raised.
+   ```python
+    from tavily import TavilyClient, BadRequestError
+    
+    tavily_client = TavilyClient(api_key="valid-api-key")
+    
+    try:
+        response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
+    except BadRequestError as e:
+        print(e)
+   ```
+   These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve
+   them.
