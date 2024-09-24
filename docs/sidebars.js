@@ -77,6 +77,8 @@
       items: [
         'integrations/langchain',
         'integrations/llamaindex',
+        'integrations/zapier',
+
       ],
     },
     {
