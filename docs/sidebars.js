@@ -71,6 +71,40 @@
     },
     {
       type: 'category',
+      label: 'JavaScript SDK (Beta)',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        {
+          type: 'category',
+          label: 'Tavily Search',
+          items: [
+            {
+              type: 'doc',
+              id: 'javascript-sdk/tavily-search/getting-started',
+              label: 'Getting Started',
+            },
+            'javascript-sdk/tavily-search/api-reference',
+            // 'javascript-sdk/tavily-search/examples',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Tavily Extract',
+          items: [
+            {
+              type: 'doc',
+              id: 'javascript-sdk/tavily-extract/getting-started',
+              label: 'Getting Started',
+            },
+            'javascript-sdk/tavily-extract/api-reference',
+            // 'javascript-sdk/tavily-extract/examples',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
       label: 'Integrations',
       collapsible: true,
       collapsed: true,
