@@ -34,7 +34,7 @@ asynchronous.
   
 * **`response_time`: float** - Your search result response time.
 
-**Please note:** if a link is broken or inaccessible or if content retrieval fails, all URLs and their error details will be included in "failed_results". Only URLs for which extraction was successful will be listed under "results".
+**Please note:** if a link is broken, inaccessible, or if content retrieval fails, all URLs and their error details will be included in `failed_results`. Only URLs for which extraction was successful will be listed under `results`.
 
 ```python
 {
@@ -57,7 +57,20 @@ asynchronous.
     "response_time": 0.23
 }
 ```
+**Please note:** if a link is broken, inaccessible, or if content retrieval fails, `results` can be an empty list.
 
+```python
+{
+    "results": [],
+    "failed_results": [
+        {
+            "url": "http://nonexistentlink.com/",
+            "error": "Failed to get content"
+        }
+    ],
+    "response_time": 0.11
+}
+```
 When you send a URL or a list of URLs, the response `dict` you receive will be in the following format:
 
 ```python
@@ -81,7 +94,6 @@ When you send a URL or a list of URLs, the response `dict` you receive will be i
     "response_time": 0.02
 }
 ```
-
 ## ⚠️ Error Handling
 
 The Tavily Python SDK includes comprehensive error handling to ensure smooth interaction with the API. Below are the

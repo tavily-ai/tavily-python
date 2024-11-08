@@ -352,17 +352,6 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
     except BadRequestError as e:
       print(e)
     ```
-   - **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs, a `tavily.BadRequestError` will be raised.
-   ```python
-    from tavily import TavilyClient, BadRequestError
-    
-    tavily_client = TavilyClient(api_key="valid-api-key")
-    
-    try:
-        response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
-    except BadRequestError as e:
-        print(e)
-   ```
    These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve them.
 
 ## Tavily API Credit Deduction Overview 
