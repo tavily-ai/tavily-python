@@ -32,7 +32,6 @@ asynchronous.
     - **`url`: str** - The URL that failed to be processed.
     - **`error`: str** - An error message describing why the URL could not be processed.
 
-
 * **`response_time`: float** - Your search result response time.
 
 When you send a URL or a list of URLs, the response `dict` you receive will be in the following format:
@@ -54,8 +53,32 @@ When you send a URL or a list of URLs, the response `dict` you receive will be i
         }
     ],
     "failed_results": [
+        {
+            "url": "http://nonexistentlink.com/",
+            "error": "Failed to get content"
+        },
+        {
+            "url": "https://invalid-url",
+            "error": "Validation Error: Invalid URL format"
+        }
     ],
-    "response_time": 0.02
+    "response_time": 0.23
+}
+```
+
+**Please note:** If no content could be successfully retrieved for any of the `urls` (e.g all links are inaccessible),
+`results` can be an empty list.
+
+```python
+{
+    "results": [],
+    "failed_results": [
+        {
+            "url": "http://nonexistentlink.com/",
+            "error": "Failed to get content"
+        }
+    ],
+    "response_time": 0.11
 }
 ```
 
@@ -156,17 +179,6 @@ appropriate actions to resolve them.
     except BadRequestError as e:
       print(e)
     ```
-    - **Failed Content Retrieval:** If no content could be successfully retrieved for any of the validated URLs,
-      a `tavily.BadRequestError` will be raised.
-   ```python
-    from tavily import TavilyClient, BadRequestError
-    
-    tavily_client = TavilyClient(api_key="valid-api-key")
-    
-    try:
-        response = tavily_client.extract(urls=["https://www.nonexistentwebsite1.com/","https://www.nonexistentwebsite2.com/"])
-    except BadRequestError as e:
-        print(e)
-   ```
+
    These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve
    them.

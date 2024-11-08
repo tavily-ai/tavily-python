@@ -1,12 +1,11 @@
-import React from 'react';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
+import React from 'react';
 import styles from './HomepageFeatures.module.css';
-
 const FeatureList = [
   {
     title: 'Tavily Search API',
-    Svg: require('../../static/img/tavily.png').default,
+    Svg: require('../../static/img/logo.png').default,
     docLink: './docs/python-sdk/tavily-search/getting-started',
     description: (
       <>
@@ -37,13 +36,13 @@ const FeatureList = [
 ];
 
 function Feature({Svg, title, description, docLink}) {
-  return (
+    return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
         {/*<Svg className={styles.featureSvg} alt={title} />*/}
-        <img src={Svg} alt={title} height="60"/>
+          <img src={Svg} alt={title} height="50"/>
       </div>
-      <div className="text--center padding-horiz--md">
+        <div className="text--center padding-horiz--md">
         <Link to={docLink}>
             <h3>{title}</h3>
         </Link>
