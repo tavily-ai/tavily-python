@@ -20,6 +20,7 @@ module.exports = {
       logo: {
         alt: 'Tavily',
         src: 'img/tavily.png',
+        srcDark: 'img/tavily-dark.png'
       },
       items: [
         {
