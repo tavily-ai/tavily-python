@@ -15,7 +15,7 @@ const FeatureList = [
   },
   {
     title: 'Examples and Demos',
-    Svg: require('../../static/img/examples.png').default,
+    Svg: require('../../static/img/idea.png').default,
     docLink: './docs/python-sdk/tavily-search/examples',
     description: (
       <>
@@ -40,7 +40,7 @@ function Feature({Svg, title, description, docLink}) {
     <div className={clsx('col col--4')}>
       <div className="text--center">
         {/*<Svg className={styles.featureSvg} alt={title} />*/}
-          <img src={Svg} alt={title} height="50"/>
+          <img src={Svg} alt={title} height="60"/>
       </div>
         <div className="text--center padding-horiz--md">
         <Link to={docLink}>
