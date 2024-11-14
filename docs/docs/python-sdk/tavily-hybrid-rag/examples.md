@@ -29,8 +29,8 @@ results = hybrid_rag.search("Who is Leo Messi?", save_foreign=save_document)
 ### Sample 2: Using a custom embedding function
 By default, we use [Cohere](https://cohere.com/embeddings) for our embeddings. If you want to use your own embeddings, can pass a custom embedding function to the TavilyHybridClient:
 ```python
-def my_embedding_function(text):
-    return my_embedding_model.encode(text)
+def my_embedding_function(texts, doc_type): # doc_type will be either 'search_query' or 'search_document'
+    return my_embedding_model.encode(texts)
 
 hybrid_rag = TavilyHybridClient(
     # ...
