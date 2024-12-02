@@ -5,7 +5,7 @@ This tool has a more extensive example usage documented in a Jupyter notebook [h
 Here's an example usage of the TavilyToolSpec.
 
 ```python
-from llama_hub.tools.tavily_research import TavilyToolSpec
+from llama_index.tools.tavily_research import TavilyToolSpec
 from llama_index.agent import OpenAIAgent
 
 tavily_tool = TavilyToolSpec(
