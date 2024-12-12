@@ -84,7 +84,7 @@ module.exports = {
             },
             {
               label: 'Tavily Platform',
-              href: 'https://tavily.com',
+              href: 'https://app.tavily.com',
             },
             {
               label: 'Contact',
