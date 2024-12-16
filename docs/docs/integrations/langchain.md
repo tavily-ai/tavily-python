@@ -8,10 +8,10 @@ Tavily API can now empower your Langchain application with real time online info
 ### How to use Tavily API with Langchain
 ```python
 import os
-from langchain.utilities.tavily_search import TavilySearchAPIWrapper
-from langchain.agents import initialize_agent, AgentType
-from langchain_community.chat_models import ChatOpenAI
-from langchain.tools.tavily_search import TavilySearchResults
+from langchain_community.utilities.tavily_search import TavilySearchAPIWrapper
+from langchain.agents.agent_toolkits import create_conversational_retrieval_agent
+from langchain_openai import ChatOpenAI
+from langchain_community.tools.tavily_search.tool import TavilySearchResults
 
 # set up API key
 os.environ["TAVILY_API_KEY"] = "..."
@@ -22,17 +22,18 @@ search = TavilySearchAPIWrapper()
 tavily_tool = TavilySearchResults(api_wrapper=search)
 
 # initialize the agent
-agent_chain = initialize_agent(
-    [tavily_tool],
+agent_chain = create_conversational_retrieval_agent(
     llm,
-    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+    [tavily_tool],
     verbose=True,
 )
 
 # run the agent
-agent_chain.run(
-    "What happened in the latest burning man floods?",
+result = agent_chain.invoke(
+    "What happened in the latest burning man floods?"
 )
+
+print(result["output"])
 ```
 
 #### Result:
