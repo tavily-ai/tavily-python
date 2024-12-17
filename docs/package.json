@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@docusaurus/core": "0.0.0-4193",
-    "@docusaurus/preset-classic": "0.0.0-4193",
+    "@docusaurus/preset-classic": "3.5.0",
     "@easyops-cn/docusaurus-search-local": "^0.21.1",
     "@mdx-js/react": "^1.6.21",
     "@svgr/webpack": "^5.5.0",
