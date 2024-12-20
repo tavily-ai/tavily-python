@@ -3,8 +3,8 @@ const math = require('remark-math');
 const katex = require('rehype-katex');
 
 module.exports = {
-  title: 'Tavily AI',
-  tagline: 'Tavily AI is the leading search engine optimized for LLMs',
+  title: 'Tavily',
+  tagline: 'Tavily is the leading search engine optimized for LLMs',
   url: 'https://docs.tavily.com',
   baseUrl: '/',
   onBrokenLinks: 'ignore',
