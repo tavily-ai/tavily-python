@@ -1,5 +1,5 @@
 :root {
-  --ifm-font-size-base: 17px;
+  --ifm-font-size-base: 12px;
   --ifm-code-font-size: 90%;
 
   --ifm-color-primary: #0c4da2;
@@ -90,4 +90,29 @@ background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www
 html[data-theme='dark'] h1,
 html[data-theme='dark'] p {
   color: white;
+}
+
+.theme-doc-sidebar-item {
+  font-size:10px;
+}
+.theme-doc-sidebar-item-category {
+  font-size: 10px;
+}
+.theme-doc-sidebar-item-link {
+  font-size: 10px;
+}
+.button.button--secondary.button--lg {
+  font-size: 10px;
+}
+.markdown h1 {
+  font-size: 1.5rem;
+}
+.markdown h2 {
+  font-size: 1.25rem;
+}
+.markdown h3 {
+  font-size: 1.125rem;
+}
+.markdown h4 {
+  font-size: 1rem;
 }
