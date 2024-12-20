@@ -95,34 +95,24 @@ html[data-theme='dark'] p {
 .theme-doc-sidebar-item {
   font-size:10px;
 }
-
 .theme-doc-sidebar-item-category {
-  font-size: 10px; /* For category labels */
+  font-size: 10px;
 }
-
 .theme-doc-sidebar-item-link {
-  font-size: 10px; /* For document links */
+  font-size: 10px;
 }
 .button.button--secondary.button--lg {
   font-size: 10px;
 }
-
-/* Adjust H1 (single #) font size */
 .markdown h1 {
-  font-size: 1.5rem; /* Adjust as needed, default is usually larger */
+  font-size: 1.5rem;
 }
-
-/* Adjust H2 (##) font size */
 .markdown h2 {
-  font-size: 1.25rem; /* Adjust as needed */
+  font-size: 1.25rem;
 }
-
-/* Adjust H3 (###) font size */
 .markdown h3 {
-  font-size: 1.125rem; /* Adjust as needed */
+  font-size: 1.125rem;
 }
-
-/* Adjust H4 (####) font size */
 .markdown h4 {
-  font-size: 1rem; /* Adjust as needed */
+  font-size: 1rem;
 }
