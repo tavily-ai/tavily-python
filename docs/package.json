@@ -30,7 +30,7 @@
     "@docusaurus/preset-classic": "3.6.3",
     "@easyops-cn/docusaurus-search-local": "^0.21.1",
     "@mdx-js/react": "^3.1.0",
-    "@svgr/webpack": "^5.5.0",
+    "@svgr/webpack": "^7.0.0",
     "clsx": "^1.1.1",
     "file-loader": "^6.2.0",
     "hast-util-is-element": "1.1.0",
