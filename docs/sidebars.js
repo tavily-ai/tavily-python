@@ -143,5 +143,5 @@
     },
   ],
   // pydoc-markdown auto-generated markdowns from docstrings
-  referenceSideBar: [require("./docs/reference/sidebar.json")]
+  // referenceSideBar: [require("./docs/reference/sidebar.json")]
 };
