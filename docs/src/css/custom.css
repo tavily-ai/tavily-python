@@ -1,5 +1,5 @@
 :root {
-  --ifm-font-size-base: 12px;
+  --ifm-font-size-base: 15px;
   --ifm-code-font-size: 90%;
 
   --ifm-color-primary: #0c4da2;
@@ -91,28 +91,27 @@ html[data-theme='dark'] h1,
 html[data-theme='dark'] p {
   color: white;
 }
-
 .theme-doc-sidebar-item {
-  font-size:10px;
+  font-size:14px;
 }
 .theme-doc-sidebar-item-category {
-  font-size: 10px;
+  font-size: 14px;
 }
 .theme-doc-sidebar-item-link {
-  font-size: 10px;
+  font-size: 14px;
 }
 .button.button--secondary.button--lg {
-  font-size: 10px;
+  font-size: 14px;
 }
 .markdown h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
 .markdown h2 {
-  font-size: 1.25rem;
+  font-size: 1.8rem;
 }
 .markdown h3 {
-  font-size: 1.125rem;
+  font-size: 1.5rem;
 }
 .markdown h4 {
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
