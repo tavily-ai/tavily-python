@@ -66,4 +66,3 @@ agent_chain.run(
 
     'The latest Burning Man event was severely affected by heavy rainfall that led to flooding. This resulted in tens of thousands of festival attendees getting stuck in their camps due to the muddy conditions, delaying their exit from the festival. An unfortunate incident also occurred, with a death being investigated at the festival. The situation was severe enough that President Biden was informed about it and administration officials were monitoring it. However, the festival goers were able to handle the situation well, as the Burning Man community is known for looking out for each other. This is not the first time a rainstorm has disrupted the Burning Man event; a similar incident occurred in 2013 when a sudden storm trapped people overnight.'
 ```
-

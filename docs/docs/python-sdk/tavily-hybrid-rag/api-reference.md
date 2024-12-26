@@ -17,7 +17,7 @@ The `TavilyHybridClient` class is your gateway to Tavily Hybrid RAG. There are a
 
 * **`content_field`: str (optional)** - The name of the field that stores the text content in the specified collection. This will also be used when inserting web search results in the database using our default function. Default is `"content"`.
 
-* **`embedding_function`: function (optional)** - A custom embedding function (if you want to use one). The function MUST take in a `str` and return a `list[float]`. If no function is provided, defaults to Cohere's Embed. Keep in mind that you shouldn't mix different embeddings in the same database collection.
+* **`embedding_function`: function (optional)** - A custom embedding function (if you want to use one). The function must take in a `list[str]` corresponding to the list of strings to be embedded, as well as an additional string defining the type of document. It must return a `list[list[float]]`, one embedding per input string. If no function is provided, defaults to Cohere's Embed. Keep in mind that you shouldn't mix different embeddings in the same database collection.
 
 * **`ranking_function`: function (optional)** - A custom ranking function (if you want to use one). If no function is provided, defaults to Cohere's Rerank. It should return an ordered `list[dict]` where the documents are sorted by decreasing relevancy to your query. Each returned document will have two properties - `content`, which is a `str`, and `score`, which is a `float`. The fuction MUST accept the following parameters:
   * **`query`: str** - This is the query you are executing. When your ranking function is called during Hybrid RAG, the `query` parameter of your `search` call (more details below) will be passed as `query`.
