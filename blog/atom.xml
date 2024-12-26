@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.tavily.com/blog</id>
-    <title>Tavily AI Blog</title>
+    <title>Tavily Blog</title>
     <updated>2023-11-12T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.tavily.com/blog"/>
-    <subtitle>Tavily AI Blog</subtitle>
+    <subtitle>Tavily Blog</subtitle>
     <icon>https://docs.tavily.com/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[How to build an OpenAI Assistant with Internet access]]></title>
