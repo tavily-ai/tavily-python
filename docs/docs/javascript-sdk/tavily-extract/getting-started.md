@@ -33,12 +33,13 @@ const urls = [
 ] // You can provide up to 20 URLs simultaneously
 
 // Step 3. Executing the extract request
-response = await tvly.extract(urls)
+response = await tvly.extract(urls, iniclude_images= true)
 
 // Step 4. Printing the extracted raw content
 for (let result of response.results) {
     console.log(`URL: ${result['url']}`)
     console.log(`Raw Content: ${result['raw_content']}\n`)
+    console.log(`Images: ${result['images']}\n`)
 }
 // Note that URLs that could not be extracted will be stored in response.failedResults
 ```

@@ -151,11 +151,14 @@ Retrieve raw web content from specified URLs.
 
 * **`api_key`: string (required)** - Your Tavily API Key.
 
+* **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
+
 ### Response
 
 * **`results`: list**: A list of extracted content from the provided URLs. Each result is in the following format:
   - **`url`: string** - The URL of the webpage from which content was extracted.
   - **`raw_content`- string** - The raw content extracted from the provided URL.
+  - **`images`: list[str]** - A list of query-related image URLs.
 
 
 * **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following format:

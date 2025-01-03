@@ -32,12 +32,13 @@ urls = [
 ]
 
 # Step 3. Executing the extract request
-response = tavily_client.extract(urls=urls)
+response = tavily_client.extract(urls=urls, include_images=True)
 
 # Step 4. Printing the extracted raw content
 for result in response["results"]:
     print(f"URL: {result['url']}")
-    print(f"Raw Content: {result['raw_content']}\n")
+    print(f"Raw Content: {result['raw_content']}")
+    print(f"Images: {result['images']}\n")
 
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
