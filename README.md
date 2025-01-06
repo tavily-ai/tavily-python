@@ -231,14 +231,14 @@ If you want to use Tavily asynchronously, you will need to instantiate an `Async
   
 ### Keyword Arguments (optional)
 
-* **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
+* **`include_images`: bool** -  Include a list of images extracted from the `urls` in the response. Default is `False`.
 
 ### Extract Responses
 
 * **`results`: list**: A list of extracted content from the provided URLs. Each result is in the following format:
   - **`url`: str** - The URL of the webpage from which content was extracted.
   - **`raw_content`- str** - The raw content extracted from the provided URL.
-  - **`images`: list[str]** - A list of query-related image URLs.
+  - **`images`: string[]** - A list of extracted image URLs.
 ``
 
 * **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following format:
