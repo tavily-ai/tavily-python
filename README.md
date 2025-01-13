@@ -96,7 +96,7 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 
 * **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
 
-* **`time_range`: str (optional)** - The time range back from the current date to include in the search results. Accepted values include `"day"`,`"week"`,`"month"`,`"year"` or `"d"`,`"w"`,`"m"`,`"y"`. Default is `None` which will not filter search results by time range.
+* **`time_range`: str (optional)** - The time range back from the current date to include in the search results. Accepted values include `"day"`,`"week"`,`"month"`,`"year"` or `"d"`,`"w"`,`"m"`,`"y"`. Default is `None`, which will not filter search results by time range.
 
 * **`max_results`: int** -  The maximum number of search results to return. Default is `5`.
 
