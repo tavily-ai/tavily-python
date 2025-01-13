@@ -85,7 +85,7 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 
 * **`qna_search`**(query, **kwargs)
   * Performs a search and returns a string containing an answer to the original query. This is optimal to be used as a tool for AI agents.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `days`, `max_results`, `include_domains`, `exclude_domains`. 
+  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `days`, `time_range`, `max_results`, `include_domains`, `exclude_domains`. 
   * **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 ### Keyword Arguments (optional)
@@ -95,6 +95,8 @@ Once you do so, you're ready to search the Web in one line of code! All you need
 * **`topic`: str** - The category of the search. This will determine which of our agents will be used for the search. Currently, only `"general"` and `"news"` are supported. Default is `"general"`.
 
 * **`days`: int (optional)** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
+
+* **`time_range`: str (optional)** - The time range back from the current date to include in the search results. Accepted values include `"day"`,`"week"`,`"month"`,`"year"` or `"d"`,`"w"`,`"m"`,`"y"`.
 
 * **`max_results`: int** -  The maximum number of search results to return. Default is `5`.
 
