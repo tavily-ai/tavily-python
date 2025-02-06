@@ -22,9 +22,6 @@ class AsyncTavilyClient:
         if not api_key:
             raise MissingAPIKeyError()
 
-        self._base_data = {
-            "api_key": api_key,
-        }
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
@@ -53,7 +50,6 @@ class AsyncTavilyClient:
         Internal search method to send the request to the API.
         """
         data = {
-            **self._base_data,
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
@@ -131,7 +127,6 @@ class AsyncTavilyClient:
         Internal extract method to send the request to the API.
         """
         data = {
-            **self._base_data,
             "urls": urls,
         }
         if kwargs:
