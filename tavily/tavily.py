@@ -54,7 +54,6 @@ class TavilyClient:
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
             "include_images": include_images,
-            "api_key": self.api_key,
         }
 
         if kwargs:
@@ -122,7 +121,6 @@ class TavilyClient:
         """
         data = {
             "urls": urls,
-            "api_key": self.api_key
         }
         if kwargs:
             data.update(kwargs)
