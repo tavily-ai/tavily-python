@@ -28,6 +28,7 @@ class AsyncTavilyClient:
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}"
             },
             base_url="https://api.tavily.com",
             timeout=180,
