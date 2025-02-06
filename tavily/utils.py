@@ -1,6 +1,6 @@
 import tiktoken
 import json
-from typing import Sequence
+from typing import Sequence, List, Dict
 from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
 
 
@@ -23,7 +23,7 @@ def get_max_tokens_from_string(string: str, max_tokens: int, encoding_name: str 
     return b"".join(token_bytes).decode()
 
 
-def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_TOKENS) -> str:
+def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_TOKENS) -> List[Dict[str,str]]:
     """
         Get max items from list of items based on defined max tokens (based on openai compute)
     """
@@ -35,6 +35,6 @@ def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_
         if new_total_tokens > max_tokens:
             break
         else:
-            result.append(item_str)
+            result.append(item)
             current_tokens = new_total_tokens
-    return json.dumps(result)
+    return result

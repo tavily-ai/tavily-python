@@ -23,6 +23,7 @@ class TavilyClient:
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
         }
 
     def _search(self,
