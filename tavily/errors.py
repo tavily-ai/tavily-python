@@ -13,5 +13,5 @@ class ForbiddenError(Exception):
         super().__init__(message)
         
 class UnauthorizedKeyError(Exception):
-    def __init__(self,  message: Optional[str] = "Unauthorized: Missing API key."):
+    def __init__(self,  message: Optional[str] = "Unauthorized: Missing/Invalid API key."):
         super().__init__(message)

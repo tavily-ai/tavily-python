@@ -21,7 +21,7 @@ class TavilyClient:
 
         if not api_key:
             raise UnauthorizedKeyError()
-        self.base_url = "http://0.0.0.0:8000"
+        self.base_url = "https://api.tavily.com"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",

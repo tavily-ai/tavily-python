@@ -70,18 +70,22 @@ class AsyncTavilyClient:
 
         if response.status_code == 200:
             return response.json()
-        elif response.status_code == 429:
-            detail = 'Too many requests.'
+        else:
             try:
                 detail = response.json()['detail']['error']
             except:
-                pass
+                raise response.raise_for_status()
 
-            raise UsageLimitExceededError(detail)
-        elif response.status_code == 401:
-            raise UnauthorizedKeyError()
-        else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code == 403:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise UnauthorizedKeyError(detail)
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
 
     async def search(self,
                      query: str,
