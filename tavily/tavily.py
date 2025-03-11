@@ -29,7 +29,7 @@ class TavilyClient:
     def _search(self,
                 query: str,
                 search_depth: Literal["basic", "advanced"] = "basic",
-                topic: Literal["general", "news"] = "general",
+                topic: Literal["general", "news", "fianance"] = "general",
                 days: int = 3,
                 max_results: int = 5,
                 include_domains: Sequence[str] = None,
