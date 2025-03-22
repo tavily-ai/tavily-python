@@ -59,7 +59,8 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=100)
+        response = requests.post(
+            self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=100)
 
         if response.status_code == 200:
             return response.json()
@@ -74,7 +75,8 @@ class TavilyClient:
         elif response.status_code == 401:
             raise InvalidAPIKeyError()
         else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            response.raise_for_status()
 
     def search(self,
                query: str,
@@ -125,7 +127,8 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=100)
+        response = requests.post(
+            self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=100)
 
         if response.status_code == 200:
             return response.json()
@@ -146,10 +149,12 @@ class TavilyClient:
                 pass
             raise UsageLimitExceededError(detail)
         else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            response.raise_for_status()
 
     def extract(self,
-                urls: Union[List[str], str],  # Accept a list of URLs or a single URL
+                # Accept a list of URLs or a single URL
+                urls: Union[List[str], str],
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
         """
@@ -166,9 +171,105 @@ class TavilyClient:
 
         return response_dict
 
+    def _crawl(self,
+               url: str,
+               max_depth: int = 3,
+               max_breadth: int = 20,
+               include_images: bool = False,
+               use_map_cache: bool = False,
+               use_extract_cache: bool = False,
+               select_paths: Sequence[str] = None,
+               select_domains: Sequence[str] = None,
+               limit: int = 500,
+               **kwargs
+               ) -> dict:
+        """
+        Internal crawl method to send the request to the API.
+        """
+        data = {
+            "url": url,
+            "max_depth": max_depth,
+            "max_breadth": max_breadth,
+            "include_images": include_images,
+            "use_map_cache": use_map_cache,
+            "use_extract_cache": use_extract_cache,
+            "select_paths": select_paths,
+            "select_domains": select_domains,
+            "limit": limit,
+        }
+
+        if kwargs:
+            data.update(kwargs)
+
+        response = requests.post(
+            self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=100)
+
+        if response.status_code == 200:
+            return response.json()
+        elif response.status_code == 400:
+            detail = 'Bad request. The request was invalid or cannot be served.'
+            try:
+                detail = response.json()['detail']['error']
+            except KeyError:
+                pass
+            raise BadRequestError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError()
+        elif response.status_code == 429:
+            detail = 'Too many requests.'
+            try:
+                detail = response.json()['detail']['error']
+            except:
+                pass
+            raise UsageLimitExceededError(detail)
+        else:
+            # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            response.raise_for_status()
+
+    def crawl(self,
+              url: str,
+              max_depth: int = 3,
+              max_breadth: int = 20,
+              include_images: bool = False,
+              use_map_cache: bool = False,
+              use_extract_cache: bool = False,
+              select_paths: Sequence[str] = None,
+              select_domains: Sequence[str] = None,
+              limit: int = 500,
+              **kwargs
+              ) -> dict:
+        """
+        Combined crawl method.
+        """
+        response_dict = self._crawl(url,
+                                    max_depth=max_depth,
+                                    max_breadth=max_breadth,
+                                    include_images=include_images,
+                                    use_map_cache=use_map_cache,
+                                    use_extract_cache=use_extract_cache,
+                                    select_paths=select_paths,
+                                    select_domains=select_domains,
+                                    limit=limit,
+                                    **kwargs)
+
+        data = response_dict.get("data", [])
+        metadata = response_dict.get("metadata", {})
+        config = response_dict.get("config", {})
+        success = response_dict.get("success", False)
+        error = response_dict.get("error", None)
+
+        response_dict["data"] = data
+        response_dict["metadata"] = metadata
+        response_dict["config"] = config
+        response_dict["success"] = success
+        response_dict["error"] = error
+
+        return response_dict
+
     def get_search_context(self,
                            query: str,
-                           search_depth: Literal["basic", "advanced"] = "basic",
+                           search_depth: Literal["basic",
+                                                 "advanced"] = "basic",
                            topic: Literal["general", "news"] = "general",
                            days: int = 3,
                            max_results: int = 5,
@@ -199,7 +300,8 @@ class TavilyClient:
                                      **kwargs,
                                      )
         sources = response_dict.get("results", [])
-        context = [{"url": source["url"], "content": source["content"]} for source in sources]
+        context = [{"url": source["url"], "content": source["content"]}
+                   for source in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
     def qna_search(self,
@@ -231,7 +333,8 @@ class TavilyClient:
 
     def get_company_info(self,
                          query: str,
-                         search_depth: Literal["basic", "advanced"] = "advanced",
+                         search_depth: Literal["basic",
+                                               "advanced"] = "advanced",
                          max_results: int = 5,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
@@ -257,7 +360,8 @@ class TavilyClient:
                     all_results.extend(data['results'])
 
         # Sort all the results by score in descending order and take the top 'max_results' items
-        sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)[:max_results]
+        sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)[
+            :max_results]
 
         return sorted_results
 
@@ -270,5 +374,6 @@ class Client(TavilyClient):
     """
 
     def __init__(self, kwargs):
-        warnings.warn("Client is deprecated, please use TavilyClient instead", DeprecationWarning, stacklevel=2)
+        warnings.warn("Client is deprecated, please use TavilyClient instead",
+                      DeprecationWarning, stacklevel=2)
         super().__init__(kwargs)

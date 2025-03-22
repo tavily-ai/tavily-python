@@ -175,6 +175,99 @@ class AsyncTavilyClient:
         response_dict["failed_results"] = failed_results
 
         return response_dict
+    
+    async def _crawl(self,
+               url: str,
+               max_depth: int = 3,
+               max_breadth: int = 20,
+               include_images: bool = False,
+               use_map_cache: bool = False,
+               use_extract_cache: bool = False,
+               select_paths: Sequence[str] = None,
+               select_domains: Sequence[str] = None,
+               limit: int = 500,
+               **kwargs
+               ) -> dict:
+        """
+        Internal crawl method to send the request to the API.
+        """
+        data = {
+            "url": url,
+            "max_depth": max_depth,
+            "max_breadth": max_breadth,
+            "include_images": include_images,
+            "use_map_cache": use_map_cache,
+            "use_extract_cache": use_extract_cache,
+            "select_paths": select_paths,
+            "select_domains": select_domains,
+            "limit": limit,
+        }
+
+        if kwargs:
+            data.update(kwargs)
+
+        async with self._client_creator() as client:
+            response = await client.post("/crawl", content=json.dumps(data))
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 400:
+                detail = 'Bad request. The request was invalid or cannot be served.'
+                try:
+                    detail = response.json()['detail']['error']
+                except KeyError:
+                    pass
+                raise BadRequestError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError()
+            elif response.status_code == 429:
+                detail = 'Too many requests.'
+                try:
+                    detail = response.json()['detail']['error']
+                except:
+                    pass
+                raise UsageLimitExceededError(detail)
+            else:
+                response.raise_for_status()
+
+    async def crawl(self,
+              url: str,
+              max_depth: int = 3,
+              max_breadth: int = 20,
+              include_images: bool = False,
+              use_map_cache: bool = False,
+              use_extract_cache: bool = False,
+              select_paths: Sequence[str] = None,
+              select_domains: Sequence[str] = None,
+              limit: int = 500,
+              **kwargs
+              ) -> dict:
+        """
+        Combined crawl method.
+        """
+        response_dict = await self._crawl(url,
+                                    max_depth=max_depth,
+                                    max_breadth=max_breadth,
+                                    include_images=include_images,
+                                    use_map_cache=use_map_cache,
+                                    use_extract_cache=use_extract_cache,
+                                    select_paths=select_paths,
+                                    select_domains=select_domains,
+                                    limit=limit,
+                                    **kwargs)
+
+        data = response_dict.get("data", [])
+        metadata = response_dict.get("metadata", {})
+        config = response_dict.get("config", {})
+        success = response_dict.get("success", False)
+        error = response_dict.get("error", None)
+
+        response_dict["data"] = data
+        response_dict["metadata"] = metadata
+        response_dict["config"] = config
+        response_dict["success"] = success
+        response_dict["error"] = error
+
+        return response_dict
 
     async def get_search_context(self,
                                  query: str,
