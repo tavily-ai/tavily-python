@@ -44,7 +44,6 @@ class AsyncTavilyClient:
                 "Authorization": f"Bearer {api_key}"
             },
             base_url="https://api.tavily.com",
-            timeout=180,
             mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
@@ -61,6 +60,7 @@ class AsyncTavilyClient:
             include_answer: bool = False,
             include_raw_content: bool = False,
             include_images: bool = False,
+            timeout: int = 60,
             **kwargs,
     ) -> dict:
         """
@@ -83,7 +83,7 @@ class AsyncTavilyClient:
             data.update(kwargs)
 
         async with self._client_creator() as client:
-            response = await client.post("/search", content=json.dumps(data))
+            response = await client.post("/search", content=json.dumps(data), timeout=min(timeout, 120))
 
         if response.status_code == 200:
             return response.json()
@@ -111,6 +111,7 @@ class AsyncTavilyClient:
                      include_answer: bool = False,
                      include_raw_content: bool = False,
                      include_images: bool = False,
+                     timeout: int = 60,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -126,6 +127,7 @@ class AsyncTavilyClient:
                                            include_answer=include_answer,
                                            include_raw_content=include_raw_content,
                                            include_images=include_images,
+                                           timeout=min(timeout, 120),
                                            **kwargs,
                                            )
 
@@ -138,6 +140,7 @@ class AsyncTavilyClient:
     async def _extract(
             self,
             urls: Union[List[str], str],
+            timeout: int = 60,
             **kwargs
     ) -> dict:
         """
@@ -150,7 +153,7 @@ class AsyncTavilyClient:
             data.update(kwargs)
 
         async with self._client_creator() as client:
-            response = await client.post("/extract", content=json.dumps(data))
+            response = await client.post("/extract", content=json.dumps(data), timeout=min(timeout, 120))
 
         if response.status_code == 200:
             return response.json()
@@ -176,12 +179,14 @@ class AsyncTavilyClient:
 
     async def extract(self,
                       urls: Union[List[str], str],  # Accept a list of URLs or a single URL
+                      timeout: int = 60,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
         """
         Combined extract method.
         """
         response_dict = await self._extract(urls,
+                                            min(timeout, 120),
                                             **kwargs,
                                             )
 
@@ -202,6 +207,7 @@ class AsyncTavilyClient:
                                  include_domains: Sequence[str] = None,
                                  exclude_domains: Sequence[str] = None,
                                  max_tokens: int = 4000,
+                                 timeout: int = 60,
                                  **kwargs,  # Accept custom arguments
                                  ) -> str:
         """
@@ -222,6 +228,7 @@ class AsyncTavilyClient:
                                            include_answer=False,
                                            include_raw_content=False,
                                            include_images=False,
+                                           timeout = min(timeout, 120),
                                            **kwargs,
                                            )
         sources = response_dict.get("results", [])
@@ -236,6 +243,7 @@ class AsyncTavilyClient:
                          max_results: int = 5,
                          include_domains: Sequence[str] = None,
                          exclude_domains: Sequence[str] = None,
+                         timeout: int = 60,
                          **kwargs,  # Accept custom arguments
                          ) -> str:
         """
@@ -251,6 +259,7 @@ class AsyncTavilyClient:
                                            include_raw_content=False,
                                            include_images=False,
                                            include_answer=True,
+                                           timeout = min(timeout, 120),
                                            **kwargs,
                                            )
         return response_dict.get("answer", "")
@@ -259,6 +268,7 @@ class AsyncTavilyClient:
                                query: str,
                                search_depth: Literal["basic", "advanced"] = "advanced",
                                max_results: int = 5,
+                               timeout: int = 60,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
 
@@ -267,7 +277,8 @@ class AsyncTavilyClient:
                                       search_depth=search_depth,
                                       topic=topic,
                                       max_results=max_results,
-                                      include_answer=False, )
+                                      include_answer=False,
+                                      timeout = min(timeout, 120))
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):
