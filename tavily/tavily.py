@@ -13,14 +13,23 @@ class TavilyClient:
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
         if not api_key:
             raise MissingAPIKeyError()
+
+        resolved_proxies = {
+            "http": proxies.get("http") if proxies else os.getenv("TAVILY_HTTP_PROXY"),
+            "https": proxies.get("https") if proxies else os.getenv("TAVILY_HTTPS_PROXY"),
+        }
+
+        resolved_proxies = {k: v for k, v in resolved_proxies.items() if v} or None
+
         self.base_url = "https://api.tavily.com"
         self.api_key = api_key
+        self.proxies = resolved_proxies
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -59,7 +68,7 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=100)
+        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=100, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()
@@ -125,7 +134,7 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=100)
+        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=100, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()

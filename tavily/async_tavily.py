@@ -15,12 +15,30 @@ class AsyncTavilyClient:
     """
 
     def __init__(self, api_key: Optional[str] = None,
-                 company_info_tags: Sequence[str] = ("news", "general", "finance")):
+                 company_info_tags: Sequence[str] = ("news", "general", "finance"), 
+                 proxies: Optional[dict[str, str]] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
         if not api_key:
             raise MissingAPIKeyError()
+        
+        proxies = proxies or {}
+
+        mapped_proxies = {
+            "http://": proxies.get("http", os.getenv("TAVILY_HTTP_PROXY")),
+            "https://": proxies.get("https", os.getenv("TAVILY_HTTPS_PROXY")),
+        }
+
+        mapped_proxies = {key: value for key, value in mapped_proxies.items() if value}
+
+        proxy_mounts = (
+            {scheme: httpx.AsyncHTTPTransport(proxy=proxy) for scheme, proxy in mapped_proxies.items()}
+            if mapped_proxies
+            else None
+        )
+
+        print(proxy_mounts)
 
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
@@ -29,6 +47,7 @@ class AsyncTavilyClient:
             },
             base_url="https://api.tavily.com",
             timeout=180,
+            mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
 
