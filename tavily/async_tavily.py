@@ -38,8 +38,6 @@ class AsyncTavilyClient:
             else None
         )
 
-        print(proxy_mounts)
-
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
