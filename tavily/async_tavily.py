@@ -82,8 +82,10 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
+        timeout = min(timeout, 120)
+
         async with self._client_creator() as client:
-            response = await client.post("/search", content=json.dumps(data), timeout=min(timeout, 120))
+            response = await client.post("/search", content=json.dumps(data), timeout=timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -117,6 +119,7 @@ class AsyncTavilyClient:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
@@ -127,7 +130,7 @@ class AsyncTavilyClient:
                                            include_answer=include_answer,
                                            include_raw_content=include_raw_content,
                                            include_images=include_images,
-                                           timeout=min(timeout, 120),
+                                           timeout=timeout,
                                            **kwargs,
                                            )
 
@@ -151,9 +154,11 @@ class AsyncTavilyClient:
         }
         if kwargs:
             data.update(kwargs)
+        
+        timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/extract", content=json.dumps(data), timeout=min(timeout, 120))
+            response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -185,8 +190,9 @@ class AsyncTavilyClient:
         """
         Combined extract method.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._extract(urls,
-                                            min(timeout, 120),
+                                            timeout,
                                             **kwargs,
                                             )
 
@@ -218,6 +224,7 @@ class AsyncTavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
@@ -228,7 +235,7 @@ class AsyncTavilyClient:
                                            include_answer=False,
                                            include_raw_content=False,
                                            include_images=False,
-                                           timeout = min(timeout, 120),
+                                           timeout = timeout,
                                            **kwargs,
                                            )
         sources = response_dict.get("results", [])
@@ -249,6 +256,7 @@ class AsyncTavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
@@ -259,7 +267,7 @@ class AsyncTavilyClient:
                                            include_raw_content=False,
                                            include_images=False,
                                            include_answer=True,
-                                           timeout = min(timeout, 120),
+                                           timeout = timeout,
                                            **kwargs,
                                            )
         return response_dict.get("answer", "")
@@ -271,6 +279,7 @@ class AsyncTavilyClient:
                                timeout: int = 60,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
+        timeout = min(timeout, 120)
 
         async def _perform_search(topic: str):
             return await self._search(query,
@@ -278,7 +287,7 @@ class AsyncTavilyClient:
                                       topic=topic,
                                       max_results=max_results,
                                       include_answer=False,
-                                      timeout = min(timeout, 120))
+                                      timeout = timeout)
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):

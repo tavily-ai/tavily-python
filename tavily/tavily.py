@@ -69,7 +69,9 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=min(timeout, 120), proxies=self.proxies)
+        timeout = min(timeout, 120)
+
+        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()
@@ -103,7 +105,7 @@ class TavilyClient:
         """
         Combined search method.
         """
-
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -114,7 +116,7 @@ class TavilyClient:
                                      include_answer=include_answer,
                                      include_raw_content=include_raw_content,
                                      include_images=include_images,
-                                     timeout=min(timeout, 120)
+                                     timeout=timeout,
                                      **kwargs,
                                      )
 
@@ -138,7 +140,9 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=min(timeout, 120), proxies=self.proxies)
+        timeout = min(timeout, 120)
+
+        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()
@@ -169,8 +173,9 @@ class TavilyClient:
         """
         Combined extract method.
         """
+        timeout = min(timeout, 120)
         response_dict = self._extract(urls, 
-                                      min(timeout, 120),
+                                      timeout,
                                       **kwargs)
 
         tavily_results = response_dict.get("results", [])
@@ -201,7 +206,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -212,7 +217,7 @@ class TavilyClient:
                                      include_answer=False,
                                      include_raw_content=False,
                                      include_images=False,
-                                     timeout=min(timeout, 120),
+                                     timeout=timeout,
                                      **kwargs,
                                      )
         sources = response_dict.get("results", [])
@@ -233,6 +238,7 @@ class TavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -243,7 +249,7 @@ class TavilyClient:
                                      include_raw_content=False,
                                      include_images=False,
                                      include_answer=True,
-                                     timeout=min(timeout, 120)
+                                     timeout=timeout,
                                      **kwargs,
                                      )
         return response_dict.get("answer", "")
@@ -255,14 +261,14 @@ class TavilyClient:
                          timeout: int = 60,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
-
+        timeout = min(timeout, 120)
         def _perform_search(topic):
             return self._search(query,
                                 search_depth=search_depth,
                                 topic=topic,
                                 max_results=max_results,
                                 include_answer=False,
-                                timeout=min(timeout, 120))
+                                timeout=timeout)
 
         with ThreadPoolExecutor() as executor:
             # Initiate the search for each topic in parallel
