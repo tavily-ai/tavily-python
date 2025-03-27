@@ -13,14 +13,23 @@ class TavilyClient:
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
         if not api_key:
             raise MissingAPIKeyError()
+
+        resolved_proxies = {
+            "http": proxies.get("http") if proxies else os.getenv("TAVILY_HTTP_PROXY"),
+            "https": proxies.get("https") if proxies else os.getenv("TAVILY_HTTPS_PROXY"),
+        }
+
+        resolved_proxies = {k: v for k, v in resolved_proxies.items() if v} or None
+
         self.base_url = "https://api.tavily.com"
         self.api_key = api_key
+        self.proxies = resolved_proxies
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -37,6 +46,7 @@ class TavilyClient:
                 include_answer: bool = False,
                 include_raw_content: bool = False,
                 include_images: bool = False,
+                timeout: int = 60,
                 **kwargs
                 ) -> dict:
         """
@@ -59,7 +69,9 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=100)
+        timeout = min(timeout, 120)
+
+        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()
@@ -87,12 +99,13 @@ class TavilyClient:
                include_answer: bool = False,
                include_raw_content: bool = False,
                include_images: bool = False,
+               timeout: int = 60,
                **kwargs,  # Accept custom arguments
                ) -> dict:
         """
         Combined search method.
         """
-
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -103,6 +116,7 @@ class TavilyClient:
                                      include_answer=include_answer,
                                      include_raw_content=include_raw_content,
                                      include_images=include_images,
+                                     timeout=timeout,
                                      **kwargs,
                                      )
 
@@ -114,6 +128,7 @@ class TavilyClient:
 
     def _extract(self,
                  urls: Union[List[str], str],
+                 timeout: int = 60,
                  **kwargs
                  ) -> dict:
         """
@@ -125,7 +140,9 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=100)
+        timeout = min(timeout, 120)
+
+        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
 
         if response.status_code == 200:
             return response.json()
@@ -150,12 +167,15 @@ class TavilyClient:
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
+                timeout: int = 60,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
         """
         Combined extract method.
         """
-        response_dict = self._extract(urls,
+        timeout = min(timeout, 120)
+        response_dict = self._extract(urls, 
+                                      timeout,
                                       **kwargs)
 
         tavily_results = response_dict.get("results", [])
@@ -175,6 +195,7 @@ class TavilyClient:
                            include_domains: Sequence[str] = None,
                            exclude_domains: Sequence[str] = None,
                            max_tokens: int = 4000,
+                           timeout: int = 60,
                            **kwargs,  # Accept custom arguments
                            ) -> str:
         """
@@ -185,7 +206,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -196,6 +217,7 @@ class TavilyClient:
                                      include_answer=False,
                                      include_raw_content=False,
                                      include_images=False,
+                                     timeout=timeout,
                                      **kwargs,
                                      )
         sources = response_dict.get("results", [])
@@ -210,11 +232,13 @@ class TavilyClient:
                    max_results: int = 5,
                    include_domains: Sequence[str] = None,
                    exclude_domains: Sequence[str] = None,
+                   timeout: int = 60,
                    **kwargs,  # Accept custom arguments
                    ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -225,6 +249,7 @@ class TavilyClient:
                                      include_raw_content=False,
                                      include_images=False,
                                      include_answer=True,
+                                     timeout=timeout,
                                      **kwargs,
                                      )
         return response_dict.get("answer", "")
@@ -233,15 +258,17 @@ class TavilyClient:
                          query: str,
                          search_depth: Literal["basic", "advanced"] = "advanced",
                          max_results: int = 5,
+                         timeout: int = 60,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
-
+        timeout = min(timeout, 120)
         def _perform_search(topic):
             return self._search(query,
                                 search_depth=search_depth,
                                 topic=topic,
                                 max_results=max_results,
-                                include_answer=False, )
+                                include_answer=False,
+                                timeout=timeout)
 
         with ThreadPoolExecutor() as executor:
             # Initiate the search for each topic in parallel
