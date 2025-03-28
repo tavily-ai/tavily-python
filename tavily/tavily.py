@@ -5,7 +5,7 @@ import os
 from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
 
 
 class TavilyClient:
@@ -75,18 +75,23 @@ class TavilyClient:
 
         if response.status_code == 200:
             return response.json()
-        elif response.status_code == 429:
-            detail = 'Too many requests.'
+        else:
             try:
                 detail = response.json()['detail']['error']
             except:
-                pass
+                raise response.raise_for_status()
 
-            raise UsageLimitExceededError(detail)
-        elif response.status_code == 401:
-            raise InvalidAPIKeyError()
-        else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code == 403:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError()
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
+
 
     def search(self,
                query: str,
@@ -146,24 +151,22 @@ class TavilyClient:
 
         if response.status_code == 200:
             return response.json()
-        elif response.status_code == 400:
-            detail = 'Bad request. The request was invalid or cannot be served.'
-            try:
-                detail = response.json()['detail']['error']
-            except KeyError:
-                pass
-            raise BadRequestError(detail)
-        elif response.status_code == 401:
-            raise InvalidAPIKeyError()
-        elif response.status_code == 429:
-            detail = 'Too many requests.'
+        else:
             try:
                 detail = response.json()['detail']['error']
             except:
-                pass
-            raise UsageLimitExceededError(detail)
-        else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+                raise response.raise_for_status()
+
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code == 403:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError()
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
@@ -174,7 +177,7 @@ class TavilyClient:
         Combined extract method.
         """
         timeout = min(timeout, 120)
-        response_dict = self._extract(urls, 
+        response_dict = self._extract(urls,
                                       timeout,
                                       **kwargs)
 
