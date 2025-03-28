@@ -38,12 +38,13 @@ class TavilyClient:
     def _search(self,
                 query: str,
                 search_depth: Literal["basic", "advanced"] = "basic",
-                topic: Literal["general", "news"] = "general",
+                topic: Literal["general", "news", "finance"] = "general",
+                time_range: Literal["day", "week", "month", "year"] = None,
                 days: int = 3,
                 max_results: int = 5,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
-                include_answer: bool = False,
+                include_answer: Union[bool, Literal["basic", "advanced"]] = False,
                 include_raw_content: bool = False,
                 include_images: bool = False,
                 timeout: int = 60,
@@ -57,6 +58,7 @@ class TavilyClient:
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
+            "time_range": time_range,
             "days": days,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
@@ -96,12 +98,13 @@ class TavilyClient:
     def search(self,
                query: str,
                search_depth: Literal["basic", "advanced"] = "basic",
-               topic: Literal["general", "news"] = "general",
+               topic: Literal["general", "news", "finance" ] = "general",
+               time_range: Literal["day", "week", "month", "year"] = None,
                days: int = 3,
                max_results: int = 5,
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
-               include_answer: bool = False,
+               include_answer: Union[bool, Literal["basic", "advanced"]] = False,
                include_raw_content: bool = False,
                include_images: bool = False,
                timeout: int = 60,
@@ -114,6 +117,7 @@ class TavilyClient:
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
+                                     time_range=time_range,
                                      days=days,
                                      max_results=max_results,
                                      include_domains=include_domains,
@@ -133,6 +137,8 @@ class TavilyClient:
 
     def _extract(self,
                  urls: Union[List[str], str],
+                 include_images: bool = False,
+                 extract_depth: Literal["basic", "advanced"] = "basic",
                  timeout: int = 60,
                  **kwargs
                  ) -> dict:
@@ -141,6 +147,8 @@ class TavilyClient:
         """
         data = {
             "urls": urls,
+            "include_images": include_images,
+            "extract_depth": extract_depth,
         }
         if kwargs:
             data.update(kwargs)
@@ -170,6 +178,8 @@ class TavilyClient:
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
+                include_images: bool = False,
+                extract_depth: Literal["basic", "advanced"] = "basic",
                 timeout: int = 60,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
@@ -178,6 +188,8 @@ class TavilyClient:
         """
         timeout = min(timeout, 120)
         response_dict = self._extract(urls,
+                                      include_images,
+                                      extract_depth,
                                       timeout,
                                       **kwargs)
 
@@ -192,7 +204,7 @@ class TavilyClient:
     def get_search_context(self,
                            query: str,
                            search_depth: Literal["basic", "advanced"] = "basic",
-                           topic: Literal["general", "news"] = "general",
+                           topic: Literal["general", "news", "finance"] = "general",
                            days: int = 3,
                            max_results: int = 5,
                            include_domains: Sequence[str] = None,
@@ -230,7 +242,7 @@ class TavilyClient:
     def qna_search(self,
                    query: str,
                    search_depth: Literal["basic", "advanced"] = "advanced",
-                   topic: Literal["general", "news"] = "general",
+                   topic: Literal["general", "news", "finance"] = "general",
                    days: int = 3,
                    max_results: int = 5,
                    include_domains: Sequence[str] = None,
