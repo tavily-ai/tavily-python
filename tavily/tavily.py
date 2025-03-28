@@ -5,7 +5,7 @@ import os
 from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, UnauthorizedKeyError, BadRequestError, ForbiddenError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
 
 
 class TavilyClient:
@@ -18,7 +18,7 @@ class TavilyClient:
             api_key = os.getenv("TAVILY_API_KEY")
 
         if not api_key:
-            raise UnauthorizedKeyError()
+            raise MissingAPIKeyError()
 
         resolved_proxies = {
             "http": proxies.get("http") if proxies else os.getenv("TAVILY_HTTP_PROXY"),
@@ -86,7 +86,7 @@ class TavilyClient:
             elif response.status_code == 403:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise UnauthorizedKeyError(detail)
+                raise InvalidAPIKeyError()
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
@@ -162,7 +162,7 @@ class TavilyClient:
             elif response.status_code == 403:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise UnauthorizedKeyError(detail)
+                raise InvalidAPIKeyError()
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
