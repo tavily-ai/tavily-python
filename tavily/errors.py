@@ -13,8 +13,8 @@ class ForbiddenError(Exception):
         super().__init__(message)
 
 class InvalidAPIKeyError(Exception):
-    def __init__(self):
-        super().__init__("Unauthorized: Invalid API key.")
+    def __init__(self, message: str):
+        super().__init__(message)
 
 class MissingAPIKeyError(Exception):
     def __init__(self):
