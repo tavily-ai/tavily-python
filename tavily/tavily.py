@@ -78,10 +78,11 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except:
-                raise response.raise_for_status()
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
@@ -160,10 +161,11 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except:
-                raise response.raise_for_status()
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
