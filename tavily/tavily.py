@@ -40,7 +40,7 @@ class TavilyClient:
                 search_depth: Literal["basic", "advanced"] = "basic",
                 topic: Literal["general", "news", "finance"] = "general",
                 time_range: Literal["day", "week", "month", "year"] = None,
-                days: int = 3,
+                days: int = 7,
                 max_results: int = 5,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
@@ -78,17 +78,18 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except:
-                raise response.raise_for_status()
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
-            elif response.status_code == 403:
+            elif response.status_code in [403,432,433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise InvalidAPIKeyError()
+                raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
@@ -100,7 +101,7 @@ class TavilyClient:
                search_depth: Literal["basic", "advanced"] = "basic",
                topic: Literal["general", "news", "finance" ] = "general",
                time_range: Literal["day", "week", "month", "year"] = None,
-               days: int = 3,
+               days: int = 7,
                max_results: int = 5,
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
@@ -160,17 +161,18 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except:
-                raise response.raise_for_status()
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
-            elif response.status_code == 403:
+            elif response.status_code in [403,432,433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise InvalidAPIKeyError()
+                raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
@@ -205,7 +207,7 @@ class TavilyClient:
                            query: str,
                            search_depth: Literal["basic", "advanced"] = "basic",
                            topic: Literal["general", "news", "finance"] = "general",
-                           days: int = 3,
+                           days: int = 7,
                            max_results: int = 5,
                            include_domains: Sequence[str] = None,
                            exclude_domains: Sequence[str] = None,
@@ -243,7 +245,7 @@ class TavilyClient:
                    query: str,
                    search_depth: Literal["basic", "advanced"] = "advanced",
                    topic: Literal["general", "news", "finance"] = "general",
-                   days: int = 3,
+                   days: int = 7,
                    max_results: int = 5,
                    include_domains: Sequence[str] = None,
                    exclude_domains: Sequence[str] = None,
