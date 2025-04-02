@@ -99,10 +99,10 @@ class AsyncTavilyClient:
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
-            elif response.status_code == 403:
+            elif response.status_code in [403,432,433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise InvalidAPIKeyError()
+                raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
@@ -180,12 +180,13 @@ class AsyncTavilyClient:
             except:
                 raise response.raise_for_status()
 
+
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
-            elif response.status_code == 403:
+            elif response.status_code in [403,432,433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise InvalidAPIKeyError()
+                raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:

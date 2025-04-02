@@ -167,7 +167,7 @@ class TavilyClient:
 
             if response.status_code == 429:
                 raise UsageLimitExceededError(detail)
-            elif response.status_code == 403:
+            elif response.status_code in [403,432,433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
                 raise InvalidAPIKeyError(detail)
