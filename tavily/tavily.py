@@ -170,7 +170,7 @@ class TavilyClient:
             elif response.status_code == 403:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
-                raise InvalidAPIKeyError()
+                raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
