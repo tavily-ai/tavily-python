@@ -178,14 +178,16 @@ class AsyncTavilyClient:
     
     async def _crawl(self,
                url: str,
-               max_depth: int = 3,
+               max_depth: int = 2,
                max_breadth: int = 20,
+               limit: int = 100,
                include_images: bool = False,
-               use_map_cache: bool = False,
-               use_extract_cache: bool = False,
-               select_paths: Sequence[str] = None,
-               select_domains: Sequence[str] = None,
-               limit: int = 500,
+               select_paths: Sequence[str] = [],
+               select_domains: Sequence[str] = [],
+               allow_external: bool = False,
+               categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing", 
+                                           "Careers", "E-Commerce", "Developers", "Partners", 
+                                           "Downloads", "Media", "Events"]] = [],
                **kwargs
                ) -> dict:
         """
@@ -195,12 +197,12 @@ class AsyncTavilyClient:
             "url": url,
             "max_depth": max_depth,
             "max_breadth": max_breadth,
+            "limit": limit,
             "include_images": include_images,
-            "use_map_cache": use_map_cache,
-            "use_extract_cache": use_extract_cache,
             "select_paths": select_paths,
             "select_domains": select_domains,
-            "limit": limit,
+            "allow_external": allow_external,
+            "categories": categories,
         }
 
         if kwargs:
@@ -230,15 +232,17 @@ class AsyncTavilyClient:
                 response.raise_for_status()
 
     async def crawl(self,
-              url: str,
-              max_depth: int = 3,
-              max_breadth: int = 20,
-              include_images: bool = False,
-              use_map_cache: bool = False,
-              use_extract_cache: bool = False,
-              select_paths: Sequence[str] = None,
-              select_domains: Sequence[str] = None,
-              limit: int = 500,
+               url: str,
+               max_depth: int = 2,
+               max_breadth: int = 20,
+               limit: int = 100,
+               include_images: bool = False,
+               select_paths: Sequence[str] = [],
+               select_domains: Sequence[str] = [],
+               allow_external: bool = False,
+               categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing", 
+                                           "Careers", "E-Commerce", "Developers", "Partners", 
+                                           "Downloads", "Media", "Events"]] = [],
               **kwargs
               ) -> dict:
         """
@@ -247,12 +251,12 @@ class AsyncTavilyClient:
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
+                                    limit=limit,
                                     include_images=include_images,
-                                    use_map_cache=use_map_cache,
-                                    use_extract_cache=use_extract_cache,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
-                                    limit=limit,
+                                    allow_external=allow_external,
+                                    categories=categories,
                                     **kwargs)
 
         data = response_dict.get("data", [])
