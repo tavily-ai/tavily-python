@@ -232,6 +232,7 @@ class AsyncTavilyClient:
                categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing", 
                                            "Careers", "E-Commerce", "Developers", "Partners", 
                                            "Downloads", "Media", "Events"]] = [],
+               timeout: int = 60,
                **kwargs
                ) -> dict:
         """
@@ -252,28 +253,29 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
+        timeout = min(timeout, 120)
+
         async with self._client_creator() as client:
-            response = await client.post("/crawl", content=json.dumps(data))
+            response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
             if response.status_code == 200:
                 return response.json()
-            elif response.status_code == 400:
-                detail = 'Bad request. The request was invalid or cannot be served.'
-                try:
-                    detail = response.json()['detail']['error']
-                except KeyError:
-                    pass
-                raise BadRequestError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError()
-            elif response.status_code == 429:
-                detail = 'Too many requests.'
-                try:
-                    detail = response.json()['detail']['error']
-                except:
-                    pass
-                raise UsageLimitExceededError(detail)
             else:
-                response.raise_for_status()
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
 
     async def crawl(self,
                url: str,
@@ -287,11 +289,13 @@ class AsyncTavilyClient:
                categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing", 
                                            "Careers", "E-Commerce", "Developers", "Partners", 
                                            "Downloads", "Media", "Events"]] = [],
+               timeout: int = 60,
               **kwargs
               ) -> dict:
         """
         Combined crawl method.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -301,6 +305,7 @@ class AsyncTavilyClient:
                                     select_domains=select_domains,
                                     allow_external=allow_external,
                                     categories=categories,
+                                    timeout=timeout,
                                     **kwargs)
 
         data = response_dict.get("data", [])
