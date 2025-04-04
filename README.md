@@ -1,5 +1,5 @@
-
 # Tavily Python Wrapper
+
 The Tavily Python wrapper allows for easy interaction with the Tavily API, offering the full range of our search and extract functionalities directly from your Python programs. Easily integrate smart search and content extraction capabilities into your applications, harnessing Tavily's powerful search and extract features.
 
 ## Installing
@@ -11,6 +11,7 @@ pip install tavily-python
 # Tavily Search
 
 ## Usage
+
 Below are some code snippets that show you how to interact with our search API. The different steps and components of this code are explained in more detail in the API Methods section further down.
 
 ### Getting and printing the full Search API response
@@ -27,6 +28,7 @@ response = tavily_client.search("Who is Leo Messi?")
 # Step 3. That's it! You've done a Tavily Search!
 print(response)
 ```
+
 This is equivalent to directly querying our REST API.
 
 ### Generating context for a RAG Application
@@ -43,6 +45,7 @@ context = tavily_client.get_search_context(query="What happened during the Burni
 # Step 3. That's it! You now have a context string that you can feed directly into your RAG Application
 print(context)
 ```
+
 This is how you can generate precise and fact-based context for your RAG application in one line of code.
 
 ### Getting a quick answer to a question
@@ -59,9 +62,10 @@ answer = tavily_client.qna_search(query="Who is Leo Messi?")
 # Step 3. That's it! Your question has been answered!
 print(answer)
 ```
+
 This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
 
-## API Methods 
+## API Methods
 
 ### Client
 
@@ -69,67 +73,69 @@ This is how you get accurate and concise answers to questions, in one line of co
 
 The `TavilyClient` class is the entry point to interacting with the Tavily API. Kickstart your journey by instantiating it with your API key. If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead.
 
-Once you do so, you're ready to search the Web in one line of code! All you need is to pass a `str` as a `query` to one of our methods (detailed below) and you'll start searching!
+If you want to use either client with specified HTTP or HTTPS proxies, you can do so by passing the proxies parameter as a dictionary in the format `{ "http": str, "https": str }`, where each key is optional, or by setting the `TAVILY_HTTP_PROXY` or `TAVILY_HTTPS_PROXY` environment variables.
+
+Once you've instantiated your client, you're ready to search the Web in one line of code! All you need is to pass a `str` as a `query` to one of our methods (detailed below) and you'll start searching!
 
 ### Methods
-* **`search`**(query, **kwargs)
-  * Performs a Tavily Search query and returns the response as a well-structured `dict`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`, `time_range`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `include_image_descriptions`. 
-  * **Returns** a `dict` with all related response fields. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `dict`. The details of the exact response format are given in the Search Responses section further down.
-  
-* **`get_search_context`**(query, **kwargs)
-  * Performs a Tavily Search query and returns a `str` of content and sources within the provided token limit. It's useful for getting only related content from retrieved websites without having to deal with context extraction and token management.
-  * The **core parameter** for this function is `max_tokens`, an `int`. It defaults to `4000`. It is provided as a keyword argument.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`, `time_range`, `max_results`, `include_domains`, `exclude_domains`.
-  * **Returns** a `str` containing the content and sources of the results. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
-* **`qna_search`**(query, **kwargs)
-  * Performs a search and returns a string containing an answer to the original query. This is optimal to be used as a tool for AI agents.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `days`, `time_range`, `time_range`, `max_results`, `include_domains`, `exclude_domains`. 
-  * **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
+- **`search`**(query, \*\*kwargs)
+  - Performs a Tavily Search query and returns the response as a well-structured `dict`.
+  - **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`, `time_range`, `max_results`, `include_domains`, `exclude_domains`, `include_answer`, `include_raw_content`, `include_images`, `include_image_descriptions`.
+  - **Returns** a `dict` with all related response fields. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `dict`. The details of the exact response format are given in the Search Responses section further down.
+- **`get_search_context`**(query, \*\*kwargs)
+
+  - Performs a Tavily Search query and returns a `str` of content and sources within the provided token limit. It's useful for getting only related content from retrieved websites without having to deal with context extraction and token management.
+  - The **core parameter** for this function is `max_tokens`, an `int`. It defaults to `4000`. It is provided as a keyword argument.
+  - **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth`, `topic`, `days`, `time_range`, `max_results`, `include_domains`, `exclude_domains`.
+  - **Returns** a `str` containing the content and sources of the results. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
+
+- **`qna_search`**(query, \*\*kwargs)
+  - Performs a search and returns a string containing an answer to the original query. This is optimal to be used as a tool for AI agents.
+  - **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `search_depth` (defaults to `"advanced"`), `topic`, `days`, `time_range`, `time_range`, `max_results`, `include_domains`, `exclude_domains`.
+  - **Returns** a `str` containing a short answer to the search query. If you decide to use the asynchronous client, returns a `coroutine` resolving to that `str`.
 
 ### Keyword Arguments (optional)
 
-* **`search_depth`: str** - The depth of the search. It can be `"basic"` or `"advanced"`. Default is `"basic"` unless specified otherwise in a given method.
+- **`search_depth`: str** - The depth of the search. It can be `"basic"` or `"advanced"`. Default is `"basic"` unless specified otherwise in a given method.
 
-* **`topic`: str** - The category of the search. This will determine which of our agents will be used for the search. Currently, only `"general"` and `"news"` are supported. Default is `"general"`.
+- **`topic`: str** - The category of the search. This will determine which of our agents will be used for the search. Currently, only `"general"` and `"news"` are supported. Default is `"general"`.
 
-* **`days`: int** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
+- **`days`: int** - The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the `"news"` search `topic`. Default is `3`.
 
-* **`time_range`: str** - The time range back from the current date to include in the search results. Accepted values include `"day"`,`"week"`,`"month"`,`"year"` or `"d"`,`"w"`,`"m"`,`"y"`. Default is `None`, which will not filter search results by time range.
+- **`time_range`: str** - The time range back from the current date to include in the search results. Accepted values include `"day"`,`"week"`,`"month"`,`"year"` or `"d"`,`"w"`,`"m"`,`"y"`. Default is `None`, which will not filter search results by time range.
 
-* **`max_results`: int** -  The maximum number of search results to return. Default is `5`.
+- **`max_results`: int** - The maximum number of search results to return. Default is `5`.
 
-* **`include_images`: bool** -  Include a list of query-related images in the response. Default is `False`.
+- **`include_images`: bool** - Include a list of query-related images in the response. Default is `False`.
 
-* **`include_image_descriptions`: bool** - When `include_images` is set to `True`, this option adds descriptive text for each image.  Default is `False`.
+- **`include_image_descriptions`: bool** - When `include_images` is set to `True`, this option adds descriptive text for each image. Default is `False`.
 
-* **`include_answer`:  bool | str** - Include an answer to original query, generated by an LLM based on Tavily's search results. `"basic"`/`True` answer will be quick but less detailed, `"advanced"` answer will be more detailed but take longer to generate. Default is `False`.
+- **`include_answer`: bool | str** - Include an answer to original query, generated by an LLM based on Tavily's search results. `"basic"`/`True` answer will be quick but less detailed, `"advanced"` answer will be more detailed but take longer to generate. Default is `False`.
 
-* **`include_raw_content`: bool** -  Include the cleaned and parsed HTML content of each search result. Default is `False`.
+- **`include_raw_content`: bool** - Include the cleaned and parsed HTML content of each search result. Default is `False`.
 
-* **`include_domains`: list[str]** -  A list of domains to specifically include in the search results. Default is `None`, which includes all domains. 
+- **`include_domains`: list[str]** - A list of domains to specifically include in the search results. Default is `None`, which includes all domains.
 
-* **`exclude_domains`: list[str]** -  A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains. 
+- **`exclude_domains`: list[str]** - A list of domains to specifically exclude from the search results. Default is `None`, which doesn't exclude any domains.
 
 ### Search Responses
 
-* **`answer`: str**- The answer to your search query. This will be `None` unless `include_answer` is set to `True`, `"basic"` or `"advanced"`.
+- **`answer`: str**- The answer to your search query. This will be `None` unless `include_answer` is set to `True`, `"basic"` or `"advanced"`.
 
-* **`query`: str** - Your search query.
+- **`query`: str** - Your search query.
 
-* **`response_time`: float** - Your search result response time.
+- **`response_time`: float** - Your search result response time.
 
-* **`images`: list[str | dict]** - A list of query-related image URLs. If `include_image_descriptions` is set to `True` each entry will be a dictionary with `url` and `description`
+- **`images`: list[str | dict]** - A list of query-related image URLs. If `include_image_descriptions` is set to `True` each entry will be a dictionary with `url` and `description`
 
-* **`results`: list** - A list of sorted search results ranked by relevancy. Each result is in the following format:
+- **`results`: list** - A list of sorted search results ranked by relevancy. Each result is in the following format:
   - **`title`: str** - The title of the search result URL.
   - **`url`: str** - The URL of the search result.
   - **`content`: str** - The most query related content from the scraped URL. We use proprietary AI and algorithms to extract only the most relevant content from each URL, to optimize for context quality and size.
   - **`raw_content`: str** - The parsed and cleaned HTML of the site. For now includes parsed text only. Please note that this will be `None` unless `include_raw_content` is set to `True`.
   - **`score`: float** - The relevance score of the search result.
   - **`published_date`: str (optional)** - The publication date of the source. This is only available if you are using `"news"` as your search `topic`.
-
 
 When you send a search query, the response `dict` you receive will be in the following format:
 
@@ -138,10 +144,10 @@ response = {
   "query": "The query provided in the request",
   "answer": "A short answer to the query",  # This will be None if include_answer is set to False in the request
   "follow_up_questions": None,  # This feature is still in development
-  "images": [ 
+  "images": [
     {
       "url": "Image 1 URL",
-      "description": "Image 1 Description",  
+      "description": "Image 1 Description",
     },
     {
       "url": "Image 2 URL",
@@ -177,6 +183,7 @@ response = {
   "response_time": 1.09 # This will be your search response time
 }
 ```
+
 # Tavily Extract
 
 ## Usage
@@ -212,7 +219,7 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
-## API Methods 
+## API Methods
 
 ### Client
 
@@ -222,33 +229,38 @@ The `TavilyClient` class is your entry point to interacting with the Tavily API.
 
 If you want to use Tavily asynchronously, you will need to instantiate an `AsyncTavilyClient` instead. The asynchronous client's interface is identical to the synchronous client's, the only difference being that all methods are asynchronous.
 
+### Proxies
+
+If you want to use either client with specified HTTP or HTTPS proxies, you can do so by passing the proxies parameter as a dictionary in the format `{ "http": str, "https": str }`, where each key is optional, or by setting the `TAVILY_HTTP_PROXY` or `TAVILY_HTTPS_PROXY` environment variables.
+
 ### Methods
 
-* **`extract`**(urls, **kwargs)
-    * Extracts the raw content from a given list of URLs (or a single URL string) and returns the response as a
-      well-structured `dict`.
-  * **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are:  `include_images`
-  * **Returns** a `dict` with all related response fields. If using the asynchronous client, it returns a coroutine
+- **`extract`**(urls, \*\*kwargs)
+  - Extracts the raw content from a given list of URLs (or a single URL string) and returns the response as a
+    well-structured `dict`.
+  - **Additional parameters** can be provided as keyword arguments (detailed below). The keyword arguments supported by this method are: `include_images`
+  - **Returns** a `dict` with all related response fields. If using the asynchronous client, it returns a coroutine
     that resolves to this `dict`. For details on the response format, see the Extract Responses section.
-  
+
 ### Keyword Arguments (optional)
 
-* **`include_images`: bool** -  Include a list of images extracted from the `urls` in the response. Default is `False`.
+- **`include_images`: bool** - Include a list of images extracted from the `urls` in the response. Default is `False`.
 
 ### Extract Responses
 
-* **`results`: list**: A list of extracted content from the provided URLs. Each result is in the following format:
+- **`results`: list**: A list of extracted content from the provided URLs. Each result is in the following format:
+
   - **`url`: str** - The URL of the webpage from which content was extracted.
   - **`raw_content`- str** - The raw content extracted from the provided URL.
   - **`images`: list[str]** - A list of extracted image URLs.
-``
+    ``
 
-* **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following format:
+- **`failed_results`: list** - A list of URLs that could not be processed, if any. Each result is in the following format:
+
   - **`url`: str** - The URL that failed to be processed.
   - **`error`: str** - An error message describing why the URL could not be processed.
-  
 
-* **`response_time`: float** - Your search result response time.
+- **`response_time`: float** - Your search result response time.
 
 When you send a URL or a list of URLs, the response `dict` you receive will be in the following format:
 
@@ -277,12 +289,12 @@ When you send a URL or a list of URLs, the response `dict` you receive will be i
 }
 ```
 
-## Error Handling 
+## Error Handling
 
 The Tavily Python SDK includes comprehensive error handling to ensure smooth interaction with the API. Below are the specific exceptions that might be raised during usage:
 
 1. **Missing API Key**: If no API key is provided when initializing the `TavilyClient`, a `tavily.MissingAPIKeyError` will be raised. Ensure you pass a valid API key to the `TavilyClient` during instantiation.
-   
+
    ```python
    from tavily import TavilyClient, MissingAPIKeyError
 
@@ -317,16 +329,18 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
    except UsageLimitExceededError:
        print("Usage limit exceeded. Please check your plan's usage limits or consider upgrading.")
    ```
+
    These errors ensure that you are aware of the specific issues related to your API key usage, allowing you to take appropriate actions to resolve them.
 
-
 4. **Bad Request Errors**: The `/extract` endpoint may return a `tavily.BadRequestError` in the following cases:
+
    - **Exceeds URL Limit**: If the number of URLs in the request exceeds the maximum allowed limit of 20, a `tavily.BadRequestError` will be raised.
+
    ```python
     from tavily import TavilyClient, BadRequestError
-    
+
     tavily_client = TavilyClient(api_key="valid-api-key")
-    
+
     urls = [
         "https://en.wikipedia.org/wiki/Artificial_intelligence",
         "https://en.wikipedia.org/wiki/Machine_learning",
@@ -354,28 +368,31 @@ The Tavily Python SDK includes comprehensive error handling to ensure smooth int
         response = tavily_client.extract(urls=urls)
     except BadRequestError as e:
         print(e)
-    ```
+   ```
+
    - **Validation Failure:** If all URLs provided in the request fail validation, a `tavily.BadRequestError` will be raised with details on the failed URLs.
+
    ```python
     from tavily import TavilyClient, BadRequestError
-    
+
     tavily_client = TavilyClient(api_key="valid-api-key")
-    
+
     try:
       response = tavily_client.extract(urls=["https://invalid-url1", "https://invalid-url2"])
     except BadRequestError as e:
       print(e)
-    ```
+   ```
+
    These errors help you identify specific issues with your URLs, allowing you to take the necessary actions to resolve them.
 
-## Tavily API Credit Deduction Overview 
- 
-* **Tavily Search**
-  * Each basic search (`search_depth="basic"`) will deduct 1 API credit from your account.
-  * Each advanced search (`search_depth="advanced"`) will deduct 2 API credits from your account. 
-* **Tavily Extract**
-  * For every 5 successful URL extractions, 1 API credit will be deducted from your account.
-  
+## Tavily API Credit Deduction Overview
+
+- **Tavily Search**
+  - Each basic search (`search_depth="basic"`) will deduct 1 API credit from your account.
+  - Each advanced search (`search_depth="advanced"`) will deduct 2 API credits from your account.
+- **Tavily Extract**
+  - For every 5 successful URL extractions, 1 API credit will be deducted from your account.
+
 ## License
 
 This project is licensed under the terms of the MIT license.

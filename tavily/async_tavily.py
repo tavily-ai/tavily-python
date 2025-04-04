@@ -6,7 +6,7 @@ from typing import Literal, Sequence, Optional, List, Union
 import httpx
 
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
 
 
 class AsyncTavilyClient:
@@ -15,12 +15,28 @@ class AsyncTavilyClient:
     """
 
     def __init__(self, api_key: Optional[str] = None,
-                 company_info_tags: Sequence[str] = ("news", "general", "finance")):
+                 company_info_tags: Sequence[str] = ("news", "general", "finance"),
+                 proxies: Optional[dict[str, str]] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
         if not api_key:
             raise MissingAPIKeyError()
+
+        proxies = proxies or {}
+
+        mapped_proxies = {
+            "http://": proxies.get("http", os.getenv("TAVILY_HTTP_PROXY")),
+            "https://": proxies.get("https", os.getenv("TAVILY_HTTPS_PROXY")),
+        }
+
+        mapped_proxies = {key: value for key, value in mapped_proxies.items() if value}
+
+        proxy_mounts = (
+            {scheme: httpx.AsyncHTTPTransport(proxy=proxy) for scheme, proxy in mapped_proxies.items()}
+            if mapped_proxies
+            else None
+        )
 
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
@@ -28,7 +44,7 @@ class AsyncTavilyClient:
                 "Authorization": f"Bearer {api_key}"
             },
             base_url="https://api.tavily.com",
-            timeout=180,
+            mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
 
@@ -36,14 +52,16 @@ class AsyncTavilyClient:
             self,
             query: str,
             search_depth: Literal["basic", "advanced"] = "basic",
-            topic: str = "general",
-            days: int = 3,
+            topic: Literal["general", "news", "finance"] = "general",
+            time_range: Literal["day", "week", "month", "year"] = None,
+            days: int = 7,
             max_results: int = 5,
             include_domains: Sequence[str] = None,
             exclude_domains: Sequence[str] = None,
-            include_answer: bool = False,
+            include_answer: Union[bool, Literal["basic", "advanced"]] = False,
             include_raw_content: bool = False,
             include_images: bool = False,
+            timeout: int = 60,
             **kwargs,
     ) -> dict:
         """
@@ -53,6 +71,7 @@ class AsyncTavilyClient:
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
+            "time_range'": time_range,
             "days": days,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
@@ -65,43 +84,54 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
+        timeout = min(timeout, 120)
+
         async with self._client_creator() as client:
-            response = await client.post("/search", content=json.dumps(data))
+            response = await client.post("/search", content=json.dumps(data), timeout=timeout)
 
         if response.status_code == 200:
             return response.json()
-        elif response.status_code == 429:
-            detail = 'Too many requests.'
+        else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except:
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
                 pass
 
-            raise UsageLimitExceededError(detail)
-        elif response.status_code == 401:
-            raise InvalidAPIKeyError()
-        else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code in [403,432,433]:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError(detail)
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
 
     async def search(self,
                      query: str,
                      search_depth: Literal["basic", "advanced"] = "basic",
-                     topic: Literal["general", "news"] = "general",
-                     days: int = 3,
+                     topic: Literal["general", "news", "finance"] = "general",
+                     time_range: Literal["day", "week", "month", "year"] = None,
+                     days: int = 7,
                      max_results: int = 5,
                      include_domains: Sequence[str] = None,
                      exclude_domains: Sequence[str] = None,
-                     include_answer: bool = False,
+                     include_answer: Union[bool, Literal["basic", "advanced"]] = False,
                      include_raw_content: bool = False,
                      include_images: bool = False,
+                     timeout: int = 60,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
         Combined search method. Set search_depth to either "basic" or "advanced".
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
+                                           time_range=time_range,
                                            days=days,
                                            max_results=max_results,
                                            include_domains=include_domains,
@@ -109,6 +139,7 @@ class AsyncTavilyClient:
                                            include_answer=include_answer,
                                            include_raw_content=include_raw_content,
                                            include_images=include_images,
+                                           timeout=timeout,
                                            **kwargs,
                                            )
 
@@ -121,6 +152,9 @@ class AsyncTavilyClient:
     async def _extract(
             self,
             urls: Union[List[str], str],
+            include_images: bool = False,
+            extract_depth: Literal["basic", "advanced"] = "basic",
+            timeout: int = 60,
             **kwargs
     ) -> dict:
         """
@@ -128,43 +162,53 @@ class AsyncTavilyClient:
         """
         data = {
             "urls": urls,
+            "include_images": include_images,
+            "extract_depth": extract_depth,
         }
         if kwargs:
             data.update(kwargs)
 
+        timeout = min(timeout, 120)
+
         async with self._client_creator() as client:
-            response = await client.post("/extract", content=json.dumps(data))
+            response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
 
         if response.status_code == 200:
             return response.json()
-        elif response.status_code == 400:
-            detail = 'Bad request. The request was invalid or cannot be served.'
+        else:
+            detail = ""
             try:
-                detail = response.json()['detail']['error']
-            except KeyError:
-                pass
-            raise BadRequestError(detail)
-        elif response.status_code == 401:
-            raise InvalidAPIKeyError()
-        elif response.status_code == 429:
-            detail = 'Too many requests.'
-            try:
-                detail = response.json()['detail']['error']
-            except:
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
                 pass
 
-            raise UsageLimitExceededError(detail)
-        else:
-            response.raise_for_status()  # Raises a HTTPError if the HTTP request returned an unsuccessful status code
+
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code in [403,432,433]:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError(detail)
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
 
     async def extract(self,
                       urls: Union[List[str], str],  # Accept a list of URLs or a single URL
+                      include_images: bool = False,
+                      extract_depth: Literal["basic", "advanced"] = "basic",
+                      timeout: int = 60,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
         """
         Combined extract method.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._extract(urls,
+                                            include_images,
+                                            extract_depth,
+                                            timeout,
                                             **kwargs,
                                             )
 
@@ -276,12 +320,13 @@ class AsyncTavilyClient:
     async def get_search_context(self,
                                  query: str,
                                  search_depth: Literal["basic", "advanced"] = "basic",
-                                 topic: Literal["general", "news"] = "general",
-                                 days: int = 3,
+                                 topic: Literal["general", "news", "finance"] = "general",
+                                 days: int = 7,
                                  max_results: int = 5,
                                  include_domains: Sequence[str] = None,
                                  exclude_domains: Sequence[str] = None,
                                  max_tokens: int = 4000,
+                                 timeout: int = 60,
                                  **kwargs,  # Accept custom arguments
                                  ) -> str:
         """
@@ -292,6 +337,7 @@ class AsyncTavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
@@ -302,6 +348,7 @@ class AsyncTavilyClient:
                                            include_answer=False,
                                            include_raw_content=False,
                                            include_images=False,
+                                           timeout = timeout,
                                            **kwargs,
                                            )
         sources = response_dict.get("results", [])
@@ -311,16 +358,18 @@ class AsyncTavilyClient:
     async def qna_search(self,
                          query: str,
                          search_depth: Literal["basic", "advanced"] = "advanced",
-                         topic: Literal["general", "news"] = "general",
-                         days: int = 3,
+                         topic: Literal["general", "news", "finance"] = "general",
+                         days: int = 7,
                          max_results: int = 5,
                          include_domains: Sequence[str] = None,
                          exclude_domains: Sequence[str] = None,
+                         timeout: int = 60,
                          **kwargs,  # Accept custom arguments
                          ) -> str:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
                                            topic=topic,
@@ -331,6 +380,7 @@ class AsyncTavilyClient:
                                            include_raw_content=False,
                                            include_images=False,
                                            include_answer=True,
+                                           timeout = timeout,
                                            **kwargs,
                                            )
         return response_dict.get("answer", "")
@@ -339,15 +389,18 @@ class AsyncTavilyClient:
                                query: str,
                                search_depth: Literal["basic", "advanced"] = "advanced",
                                max_results: int = 5,
+                               timeout: int = 60,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
+        timeout = min(timeout, 120)
 
         async def _perform_search(topic: str):
             return await self._search(query,
                                       search_depth=search_depth,
                                       topic=topic,
                                       max_results=max_results,
-                                      include_answer=False, )
+                                      include_answer=False,
+                                      timeout = timeout)
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):
