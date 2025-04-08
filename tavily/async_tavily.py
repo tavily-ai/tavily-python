@@ -48,43 +48,35 @@ class AsyncTavilyClient:
         )
         self._company_info_tags = company_info_tags
 
-    async def _search(
-            self,
-            query: str,
-            search_depth: Literal["basic", "advanced"] = "basic",
-            topic: Literal["general", "news", "finance"] = "general",
-            time_range: Literal["day", "week", "month", "year"] = None,
-            days: int = 7,
-            max_results: int = 5,
-            include_domains: Sequence[str] = None,
-            exclude_domains: Sequence[str] = None,
-            include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-            include_raw_content: bool = False,
-            include_images: bool = False,
-            timeout: int = 60,
-            **kwargs,
-    ) -> dict:
+    async def _search(self,
+                      query: str,
+                      **kwargs
+                     ) -> dict:
         """
         Internal search method to send the request to the API.
+
+        Accepted kwargs:
+                search_depth: Optional[Literal["basic", "advanced"]] = "basic",
+                topic: Optional[Literal["general", "news", "finance"]] = "general",
+                time_range: Optional[Literal["day", "week", "month", "year"]] = None,
+                days: Optional[int] = 7,
+                max_results: Optional[int] = 5,
+                include_domains: Optional[Sequence[str]] = None,
+                exclude_domains: Optional[Sequence[str]] = None,
+                include_answer: Optional[Union[bool, Literal["basic", "advanced"]]] = False,
+                include_raw_content: Optional[bool] = False,
+                include_images: Optional[bool] = False,
+                timeout: Optional[int] = 60
         """
         data = {
             "query": query,
-            "search_depth": search_depth,
-            "topic": topic,
-            "time_range'": time_range,
-            "days": days,
-            "include_answer": include_answer,
-            "include_raw_content": include_raw_content,
-            "max_results": max_results,
-            "include_domains": include_domains,
-            "exclude_domains": exclude_domains,
-            "include_images": include_images,
         }
 
         if kwargs:
             data.update(kwargs)
 
-        timeout = min(timeout, 120)
+        timeout = data.get("timeout")
+        timeout = min(timeout, 120) if timeout else 60
 
         async with self._client_creator() as client:
             response = await client.post("/search", content=json.dumps(data), timeout=timeout)
@@ -111,35 +103,26 @@ class AsyncTavilyClient:
 
     async def search(self,
                      query: str,
-                     search_depth: Literal["basic", "advanced"] = "basic",
-                     topic: Literal["general", "news", "finance"] = "general",
-                     time_range: Literal["day", "week", "month", "year"] = None,
-                     days: int = 7,
-                     max_results: int = 5,
-                     include_domains: Sequence[str] = None,
-                     exclude_domains: Sequence[str] = None,
-                     include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-                     include_raw_content: bool = False,
-                     include_images: bool = False,
-                     timeout: int = 60,
-                     **kwargs,  # Accept custom arguments
+                     **kwargs
                      ) -> dict:
         """
-        Combined search method. Set search_depth to either "basic" or "advanced".
+        Combined search method.
+
+                Accepted kwargs:
+                search_depth: Optional[Literal["basic", "advanced"]] = "basic",
+                topic: Optional[Literal["general", "news", "finance"]] = "general",
+                time_range: Optional[Literal["day", "week", "month", "year"]] = None,
+                days: Optional[int] = 7,
+                max_results: Optional[int] = 5,
+                include_domains: Optional[Sequence[str]] = None,
+                exclude_domains: Optional[Sequence[str]] = None,
+                include_answer: Optional[Union[bool, Literal["basic", "advanced"]]] = False,
+                include_raw_content: Optional[bool] = False,
+                include_images: Optional[bool] = False,
+                timeout: Optional[int] = 60
         """
-        timeout = min(timeout, 120)
-        response_dict = await self._search(query,
-                                           search_depth=search_depth,
-                                           topic=topic,
-                                           time_range=time_range,
-                                           days=days,
-                                           max_results=max_results,
-                                           include_domains=include_domains,
-                                           exclude_domains=exclude_domains,
-                                           include_answer=include_answer,
-                                           include_raw_content=include_raw_content,
-                                           include_images=include_images,
-                                           timeout=timeout,
+
+        response_dict = await self._search(query=query,
                                            **kwargs,
                                            )
 
@@ -149,14 +132,13 @@ class AsyncTavilyClient:
 
         return response_dict
 
-    async def _extract(
-            self,
-            urls: Union[List[str], str],
-            include_images: bool = False,
-            extract_depth: Literal["basic", "advanced"] = "basic",
-            timeout: int = 60,
-            **kwargs
-    ) -> dict:
+    async def _extract(self,
+                       urls: Union[List[str], str],
+                       include_images: bool = False,
+                       extract_depth: Literal["basic", "advanced"] = "basic",
+                       timeout: int = 60,
+                       **kwargs
+                       ) -> dict:
         """
         Internal extract method to send the request to the API.
         """
