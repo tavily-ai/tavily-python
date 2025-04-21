@@ -205,16 +205,17 @@ class TavilyClient:
 
     def _crawl(self,
             url: str,
-            max_depth: int = 2,
+            max_depth: int = 1,
             max_breadth: int = 20,
-            limit: int = 100,
-            include_images: bool = False,
-            select_paths: Sequence[str] = [],
-            select_domains: Sequence[str] = [],
+            limit: int = 50,
+            query: str = None,
+            select_paths: Sequence[str] = None,
+            select_domains: Sequence[str] = None,
             allow_external: bool = False,
             categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
                                         "Careers", "E-Commerce", "Developers", "Partners",
-                                        "Downloads", "Media", "Events"]] = [],
+                                        "Downloads", "Media", "Events"]] = None,
+            extract_depth: Literal["basic", "advanced"] = "basic",
             timeout: int = 60,
             **kwargs
             ) -> dict:
@@ -226,11 +227,12 @@ class TavilyClient:
             "max_depth": max_depth,
             "max_breadth": max_breadth,
             "limit": limit,
-            "include_images": include_images,
+            "query": query,
             "select_paths": select_paths,
             "select_domains": select_domains,
             "allow_external": allow_external,
             "categories": categories,
+            "extract_depth": extract_depth,
         }
 
         if kwargs:
@@ -263,16 +265,17 @@ class TavilyClient:
 
     def crawl(self,
               url: str,
-              max_depth: int = 2,
+              max_depth: int = 1,
               max_breadth: int = 20,
-              limit: int = 100,
-              include_images: bool = False,
-              select_paths: Sequence[str] = [],
-              select_domains: Sequence[str] = [],
+              limit: int = 50,
+              query: str = None,
+              select_paths: Sequence[str] = None,
+              select_domains: Sequence[str] = None,
               allow_external: bool = False,
               categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
-                                            "Careers", "E-Commerce", "Developers", "Partners",
-                                            "Downloads", "Media", "Events"]] = [],
+                                           "Careers", "E-Commerce", "Developers", "Partners",
+                                           "Downloads", "Media", "Events"]] = None,
+              extract_depth: Literal["basic", "advanced"] = "basic",
               timeout: int = 60,
               **kwargs
               ) -> dict:
@@ -284,11 +287,12 @@ class TavilyClient:
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
-                                    include_images=include_images,
+                                    query=query,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
                                     allow_external=allow_external,
                                     categories=categories,
+                                    extract_depth=extract_depth,
                                     timeout=timeout,
                                     **kwargs)
 
