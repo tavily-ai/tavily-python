@@ -219,6 +219,112 @@ class AsyncTavilyClient:
         response_dict["failed_results"] = failed_results
 
         return response_dict
+    
+    async def _crawl(self,
+               url: str,
+               max_depth: int = 1,
+               max_breadth: int = 20,
+               limit: int = 50,
+               query: str = None,
+               select_paths: Sequence[str] = None,
+               select_domains: Sequence[str] = None,
+               allow_external: bool = False,
+               categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
+                                            "Careers", "E-Commerce", "Developers", "Partners",
+                                            "Downloads", "Media", "Events"]] = None,
+               extract_depth: Literal["basic", "advanced"] = "basic",
+               timeout: int = 60,
+               **kwargs
+               ) -> dict:
+        """
+        Internal crawl method to send the request to the API.
+        """
+        data = {
+            "url": url,
+            "max_depth": max_depth,
+            "max_breadth": max_breadth,
+            "limit": limit,
+            "query": query,
+            "select_paths": select_paths,
+            "select_domains": select_domains,
+            "allow_external": allow_external,
+            "categories": categories,
+            "extract_depth": extract_depth,
+        }
+
+        if kwargs:
+            data.update(kwargs)
+
+        timeout = min(timeout, 120)
+
+        async with self._client_creator() as client:
+            response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
+
+    async def crawl(self,
+                    url: str,
+                    max_depth: int = 1,
+                    max_breadth: int = 20,
+                    limit: int = 50,
+                    query: str = None,
+                    select_paths: Sequence[str] = None,
+                    select_domains: Sequence[str] = None,
+                    allow_external: bool = False,
+                    categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
+                                           "Careers", "E-Commerce", "Developers", "Partners",
+                                           "Downloads", "Media", "Events"]] = None,
+                    extract_depth: Literal["basic", "advanced"] = "basic",
+                    timeout: int = 60,
+                    **kwargs
+                    ) -> dict:
+        """
+        Combined crawl method.
+        """
+        timeout = min(timeout, 120)
+        response_dict = await self._crawl(url,
+                                    max_depth=max_depth,
+                                    max_breadth=max_breadth,
+                                    limit=limit,
+                                    query=query,
+                                    select_paths=select_paths,
+                                    select_domains=select_domains,
+                                    allow_external=allow_external,
+                                    categories=categories,
+                                    extract_depth=extract_depth,
+                                    timeout=timeout,
+                                    **kwargs)
+
+        data = response_dict.get("data", [])
+        metadata = response_dict.get("metadata", {})
+        config = response_dict.get("config", {})
+        success = response_dict.get("success", False)
+        error = response_dict.get("error", None)
+
+        response_dict["data"] = data
+        response_dict["metadata"] = metadata
+        response_dict["config"] = config
+        response_dict["success"] = success
+        response_dict["error"] = error
+
+        return response_dict
 
     async def get_search_context(self,
                                  query: str,
