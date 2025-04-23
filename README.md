@@ -219,7 +219,7 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
-# Tavily Crawl
+# Tavily Crawl (Currently in Invitational Beta)
 
 ## Usage
 
