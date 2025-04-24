@@ -238,6 +238,8 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
         
+        data = {k: v for k, v in data.items() if v is not None}
+    
         timeout = min(timeout, 120)
 
         response = requests.post(
@@ -331,6 +333,8 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
         
+        data = {k: v for k, v in data.items() if v is not None}
+
         timeout = min(timeout, 120)
 
         response = requests.post(
