@@ -255,6 +255,8 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
+        data = {k: v for k, v in data.items() if v is not None}
+
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
@@ -346,6 +348,8 @@ class AsyncTavilyClient:
 
         if kwargs:
             data.update(kwargs)
+
+        data = {k: v for k, v in data.items() if v is not None}
 
         timeout = min(timeout, 120)
 
