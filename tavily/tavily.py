@@ -205,17 +205,17 @@ class TavilyClient:
 
     def _crawl(self,
             url: str,
-            max_depth: int = 1,
-            max_breadth: int = 20,
-            limit: int = 50,
+            max_depth: int = None,
+            max_breadth: int = None,
+            limit: int = None,
             query: str = None,
             select_paths: Sequence[str] = None,
             select_domains: Sequence[str] = None,
-            allow_external: bool = False,
+            allow_external: bool = None,
             categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
                                         "Careers", "E-Commerce", "Developers", "Partners",
                                         "Downloads", "Media", "Events"]] = None,
-            extract_depth: Literal["basic", "advanced"] = "basic",
+            extract_depth: Literal["basic", "advanced"] = None,
             timeout: int = 60,
             **kwargs
             ) -> dict:
@@ -237,7 +237,7 @@ class TavilyClient:
 
         if kwargs:
             data.update(kwargs)
-
+        
         timeout = min(timeout, 120)
 
         response = requests.post(
@@ -265,17 +265,17 @@ class TavilyClient:
 
     def crawl(self,
               url: str,
-              max_depth: int = 1,
-              max_breadth: int = 20,
-              limit: int = 50,
+              max_depth: int = None,
+              max_breadth: int = None,
+              limit: int = None,
               query: str = None,
               select_paths: Sequence[str] = None,
               select_domains: Sequence[str] = None,
-              allow_external: bool = False,
+              allow_external: bool = None,
               categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
                                            "Careers", "E-Commerce", "Developers", "Partners",
                                            "Downloads", "Media", "Events"]] = None,
-              extract_depth: Literal["basic", "advanced"] = "basic",
+              extract_depth: Literal["basic", "advanced"] = None,
               timeout: int = 60,
               **kwargs
               ) -> dict:
@@ -296,17 +296,96 @@ class TavilyClient:
                                     timeout=timeout,
                                     **kwargs)
 
-        data = response_dict.get("data", [])
-        metadata = response_dict.get("metadata", {})
-        config = response_dict.get("config", {})
-        success = response_dict.get("success", False)
-        error = response_dict.get("error", None)
+        return response_dict
+    
+    def _map(self,
+            url: str,
+            max_depth: int = None,
+            max_breadth: int = None,
+            limit: int = None,
+            query: str = None,
+            select_paths: Sequence[str] = None,
+            select_domains: Sequence[str] = None,
+            allow_external: bool = None,
+            categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
+                                        "Careers", "E-Commerce", "Developers", "Partners",
+                                        "Downloads", "Media", "Events"]] = None,
+            timeout: int = 60,
+            **kwargs
+            ) -> dict:
+        """
+        Internal map method to send the request to the API.
+        """
+        data = {
+            "url": url,
+            "max_depth": max_depth,
+            "max_breadth": max_breadth,
+            "limit": limit,
+            "query": query,
+            "select_paths": select_paths,
+            "select_domains": select_domains,
+            "allow_external": allow_external,
+            "categories": categories,
+        }
 
-        response_dict["data"] = data
-        response_dict["metadata"] = metadata
-        response_dict["config"] = config
-        response_dict["success"] = success
-        response_dict["error"] = error
+        if kwargs:
+            data.update(kwargs)
+        
+        timeout = min(timeout, 120)
+
+        response = requests.post(
+            self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            detail = ""
+            try:
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
+
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code in [403,432,433]:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError(detail)
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
+
+    def map(self,
+              url: str,
+              max_depth: int = None,
+              max_breadth: int = None,
+              limit: int = None,
+              query: str = None,
+              select_paths: Sequence[str] = None,
+              select_domains: Sequence[str] = None,
+              allow_external: bool = None,
+              categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
+                                           "Careers", "E-Commerce", "Developers", "Partners",
+                                           "Downloads", "Media", "Events"]] = None,
+              timeout: int = 60,
+              **kwargs
+              ) -> dict:
+        """
+        Combined map method.
+        """
+        timeout = min(timeout, 120)
+        response_dict = self._crawl(url,
+                                    max_depth=max_depth,
+                                    max_breadth=max_breadth,
+                                    limit=limit,
+                                    query=query,
+                                    select_paths=select_paths,
+                                    select_domains=select_domains,
+                                    allow_external=allow_external,
+                                    categories=categories,
+                                    timeout=timeout,
+                                    **kwargs)
 
         return response_dict
 
