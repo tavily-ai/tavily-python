@@ -375,7 +375,7 @@ class TavilyClient:
         Combined map method.
         """
         timeout = min(timeout, 120)
-        response_dict = self._crawl(url,
+        response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
