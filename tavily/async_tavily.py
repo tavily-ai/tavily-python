@@ -354,7 +354,7 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            response = await client.post("/map", content=json.dumps(data), timeout=timeout)
             if response.status_code == 200:
                 return response.json()
             else:
