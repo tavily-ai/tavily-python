@@ -229,6 +229,7 @@ class AsyncTavilyClient:
                select_paths: Sequence[str] = None,
                select_domains: Sequence[str] = None,
                allow_external: bool = None,
+               include_images: bool = None,
                categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
                                             "Careers", "E-Commerce", "Developers", "Partners",
                                             "Downloads", "Media", "Events"]] = None,
@@ -249,6 +250,7 @@ class AsyncTavilyClient:
             "select_domains": select_domains,
             "allow_external": allow_external,
             "categories": categories,
+            "include_images": include_images,
             "extract_depth": extract_depth,
         }
 
@@ -290,6 +292,7 @@ class AsyncTavilyClient:
                     select_paths: Sequence[str] = None,
                     select_domains: Sequence[str] = None,
                     allow_external: bool = None,
+                    include_images: bool = None,
                     categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
                                            "Careers", "E-Commerce", "Developers", "Partners",
                                            "Downloads", "Media", "Events"]] = None,
@@ -309,6 +312,7 @@ class AsyncTavilyClient:
                                     select_paths=select_paths,
                                     select_domains=select_domains,
                                     allow_external=allow_external,
+                                    include_images=include_images,
                                     categories=categories,
                                     extract_depth=extract_depth,
                                     timeout=timeout,
