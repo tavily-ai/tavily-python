@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='tavily-python',
-    version='0.7.0',
+    version='0.7.1',
     url='https://github.com/tavily-ai/tavily-python',
     author='Tavily AI',
     author_email='support@tavily.com',
