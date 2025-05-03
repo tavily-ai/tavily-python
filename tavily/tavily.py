@@ -208,7 +208,7 @@ class TavilyClient:
             max_depth: int = None,
             max_breadth: int = None,
             limit: int = None,
-            query: str = None,
+            instructions: str = None,
             select_paths: Sequence[str] = None,
             select_domains: Sequence[str] = None,
             exclude_paths: Sequence[str] = None,
@@ -228,7 +228,7 @@ class TavilyClient:
             "max_depth": max_depth,
             "max_breadth": max_breadth,
             "limit": limit,
-            "query": query,
+            "instructions": instructions,
             "select_paths": select_paths,
             "select_domains": select_domains,
             "exclude_paths": exclude_paths,
@@ -274,7 +274,7 @@ class TavilyClient:
               max_depth: int = None,
               max_breadth: int = None,
               limit: int = None,
-              query: str = None,
+              instructions: str = None,
               select_paths: Sequence[str] = None,
               select_domains: Sequence[str] = None,
               exclude_paths: Sequence[str] = None,
@@ -288,19 +288,19 @@ class TavilyClient:
               ) -> dict:
         """
         Combined crawl method.
+        
         """
         timeout = min(timeout, 120)
         response_dict = self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
-                                    query=query,
+                                    instructions=instructions,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
                                     exclude_paths=exclude_paths,
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
-                                    include_images=include_images,
                                     categories=categories,
                                     extract_depth=extract_depth,
                                     include_images=include_images,
@@ -314,7 +314,7 @@ class TavilyClient:
             max_depth: int = None,
             max_breadth: int = None,
             limit: int = None,
-            query: str = None,
+            instructions: str = None,
             select_paths: Sequence[str] = None,
             select_domains: Sequence[str] = None,
             exclude_paths: Sequence[str] = None,
@@ -333,7 +333,7 @@ class TavilyClient:
             "max_depth": max_depth,
             "max_breadth": max_breadth,
             "limit": limit,
-            "query": query,
+            "instructions": instructions,
             "select_paths": select_paths,
             "select_domains": select_domains,
             "exclude_paths": exclude_paths,
@@ -378,7 +378,7 @@ class TavilyClient:
               max_depth: int = None,
               max_breadth: int = None,
               limit: int = None,
-              query: str = None,
+              instructions: str = None,
               select_paths: Sequence[str] = None,
               select_domains: Sequence[str] = None,
               exclude_paths: Sequence[str] = None,
@@ -391,13 +391,14 @@ class TavilyClient:
               ) -> dict:
         """
         Combined map method.
+        
         """
         timeout = min(timeout, 120)
         response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
-                                    query=query,
+                                    instructions=instructions,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
                                     exclude_paths=exclude_paths,
