@@ -102,9 +102,9 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
-# Tavily Crawl (Invitational Beta)
+# Tavily Crawl (Open-Access Beta)
 
-Crawl lets you traverse a site like a graph starting from a base URL.
+Crawl lets you traverse a website's content starting from a base URL.
 
 > **Note**: Crawl is currently available on an invite-only basis. For more information, please visit [crawl.tavily.com](https://crawl.tavily.com)
 
@@ -112,7 +112,7 @@ Crawl lets you traverse a site like a graph starting from a base URL.
 
 Below are some code snippets that demonstrate how to interact with our Crawl API. Each step and component of this code is explained in greater detail in the API Methods section below.
 
-### Crawling a website with a query
+### Crawling a website with instructions
 
 ```python
 from tavily import TavilyClient
@@ -120,22 +120,54 @@ from tavily import TavilyClient
 # Step 1. Instantiating your TavilyClient
 tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
-# Step 2. Defining the starting URL and query
+# Step 2. Defining the starting URL
 start_url = "https://wikipedia.org/wiki/Lemon"
-search_term = "Find all pages on citrus fruits"
 
-# Step 3. Executing the crawl request with a query to surface only pages containing “remote”
+# Step 3. Executing the crawl request with instructions to surface only pages about citrus fruits
 response = tavily_client.crawl(
     url=start_url,
     max_depth=3,
     limit=50,
-    query=search_term
+    instructions="Find all pages on citrus fruits"
 )
 
 # Step 4. Printing pages matching the query
 for result in response["results"]:
     print(f"URL: {result['url']}")
     print(f"Snippet: {result['raw_content'][:200]}...\n")
+
+```
+
+# Tavily Map (Open-Access Beta)
+
+Map lets you discover and visualize the structure of a website starting from a base URL.
+
+## Usage
+
+Below are some code snippets that demonstrate how to interact with our Map API. Each step and component of this code is explained in greater detail in the API Methods section below.
+
+### Mapping a website with instructions
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Defining the starting URL
+start_url = "https://wikipedia.org/wiki/Lemon"
+
+# Step 3. Executing the map request with parameters to focus on specific pages
+response = tavily_client.map(
+    url=start_url,
+    max_depth=2,
+    limit=30,
+    instructions="Find pages on citrus fruits"
+)
+
+# Step 4. Printing the site structure
+for result in response["results"]:
+    print(f"URL: {result['url']}")
 
 ```
 

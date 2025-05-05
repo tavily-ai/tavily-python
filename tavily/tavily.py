@@ -6,7 +6,7 @@ from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
-
+from .config import AllowedCategory
 
 class TavilyClient:
     """
@@ -208,14 +208,14 @@ class TavilyClient:
             max_depth: int = None,
             max_breadth: int = None,
             limit: int = None,
-            query: str = None,
+            instructions: str = None,
             select_paths: Sequence[str] = None,
             select_domains: Sequence[str] = None,
+            exclude_paths: Sequence[str] = None,
+            exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
             include_images: bool = None,
-            categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
-                                        "Careers", "E-Commerce", "Developers", "Partners",
-                                        "Downloads", "Media", "Events"]] = None,
+            categories: Sequence[AllowedCategory] = None,
             extract_depth: Literal["basic", "advanced"] = None,
             timeout: int = 60,
             **kwargs
@@ -228,9 +228,11 @@ class TavilyClient:
             "max_depth": max_depth,
             "max_breadth": max_breadth,
             "limit": limit,
-            "query": query,
+            "instructions": instructions,
             "select_paths": select_paths,
             "select_domains": select_domains,
+            "exclude_paths": exclude_paths,
+            "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
             "categories": categories,
@@ -272,33 +274,36 @@ class TavilyClient:
               max_depth: int = None,
               max_breadth: int = None,
               limit: int = None,
-              query: str = None,
+              instructions: str = None,
               select_paths: Sequence[str] = None,
               select_domains: Sequence[str] = None,
+              exclude_paths: Sequence[str] = None,
+              exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
               include_images: bool = None,
-              categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
-                                           "Careers", "E-Commerce", "Developers", "Partners",
-                                           "Downloads", "Media", "Events"]] = None,
+              categories: Sequence[AllowedCategory] = None,
               extract_depth: Literal["basic", "advanced"] = None,
               timeout: int = 60,
               **kwargs
               ) -> dict:
         """
         Combined crawl method.
+        
         """
         timeout = min(timeout, 120)
         response_dict = self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
-                                    query=query,
+                                    instructions=instructions,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
+                                    exclude_paths=exclude_paths,
+                                    exclude_domains=exclude_domains,
                                     allow_external=allow_external,
-                                    include_images=include_images,
                                     categories=categories,
                                     extract_depth=extract_depth,
+                                    include_images=include_images,
                                     timeout=timeout,
                                     **kwargs)
 
@@ -309,13 +314,14 @@ class TavilyClient:
             max_depth: int = None,
             max_breadth: int = None,
             limit: int = None,
-            query: str = None,
+            instructions: str = None,
             select_paths: Sequence[str] = None,
             select_domains: Sequence[str] = None,
+            exclude_paths: Sequence[str] = None,
+            exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
-            categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
-                                        "Careers", "E-Commerce", "Developers", "Partners",
-                                        "Downloads", "Media", "Events"]] = None,
+            include_images: bool = None,
+            categories: Sequence[AllowedCategory] = None,
             timeout: int = 60,
             **kwargs
             ) -> dict:
@@ -327,10 +333,13 @@ class TavilyClient:
             "max_depth": max_depth,
             "max_breadth": max_breadth,
             "limit": limit,
-            "query": query,
+            "instructions": instructions,
             "select_paths": select_paths,
             "select_domains": select_domains,
+            "exclude_paths": exclude_paths,
+            "exclude_domains": exclude_domains,
             "allow_external": allow_external,
+            "include_images": include_images,
             "categories": categories,
         }
 
@@ -369,28 +378,33 @@ class TavilyClient:
               max_depth: int = None,
               max_breadth: int = None,
               limit: int = None,
-              query: str = None,
+              instructions: str = None,
               select_paths: Sequence[str] = None,
               select_domains: Sequence[str] = None,
+              exclude_paths: Sequence[str] = None,
+              exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
-              categories: Sequence[Literal["Documentation", "Blog", "About", "Contact", "Pricing",
-                                           "Careers", "E-Commerce", "Developers", "Partners",
-                                           "Downloads", "Media", "Events"]] = None,
+              include_images: bool = None,
+              categories: Sequence[AllowedCategory] = None,
               timeout: int = 60,
               **kwargs
               ) -> dict:
         """
         Combined map method.
+        
         """
         timeout = min(timeout, 120)
         response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
                                     limit=limit,
-                                    query=query,
+                                    instructions=instructions,
                                     select_paths=select_paths,
                                     select_domains=select_domains,
+                                    exclude_paths=exclude_paths,
+                                    exclude_domains=exclude_domains,
                                     allow_external=allow_external,
+                                    include_images=include_images,
                                     categories=categories,
                                     timeout=timeout,
                                     **kwargs)
