@@ -210,7 +210,7 @@ class TavilyHybridClient:
             combined_results = combined_results[:max_results]
 
         # Can't use 'not save_foreign' because save_foreign is not necessarily a boolean
-        if max_foreign > 0 and save_foreign != False:
+        if max_foreign > 0 and save_foreign != False:  # noqa: E712
             documents = []
             embeddings = self.embedding_function(
                 [result["content"] for result in foreign_results], "search_document"
@@ -218,7 +218,7 @@ class TavilyHybridClient:
             for i, result in enumerate(foreign_results):
                 result["embeddings"] = embeddings[i]
 
-                if save_foreign == True:
+                if save_foreign == True:  # noqa: E712
                     # No custom function provided, save as is
                     documents.append(
                         {
