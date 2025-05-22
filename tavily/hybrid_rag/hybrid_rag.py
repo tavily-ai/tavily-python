@@ -1,4 +1,3 @@
-import os
 from typing import Literal, Optional, Union
 
 from tavily import TavilyClient
