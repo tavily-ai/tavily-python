@@ -5,9 +5,26 @@ DEFAULT_MAX_TOKENS = 4000
 
 # Create a type that represents all allowed categories
 AllowedCategory = Literal[
-    "Documentation", "Blog", "Blogs", "Community", "About", "Contact", 
-    "Privacy", "Terms", "Status", "Pricing", "Enterprise", "Careers", 
-    "E-Commerce", "Authentication", "Developer", "Developers", "Solutions", 
-    "Partners", "Downloads", "Media", "Events", "People"
+    "Documentation",
+    "Blog",
+    "Blogs",
+    "Community",
+    "About",
+    "Contact",
+    "Privacy",
+    "Terms",
+    "Status",
+    "Pricing",
+    "Enterprise",
+    "Careers",
+    "E-Commerce",
+    "Authentication",
+    "Developer",
+    "Developers",
+    "Solutions",
+    "Partners",
+    "Downloads",
+    "Media",
+    "Events",
+    "People",
 ]
-
