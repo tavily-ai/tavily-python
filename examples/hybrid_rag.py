@@ -17,7 +17,7 @@ hybrid_rag = TavilyHybridClient(
 )
 
 
-def save_document(document):
+def save_document(document) -> dict | None:
     if document["score"] < 0.5:
         return None  # Do not save documents with low scores
 

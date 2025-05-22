@@ -1,25 +1,25 @@
 class UsageLimitExceededError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class BadRequestError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class ForbiddenError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class InvalidAPIKeyError(Exception):
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class MissingAPIKeyError(Exception):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             "No API key provided. Please provide the api_key attribute or set the TAVILY_API_KEY environment variable."
         )

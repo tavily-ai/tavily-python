@@ -26,7 +26,7 @@ class AsyncTavilyClient:
         api_key: Optional[str] = None,
         company_info_tags: Sequence[str] = ("news", "general", "finance"),
         proxies: Optional[dict[str, str]] = None,
-    ):
+    ) -> None:
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 

@@ -24,7 +24,7 @@ class TavilyClient:
 
     def __init__(
         self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None
-    ):
+    ) -> None:
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -580,7 +580,7 @@ class Client(TavilyClient):
     WARNING! This class is deprecated. Please use TavilyClient instead.
     """
 
-    def __init__(self, kwargs):
+    def __init__(self, kwargs) -> None:
         warnings.warn(
             "Client is deprecated, please use TavilyClient instead",
             DeprecationWarning,

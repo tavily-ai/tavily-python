@@ -11,7 +11,7 @@ except:
     co = None
 
 
-def _validate_index(client):
+def _validate_index(client) -> None:
     """
     Check that the index specified by the parameters exists and is a valid vector search index.
 
@@ -64,7 +64,7 @@ def _cohere_embed(texts, type):
     return co.embed(model="embed-english-v3.0", texts=texts, input_type=type).embeddings
 
 
-def _cohere_rerank(query, documents, top_n):
+def _cohere_rerank(query, documents, top_n) -> list:
     response = co.rerank(
         model="rerank-english-v3.0",
         query=query,
@@ -89,7 +89,7 @@ class TavilyHybridClient:
         content_field: str = "content",
         embedding_function: Optional[callable] = None,
         ranking_function: Optional[callable] = None,
-    ):
+    ) -> None:
         """
         A client for performing hybrid RAG using both the Tavily API and a local database collection.
 

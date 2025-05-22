@@ -39,7 +39,7 @@ You must answer short and concise without opening remarks.
 REMEMBER: If there is no relevant information within the context for a given param, you must answer with "None". For example: company_name: None.
 """
 
-print(f"Calling OpenAI to extract information...")
+print("Calling OpenAI to extract information...")
 chat_completion = openai_client.chat.completions.create(
     messages=[
         {
