@@ -1,3 +1,27 @@
+"""
+Asynchronous Tavily API Client Implementation.
+
+This module provides an asynchronous Python client for interacting with the Tavily API,
+offering non-blocking operations for web search, content extraction, web crawling,
+and more. The client uses httpx for asynchronous HTTP requests.
+
+The main class `AsyncTavilyClient` provides methods for:
+- Asynchronous web search with customizable parameters
+- Asynchronous content extraction from URLs
+- Asynchronous web crawling with configurable depth and breadth
+- Asynchronous site mapping
+- Asynchronous question answering
+- Asynchronous company information retrieval
+
+Example:
+    >>> import asyncio
+    >>> async def main():
+    ...     client = AsyncTavilyClient(api_key="your-api-key")
+    ...     results = await client.search("Python programming")
+    ...     print(results)
+    >>> asyncio.run(main())
+"""
+
 import asyncio
 import json
 import os
@@ -27,6 +51,19 @@ class AsyncTavilyClient:
         company_info_tags: Sequence[str] = ("news", "general", "finance"),
         proxies: Optional[dict[str, str]] = None,
     ) -> None:
+        """Initialize the asynchronous Tavily client.
+
+        Args:
+            api_key (Optional[str]): The Tavily API key. If not provided, will be
+                read from the TAVILY_API_KEY environment variable.
+            company_info_tags (Sequence[str]): Tags to use for company information
+                searches. Defaults to ("news", "general", "finance").
+            proxies (Optional[dict[str, str]]): Proxy configuration for requests.
+                Can include 'http' and 'https' keys.
+
+        Raises:
+            MissingAPIKeyError: If no API key is provided and TAVILY_API_KEY is not set.
+        """
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -77,8 +114,33 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,
     ) -> dict:
-        """
-        Internal search method to send the request to the API.
+        """Internal method to perform an asynchronous search request to the Tavily API.
+
+        Args:
+            query (str): The search query string.
+            search_depth (Literal["basic", "advanced"]): The depth of the search.
+                'basic' for quick results, 'advanced' for more comprehensive results.
+            topic (Literal["general", "news", "finance"]): The topic category for the search.
+            time_range (Optional[Literal["day", "week", "month", "year"]]): Time range for results.
+            days (int): Number of days to look back for results.
+            max_results (int): Maximum number of results to return.
+            include_domains (Optional[Sequence[str]]): List of domains to include in results.
+            exclude_domains (Optional[Sequence[str]]): List of domains to exclude from results.
+            include_answer (Union[bool, Literal["basic", "advanced"]]): Whether to include an AI-generated answer.
+            include_raw_content (bool): Whether to include raw content in results.
+            include_images (bool): Whether to include images in results.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: The API response containing search results.
+
+        Raises:
+            UsageLimitExceededError: If API usage limit is exceeded.
+            ForbiddenError: If the request is forbidden.
+            InvalidAPIKeyError: If the API key is invalid.
+            BadRequestError: If the request is malformed.
+            httpx.HTTPError: For other HTTP errors.
         """
         data = {
             "query": query,
@@ -140,8 +202,30 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,  # Accept custom arguments
     ) -> dict:
-        """
-        Combined search method. Set search_depth to either "basic" or "advanced".
+        """Perform an asynchronous search using the Tavily API.
+
+        This method provides a high-level interface for performing asynchronous web
+        searches with various customization options.
+
+        Args:
+            query (str): The search query string.
+            search_depth (Literal["basic", "advanced"]): The depth of the search.
+                'basic' for quick results, 'advanced' for more comprehensive results.
+            topic (Literal["general", "news", "finance"]): The topic category for the search.
+            time_range (Optional[Literal["day", "week", "month", "year"]]): Time range for results.
+            days (int): Number of days to look back for results.
+            max_results (int): Maximum number of results to return.
+            include_domains (Optional[Sequence[str]]): List of domains to include in results.
+            exclude_domains (Optional[Sequence[str]]): List of domains to exclude from results.
+            include_answer (Union[bool, Literal["basic", "advanced"]]): Whether to include an AI-generated answer.
+            include_raw_content (bool): Whether to include raw content in results.
+            include_images (bool): Whether to include images in results.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: A dictionary containing the search results and metadata.
+
         """
         timeout = min(timeout, 120)
         response_dict = await self._search(
@@ -174,8 +258,25 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,
     ) -> dict:
-        """
-        Internal extract method to send the request to the API.
+        """Internal method to perform an asynchronous content extraction request.
+
+        Args:
+            urls (Union[List[str], str]): A single URL or list of URLs to extract content from.
+            include_images (bool): Whether to include images in the extracted content.
+            extract_depth (Literal["basic", "advanced"]): The depth of content extraction.
+                'basic' for main content only, 'advanced' for more comprehensive extraction.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: The API response containing extracted content.
+
+        Raises:
+            UsageLimitExceededError: If API usage limit is exceeded.
+            ForbiddenError: If the request is forbidden.
+            InvalidAPIKeyError: If the API key is invalid.
+            BadRequestError: If the request is malformed.
+            httpx.HTTPError: For other HTTP errors.
         """
         data = {
             "urls": urls,
@@ -220,8 +321,23 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,  # Accept custom arguments
     ) -> dict:
-        """
-        Combined extract method.
+        """Extract content from one or more URLs using the Tavily API asynchronously.
+
+        This method provides a high-level interface for performing asynchronous content
+        extraction from web pages, with options for controlling the extraction depth
+        and including images.
+
+        Args:
+            urls (Union[List[str], str]): A single URL or list of URLs to extract content from.
+            include_images (bool): Whether to include images in the extracted content.
+            extract_depth (Literal["basic", "advanced"]): The depth of content extraction.
+                'basic' for main content only, 'advanced' for more comprehensive extraction.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: A dictionary containing the extracted content and metadata.
+
         """
         timeout = min(timeout, 120)
         response_dict = await self._extract(
@@ -258,8 +374,34 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,
     ) -> dict:
-        """
-        Internal crawl method to send the request to the API.
+        """Internal method to perform an asynchronous website crawl request.
+
+        Args:
+            url (str): The starting URL for the crawl.
+            max_depth (Optional[int]): Maximum depth of the crawl.
+            max_breadth (Optional[int]): Maximum number of pages to crawl at each depth.
+            limit (Optional[int]): Maximum total number of pages to crawl.
+            instructions (Optional[str]): Custom instructions for the crawler.
+            select_paths (Optional[Sequence[str]]): URL patterns to include in the crawl.
+            select_domains (Optional[Sequence[str]]): Domains to include in the crawl.
+            exclude_paths (Optional[Sequence[str]]): URL patterns to exclude from the crawl.
+            exclude_domains (Optional[Sequence[str]]): Domains to exclude from the crawl.
+            allow_external (Optional[bool]): Whether to allow crawling external domains.
+            include_images (Optional[bool]): Whether to include images in the crawl.
+            categories (Optional[Sequence[AllowedCategory]]): Content categories to include.
+            extract_depth (Optional[Literal["basic", "advanced"]]): Depth of content extraction.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: The API response containing crawl results.
+
+        Raises:
+            UsageLimitExceededError: If API usage limit is exceeded.
+            ForbiddenError: If the request is forbidden.
+            InvalidAPIKeyError: If the API key is invalid.
+            BadRequestError: If the request is malformed.
+            httpx.HTTPError: For other HTTP errors.
         """
         data = {
             "url": url,
@@ -326,9 +468,44 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,
     ) -> dict:
-        """
-        Combined crawl method.
+        """Crawl a website using the Tavily API asynchronously.
 
+        This method provides a high-level interface for performing asynchronous website
+        crawling with various customization options for controlling the crawl behavior
+        and content extraction.
+
+        Args:
+            url (str): The starting URL for the crawl.
+            max_depth (Optional[int]): Maximum depth of the crawl.
+            max_breadth (Optional[int]): Maximum number of pages to crawl at each depth.
+            limit (Optional[int]): Maximum total number of pages to crawl.
+            instructions (Optional[str]): Custom instructions for the crawler.
+            select_paths (Optional[Sequence[str]]): URL patterns to include in the crawl.
+            select_domains (Optional[Sequence[str]]): Domains to include in the crawl.
+            exclude_paths (Optional[Sequence[str]]): URL patterns to exclude from the crawl.
+            exclude_domains (Optional[Sequence[str]]): Domains to exclude from the crawl.
+            allow_external (Optional[bool]): Whether to allow crawling external domains.
+            include_images (Optional[bool]): Whether to include images in the crawl.
+            categories (Optional[Sequence[AllowedCategory]]): Content categories to include.
+            extract_depth (Optional[Literal["basic", "advanced"]]): Depth of content extraction.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            dict: A dictionary containing the crawl results and metadata.
+
+        Example:
+            >>> import asyncio
+            >>> async def main():
+            ...     client = AsyncTavilyClient(api_key="your-api-key")
+            ...     results = await client.crawl(
+            ...         url="https://example.com",
+            ...         max_depth=2,
+            ...         max_breadth=10,
+            ...         include_images=True
+            ...     )
+            ...     print(results["pages"])
+            >>> asyncio.run(main())
         """
         timeout = min(timeout, 120)
         response_dict = await self._crawl(
@@ -471,13 +648,27 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,  # Accept custom arguments
     ) -> str:
-        """
-        Get the search context for a query. Useful for getting only related content from retrieved websites
+        """Get a contextual summary of search results for a query asynchronously. Useful for getting only related content from retrieved websites
         without having to deal with context extraction and limitation yourself.
 
-        max_tokens: The maximum number of tokens to return (based on openai token compute). Defaults to 4000.
+        This method performs an asynchronous search and returns a concise summary
+        of the most relevant information found, formatted as a context string.
 
-        Returns a string of JSON containing the search context up to context limit.
+        Args:
+            query (str): The search query string.
+            search_depth (Literal["basic", "advanced"]): The depth of the search.
+            topic (Literal["general", "news", "finance"]): The topic category for the search.
+            days (int): Number of days to look back for results.
+            max_results (int): Maximum number of results to include in the context.
+            include_domains (Optional[Sequence[str]]): List of domains to include in results.
+            exclude_domains (Optional[Sequence[str]]): List of domains to exclude from results.
+            max_tokens (int): Maximum number of tokens in the generated context.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            str: A string containing the contextual summary of search results.
+
         """
         timeout = min(timeout, 120)
         response_dict = await self._search(
@@ -512,8 +703,35 @@ class AsyncTavilyClient:
         timeout: int = 60,
         **kwargs,  # Accept custom arguments
     ) -> str:
-        """
-        Q&A search method. Search depth is advanced by default to get the best answer.
+        """Perform an asynchronous question-answering search using the Tavily API.
+
+        This method performs an asynchronous search and returns a direct answer to
+        the query, synthesized from the most relevant search results. Search depth is advanced by default to get the best answer.
+
+        Args:
+            query (str): The question to answer.
+            search_depth (Literal["basic", "advanced"]): The depth of the search.
+            topic (Literal["general", "news", "finance"]): The topic category for the search.
+            days (int): Number of days to look back for results.
+            max_results (int): Maximum number of results to consider for the answer.
+            include_domains (Optional[Sequence[str]]): List of domains to include in results.
+            exclude_domains (Optional[Sequence[str]]): List of domains to exclude from results.
+            timeout (int): Request timeout in seconds.
+            **kwargs: Additional parameters to pass to the API.
+
+        Returns:
+            str: A string containing the answer to the query.
+
+        Example:
+            >>> import asyncio
+            >>> async def main():
+            ...     client = AsyncTavilyClient(api_key="your-api-key")
+            ...     answer = await client.qna_search(
+            ...         query="What is the capital of France?",
+            ...         search_depth="advanced"
+            ...     )
+            ...     print(answer)
+            >>> asyncio.run(main())
         """
         timeout = min(timeout, 120)
         response_dict = await self._search(
@@ -539,7 +757,21 @@ class AsyncTavilyClient:
         max_results: int = 5,
         timeout: int = 60,
     ) -> Sequence[dict]:
-        """Company information search method. Search depth is advanced by default to get the best answer."""
+        """Get comprehensive information about a company asynchronously. Search depth is advanced by default to get the best answer.
+
+        This method performs an asynchronous specialized search to gather detailed
+        information about a company, including its description, financial data,
+        and recent news.
+
+        Args:
+            query (str): The company name or identifier to search for.
+            search_depth (Literal["basic", "advanced"]): The depth of the search.
+            max_results (int): Maximum number of results to return.
+            timeout (int): Request timeout in seconds.
+
+        Returns:
+            Sequence[dict]: A sequence of dictionaries containing company information.
+        """
         timeout = min(timeout, 120)
 
         async def _perform_search(topic: str):
