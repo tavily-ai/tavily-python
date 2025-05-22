@@ -12,14 +12,6 @@ The main class `AsyncTavilyClient` provides methods for:
 - Asynchronous site mapping
 - Asynchronous question answering
 - Asynchronous company information retrieval
-
-Example:
-    >>> import asyncio
-    >>> async def main():
-    ...     client = AsyncTavilyClient(api_key="your-api-key")
-    ...     results = await client.search("Python programming")
-    ...     print(results)
-    >>> asyncio.run(main())
 """
 
 import asyncio
@@ -493,19 +485,6 @@ class AsyncTavilyClient:
 
         Returns:
             dict: A dictionary containing the crawl results and metadata.
-
-        Example:
-            >>> import asyncio
-            >>> async def main():
-            ...     client = AsyncTavilyClient(api_key="your-api-key")
-            ...     results = await client.crawl(
-            ...         url="https://example.com",
-            ...         max_depth=2,
-            ...         max_breadth=10,
-            ...         include_images=True
-            ...     )
-            ...     print(results["pages"])
-            >>> asyncio.run(main())
         """
         timeout = min(timeout, 120)
         response_dict = await self._crawl(
@@ -722,16 +701,6 @@ class AsyncTavilyClient:
         Returns:
             str: A string containing the answer to the query.
 
-        Example:
-            >>> import asyncio
-            >>> async def main():
-            ...     client = AsyncTavilyClient(api_key="your-api-key")
-            ...     answer = await client.qna_search(
-            ...         query="What is the capital of France?",
-            ...         search_depth="advanced"
-            ...     )
-            ...     print(answer)
-            >>> asyncio.run(main())
         """
         timeout = min(timeout, 120)
         response_dict = await self._search(
