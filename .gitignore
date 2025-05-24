@@ -8,3 +8,4 @@ tests/
 .egg
 *.egg-info/
 dist/
+venv/

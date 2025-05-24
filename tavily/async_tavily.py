@@ -6,7 +6,7 @@ from typing import Literal, Sequence, Optional, List, Union
 import httpx
 
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 from .config import AllowedCategory
 
 
@@ -88,7 +88,10 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/search", content=json.dumps(data), timeout=timeout)
+            try:
+                response = await client.post("/search", content=json.dumps(data), timeout=timeout)
+            except httpx.TimeoutException:
+                raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
@@ -172,7 +175,10 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
+            try:
+                response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
+            except httpx.TimeoutException:
+                raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
@@ -265,7 +271,11 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            try:
+                response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            except httpx.TimeoutException:
+                raise TimeoutError("Request timed out")
+
             if response.status_code == 200:
                 return response.json()
             else:
@@ -368,7 +378,11 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
-            response = await client.post("/map", content=json.dumps(data), timeout=timeout)
+            try:
+                response = await client.post("/map", content=json.dumps(data), timeout=timeout)
+            except httpx.TimeoutException:
+                raise TimeoutError("Request timed out")
+
             if response.status_code == 200:
                 return response.json()
             else:
