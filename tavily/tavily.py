@@ -5,7 +5,7 @@ import os
 from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 from .config import AllowedCategory
 
 class TavilyClient:
@@ -73,7 +73,10 @@ class TavilyClient:
 
         timeout = min(timeout, 120)
 
-        response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        try:
+            response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        except requests.exceptions.Timeout:
+            raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
@@ -92,6 +95,7 @@ class TavilyClient:
                 raise InvalidAPIKeyError(detail)
             elif response.status_code == 400:
                 raise BadRequestError(detail)
+            
             else:
                 raise response.raise_for_status()
 
@@ -156,7 +160,10 @@ class TavilyClient:
 
         timeout = min(timeout, 120)
 
-        response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        try:
+            response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        except requests.exceptions.Timeout:
+            raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
@@ -246,8 +253,11 @@ class TavilyClient:
     
         timeout = min(timeout, 120)
 
-        response = requests.post(
-            self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        try:
+            response = requests.post(
+                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        except requests.exceptions.Timeout:
+            raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
@@ -350,8 +360,11 @@ class TavilyClient:
 
         timeout = min(timeout, 120)
 
-        response = requests.post(
-            self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        try:
+            response = requests.post(
+                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+        except requests.exceptions.Timeout:
+            raise TimeoutError("Request timed out")
 
         if response.status_code == 200:
             return response.json()
