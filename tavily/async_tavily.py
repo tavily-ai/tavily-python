@@ -91,7 +91,7 @@ class AsyncTavilyClient:
             try:
                 response = await client.post("/search", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
-                raise TimeoutError("Request timed out")
+                raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -178,7 +178,7 @@ class AsyncTavilyClient:
             try:
                 response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
-                raise TimeoutError("Request timed out")
+                raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -274,7 +274,7 @@ class AsyncTavilyClient:
             try:
                 response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
-                raise TimeoutError("Request timed out")
+                raise TimeoutError(timeout)
 
             if response.status_code == 200:
                 return response.json()
@@ -381,7 +381,7 @@ class AsyncTavilyClient:
             try:
                 response = await client.post("/map", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
-                raise TimeoutError("Request timed out")
+                raise TimeoutError(timeout)
 
             if response.status_code == 200:
                 return response.json()

@@ -76,7 +76,7 @@ class TavilyClient:
         try:
             response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
-            raise TimeoutError("Request timed out")
+            raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -163,7 +163,7 @@ class TavilyClient:
         try:
             response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
-            raise TimeoutError("Request timed out")
+            raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -257,7 +257,7 @@ class TavilyClient:
             response = requests.post(
                 self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
-            raise TimeoutError("Request timed out")
+            raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
@@ -364,7 +364,7 @@ class TavilyClient:
             response = requests.post(
                 self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
-            raise TimeoutError("Request timed out")
+            raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
