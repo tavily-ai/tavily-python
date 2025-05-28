@@ -89,6 +89,11 @@ class InvalidAPIKeyError(Exception):
         """
         super().__init__(message)
 
+        
+class TimeoutError(Exception):
+    def __init__(self, timeout: int):
+        super().__init__(f"Request timed out after {timeout} seconds.")
+
 
 class MissingAPIKeyError(Exception):
     """Exception raised when no API key is provided.
