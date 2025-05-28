@@ -2,10 +2,12 @@
 # Step 2: Install Tavily Python SDK with pip install tavily-python
 # Step 3: Build an OpenAI assistant with Python SDK documentation - https://platform.openai.com/docs/assistants/overview
 
-import os
 import json
+import os
 import time
+
 from openai import OpenAI
+
 from tavily import TavilyClient
 
 # Initialize clients with API keys
@@ -19,10 +21,14 @@ You should never use your own knowledge to answer questions.
 Please include relevant url sources in the end of your answers.
 """
 
+
 # Function to perform a Tavily search
 def tavily_search(query):
-    search_result = tavily_client.get_search_context(query, search_depth="advanced", max_tokens=8000)
+    search_result = tavily_client.get_search_context(
+        query, search_depth="advanced", max_tokens=8000
+    )
     return search_result
+
 
 # Function to wait for a run to complete
 def wait_for_run_completion(thread_id, run_id):
@@ -30,8 +36,9 @@ def wait_for_run_completion(thread_id, run_id):
         time.sleep(1)
         run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
         print(f"Current run status: {run.status}")
-        if run.status in ['completed', 'failed', 'requires_action']:
+        if run.status in ["completed", "failed", "requires_action"]:
             return run
+
 
 # Function to handle tool output submission
 def submit_tool_outputs(thread_id, run_id, tools_to_call):
@@ -49,10 +56,9 @@ def submit_tool_outputs(thread_id, run_id, tools_to_call):
             tool_output_array.append({"tool_call_id": tool_call_id, "output": output})
 
     return client.beta.threads.runs.submit_tool_outputs(
-        thread_id=thread_id,
-        run_id=run_id,
-        tool_outputs=tool_output_array
+        thread_id=thread_id, run_id=run_id, tool_outputs=tool_output_array
     )
+
 
 # Function to print messages from a thread
 def print_messages_from_thread(thread_id):
@@ -60,24 +66,30 @@ def print_messages_from_thread(thread_id):
     for msg in messages:
         print(f"{msg.role}: {msg.content[0].text.value}")
 
+
 # Create an assistant
 assistant = client.beta.assistants.create(
     instructions=assistant_prompt_instruction,
     model="gpt-4-1106-preview",
-    tools=[{
-        "type": "function",
-        "function": {
-            "name": "tavily_search",
-            "description": "Get information on recent events from the web.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "The search query to use. For example: 'Latest news on Nvidia stock performance'"},
+    tools=[
+        {
+            "type": "function",
+            "function": {
+                "name": "tavily_search",
+                "description": "Get information on recent events from the web.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The search query to use. For example: 'Latest news on Nvidia stock performance'",
+                        },
+                    },
+                    "required": ["query"],
                 },
-                "required": ["query"]
-            }
+            },
         }
-    }]
+    ],
 )
 assistant_id = assistant.id
 print(f"Assistant ID: {assistant_id}")
@@ -89,7 +101,7 @@ print(f"Thread: {thread}")
 # Ongoing conversation loop
 while True:
     user_input = input("You: ")
-    if user_input.lower() == 'exit':
+    if user_input.lower() == "exit":
         break
 
     # Create a message
@@ -109,13 +121,14 @@ while True:
     # Wait for run to complete
     run = wait_for_run_completion(thread.id, run.id)
 
-    if run.status == 'failed':
+    if run.status == "failed":
         print(run.error)
         continue
-    elif run.status == 'requires_action':
-        run = submit_tool_outputs(thread.id, run.id, run.required_action.submit_tool_outputs.tool_calls)
+    elif run.status == "requires_action":
+        run = submit_tool_outputs(
+            thread.id, run.id, run.required_action.submit_tool_outputs.tool_calls
+        )
         run = wait_for_run_completion(thread.id, run.id)
 
     # Print messages from the thread
     print_messages_from_thread(thread.id)
-
