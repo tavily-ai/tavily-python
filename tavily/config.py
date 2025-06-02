@@ -10,4 +10,3 @@ AllowedCategory = Literal[
     "E-Commerce", "Authentication", "Developer", "Developers", "Solutions", 
     "Partners", "Downloads", "Media", "Events", "People"
 ]
-
