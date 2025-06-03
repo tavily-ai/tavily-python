@@ -70,4 +70,3 @@ def clear_interceptor(tavily):
 
     if hasattr(tavily, 'httpx'):
         tavily.httpx.AsyncClient.post = vanilla_async_post
-    
