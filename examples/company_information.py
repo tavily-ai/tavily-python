@@ -1,5 +1,7 @@
 import os
+
 from openai import OpenAI
+
 from tavily import TavilyClient
 
 # Initialize clients with API keys
@@ -8,8 +10,12 @@ tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
 
 query = "Information about Nvidia (nvidia.com)"
 
-print(f"Calling Tavily company retrieval with query: {query}...\n[Note]: Using 'advanced' may take up to 10 seconds.")
-context = tavily_client.get_company_info(query=query, search_depth="advanced", max_results=7)
+print(
+    f"Calling Tavily company retrieval with query: {query}...\n[Note]: Using 'advanced' may take up to 10 seconds."
+)
+context = tavily_client.get_company_info(
+    query=query, search_depth="advanced", max_results=7
+)
 
 PROMPT = f"""
 You are a business analyst tasked with collecting and summarizing company information and insights from a given context.
@@ -33,7 +39,7 @@ You must answer short and concise without opening remarks.
 REMEMBER: If there is no relevant information within the context for a given param, you must answer with "None". For example: company_name: None.
 """
 
-print(f"Calling OpenAI to extract information...")
+print("Calling OpenAI to extract information...")
 chat_completion = openai_client.chat.completions.create(
     messages=[
         {
