@@ -1,11 +1,14 @@
+# Build artifacts
 build/
-.docusaurus/
-node_modules/
-.DS_Store
-__pycache__/
-.env
-tests/
+dist/
 .egg
 *.egg-info/
-dist/
+
+# Cache
+__pycache__/
+.pytest_cache/
+
+# Other
+.DS_Store
+.env
 venv/
