@@ -47,6 +47,7 @@ class TavilyClient:
                 include_answer: Union[bool, Literal["basic", "advanced"]] = False,
                 include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                 include_images: bool = False,
+                country: str = None,
                 timeout: int = 60,
                 **kwargs
                 ) -> dict:
@@ -66,6 +67,7 @@ class TavilyClient:
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
             "include_images": include_images,
+            "country": country,
         }
 
         if kwargs:
@@ -112,6 +114,7 @@ class TavilyClient:
                include_answer: Union[bool, Literal["basic", "advanced"]] = False,
                include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                include_images: bool = False,
+               country: str = None,
                timeout: int = 60,
                **kwargs,  # Accept custom arguments
                ) -> dict:
@@ -130,6 +133,7 @@ class TavilyClient:
                                      include_answer=include_answer,
                                      include_raw_content=include_raw_content,
                                      include_images=include_images,
+                                     country=country,
                                      timeout=timeout,
                                      **kwargs,
                                      )
