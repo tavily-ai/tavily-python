@@ -73,7 +73,7 @@ class AsyncTavilyClient:
             "query": query,
             "search_depth": search_depth,
             "topic": topic,
-            "time_range'": time_range,
+            "time_range": time_range,
             "days": days,
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
