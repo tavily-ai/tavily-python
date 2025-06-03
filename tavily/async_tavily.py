@@ -60,7 +60,7 @@ class AsyncTavilyClient:
             include_domains: Sequence[str] = None,
             exclude_domains: Sequence[str] = None,
             include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-            include_raw_content: bool = False,
+            include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
             include_images: bool = False,
             timeout: int = 60,
             **kwargs,
@@ -123,7 +123,7 @@ class AsyncTavilyClient:
                      include_domains: Sequence[str] = None,
                      exclude_domains: Sequence[str] = None,
                      include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-                     include_raw_content: bool = False,
+                     include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                      include_images: bool = False,
                      timeout: int = 60,
                      **kwargs,  # Accept custom arguments
@@ -158,6 +158,7 @@ class AsyncTavilyClient:
             urls: Union[List[str], str],
             include_images: bool = False,
             extract_depth: Literal["basic", "advanced"] = "basic",
+            format: Literal["markdown", "text"] = "markdown",
             timeout: int = 60,
             **kwargs
     ) -> dict:
@@ -168,6 +169,7 @@ class AsyncTavilyClient:
             "urls": urls,
             "include_images": include_images,
             "extract_depth": extract_depth,
+            "format": format,
         }
         if kwargs:
             data.update(kwargs)
@@ -205,6 +207,7 @@ class AsyncTavilyClient:
                       urls: Union[List[str], str],  # Accept a list of URLs or a single URL
                       include_images: bool = False,
                       extract_depth: Literal["basic", "advanced"] = "basic",
+                      format: Literal["markdown", "text"] = "markdown",
                       timeout: int = 60,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
@@ -215,6 +218,7 @@ class AsyncTavilyClient:
         response_dict = await self._extract(urls,
                                             include_images,
                                             extract_depth,
+                                            format,
                                             timeout,
                                             **kwargs,
                                             )
@@ -241,6 +245,7 @@ class AsyncTavilyClient:
                include_images: bool = None,
                categories: Sequence[AllowedCategory] = None,
                extract_depth: Literal["basic", "advanced"] = None,
+               format: Literal["markdown", "text"] = None,
                timeout: int = 60,
                **kwargs
                ) -> dict:
@@ -261,6 +266,7 @@ class AsyncTavilyClient:
             "categories": categories,
             "include_images": include_images,
             "extract_depth": extract_depth,
+            "format": format
         }
 
         if kwargs:
@@ -310,6 +316,7 @@ class AsyncTavilyClient:
                     categories: Sequence[AllowedCategory] = None,
                     extract_depth: Literal["basic", "advanced"] = None,
                     include_images: bool = None,
+                    format: Literal["markdown", "text"] = None,
                     timeout: int = 60,
                     **kwargs
                     ) -> dict:
@@ -331,6 +338,7 @@ class AsyncTavilyClient:
                                     categories=categories,
                                     extract_depth=extract_depth,
                                     include_images=include_images,
+                                    format=format,
                                     timeout=timeout,
                                     **kwargs)
 
