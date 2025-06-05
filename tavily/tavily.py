@@ -48,6 +48,7 @@ class TavilyClient:
                 include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                 include_images: bool = False,
                 timeout: int = 60,
+                country: str = None,
                 **kwargs
                 ) -> dict:
         """
@@ -66,6 +67,7 @@ class TavilyClient:
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
             "include_images": include_images,
+            "country": country,
         }
 
         if kwargs:
@@ -113,6 +115,7 @@ class TavilyClient:
                include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                include_images: bool = False,
                timeout: int = 60,
+               country: str = None,
                **kwargs,  # Accept custom arguments
                ) -> dict:
         """
@@ -131,6 +134,7 @@ class TavilyClient:
                                      include_raw_content=include_raw_content,
                                      include_images=include_images,
                                      timeout=timeout,
+                                     country=country,
                                      **kwargs,
                                      )
 
@@ -442,6 +446,7 @@ class TavilyClient:
                            exclude_domains: Sequence[str] = None,
                            max_tokens: int = 4000,
                            timeout: int = 60,
+                           country: str = None,
                            **kwargs,  # Accept custom arguments
                            ) -> str:
         """
@@ -464,6 +469,7 @@ class TavilyClient:
                                      include_raw_content=False,
                                      include_images=False,
                                      timeout=timeout,
+                                     country=country,
                                      **kwargs,
                                      )
         sources = response_dict.get("results", [])
@@ -480,6 +486,7 @@ class TavilyClient:
                    include_domains: Sequence[str] = None,
                    exclude_domains: Sequence[str] = None,
                    timeout: int = 60,
+                   country: str = None,
                    **kwargs,  # Accept custom arguments
                    ) -> str:
         """
@@ -497,6 +504,7 @@ class TavilyClient:
                                      include_images=False,
                                      include_answer=True,
                                      timeout=timeout,
+                                     country=country,
                                      **kwargs,
                                      )
         return response_dict.get("answer", "")
@@ -507,6 +515,7 @@ class TavilyClient:
                                                "advanced"] = "advanced",
                          max_results: int = 5,
                          timeout: int = 60,
+                         country: str = None,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
         timeout = min(timeout, 120)
@@ -516,7 +525,8 @@ class TavilyClient:
                                 topic=topic,
                                 max_results=max_results,
                                 include_answer=False,
-                                timeout=timeout)
+                                timeout=timeout,
+                                country=country)
 
         with ThreadPoolExecutor() as executor:
             # Initiate the search for each topic in parallel

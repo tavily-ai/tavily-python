@@ -63,6 +63,7 @@ class AsyncTavilyClient:
             include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
             include_images: bool = False,
             timeout: int = 60,
+            country: str = None,
             **kwargs,
     ) -> dict:
         """
@@ -80,6 +81,7 @@ class AsyncTavilyClient:
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
             "include_images": include_images,
+            "country": country,
         }
 
         if kwargs:
@@ -126,6 +128,7 @@ class AsyncTavilyClient:
                      include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                      include_images: bool = False,
                      timeout: int = 60,
+                     country: str = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -144,6 +147,7 @@ class AsyncTavilyClient:
                                            include_raw_content=include_raw_content,
                                            include_images=include_images,
                                            timeout=timeout,
+                                           country=country,
                                            **kwargs,
                                            )
 
@@ -459,6 +463,7 @@ class AsyncTavilyClient:
                                  exclude_domains: Sequence[str] = None,
                                  max_tokens: int = 4000,
                                  timeout: int = 60,
+                                 country: str = None,
                                  **kwargs,  # Accept custom arguments
                                  ) -> str:
         """
@@ -481,6 +486,7 @@ class AsyncTavilyClient:
                                            include_raw_content=False,
                                            include_images=False,
                                            timeout = timeout,
+                                           country=country,
                                            **kwargs,
                                            )
         sources = response_dict.get("results", [])
@@ -496,6 +502,7 @@ class AsyncTavilyClient:
                          include_domains: Sequence[str] = None,
                          exclude_domains: Sequence[str] = None,
                          timeout: int = 60,
+                         country: str = None,
                          **kwargs,  # Accept custom arguments
                          ) -> str:
         """
@@ -513,6 +520,7 @@ class AsyncTavilyClient:
                                            include_images=False,
                                            include_answer=True,
                                            timeout = timeout,
+                                           country=country,
                                            **kwargs,
                                            )
         return response_dict.get("answer", "")
@@ -522,6 +530,7 @@ class AsyncTavilyClient:
                                search_depth: Literal["basic", "advanced"] = "advanced",
                                max_results: int = 5,
                                timeout: int = 60,
+                               country: str = None,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
         timeout = min(timeout, 120)
@@ -532,7 +541,8 @@ class AsyncTavilyClient:
                                       topic=topic,
                                       max_results=max_results,
                                       include_answer=False,
-                                      timeout = timeout)
+                                      timeout = timeout,
+                                      country=country)
 
         all_results = []
         for data in await asyncio.gather(*[_perform_search(topic) for topic in self._company_info_tags]):
