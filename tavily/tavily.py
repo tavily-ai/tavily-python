@@ -45,7 +45,7 @@ class TavilyClient:
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
                 include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-                include_raw_content: bool = False,
+                include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                 include_images: bool = False,
                 timeout: int = 60,
                 country: str = None,
@@ -112,7 +112,7 @@ class TavilyClient:
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
                include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-               include_raw_content: bool = False,
+               include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
                include_images: bool = False,
                timeout: int = 60,
                country: str = None,
@@ -148,6 +148,7 @@ class TavilyClient:
                  urls: Union[List[str], str],
                  include_images: bool = False,
                  extract_depth: Literal["basic", "advanced"] = "basic",
+                 format: Literal["markdown", "text"] = "markdown",
                  timeout: int = 60,
                  **kwargs
                  ) -> dict:
@@ -158,6 +159,7 @@ class TavilyClient:
             "urls": urls,
             "include_images": include_images,
             "extract_depth": extract_depth,
+            "format": format,
         }
         if kwargs:
             data.update(kwargs)
@@ -193,6 +195,7 @@ class TavilyClient:
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
                 include_images: bool = False,
                 extract_depth: Literal["basic", "advanced"] = "basic",
+                format: Literal["markdown", "text"] = "markdown",
                 timeout: int = 60,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
@@ -203,6 +206,7 @@ class TavilyClient:
         response_dict = self._extract(urls,
                                       include_images,
                                       extract_depth,
+                                      format,
                                       timeout,
                                       **kwargs)
 
@@ -228,6 +232,7 @@ class TavilyClient:
             include_images: bool = None,
             categories: Sequence[AllowedCategory] = None,
             extract_depth: Literal["basic", "advanced"] = None,
+            format: Literal["markdown", "text"] = None,
             timeout: int = 60,
             **kwargs
             ) -> dict:
@@ -248,6 +253,7 @@ class TavilyClient:
             "include_images": include_images,
             "categories": categories,
             "extract_depth": extract_depth,
+            "format": format
         }
 
         if kwargs:
@@ -297,6 +303,7 @@ class TavilyClient:
               include_images: bool = None,
               categories: Sequence[AllowedCategory] = None,
               extract_depth: Literal["basic", "advanced"] = None,
+              format: Literal["markdown", "text"] = None,
               timeout: int = 60,
               **kwargs
               ) -> dict:
@@ -315,9 +322,10 @@ class TavilyClient:
                                     exclude_paths=exclude_paths,
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
+                                    include_images=include_images,
                                     categories=categories,
                                     extract_depth=extract_depth,
-                                    include_images=include_images,
+                                    format=format,
                                     timeout=timeout,
                                     **kwargs)
 
