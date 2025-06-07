@@ -20,11 +20,21 @@ class TavilyClient:
         if not api_key:
             raise MissingAPIKeyError()
 
+        # Initialize with environment variables first
         resolved_proxies = {
-            "http": proxies.get("http") if proxies else os.getenv("TAVILY_HTTP_PROXY"),
-            "https": proxies.get("https") if proxies else os.getenv("TAVILY_HTTPS_PROXY"),
+            "http": os.getenv("TAVILY_HTTP_PROXY"),
+            "https": os.getenv("TAVILY_HTTPS_PROXY"),
         }
+        
+        # Update with provided proxies if any
+        if proxies:
 
+            if "http" in proxies:
+                resolved_proxies["http"] = proxies["http"]
+            if "https" in proxies:
+                resolved_proxies["https"] = proxies["https"]
+                
+        # Remove None values and convert to None if empty
         resolved_proxies = {k: v for k, v in resolved_proxies.items() if v} or None
 
         self.base_url = "https://api.tavily.com"
