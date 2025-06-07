@@ -555,7 +555,7 @@ class Client(TavilyClient):
     WARNING! This class is deprecated. Please use TavilyClient instead.
     """
 
-    def __init__(self, kwargs):
+    def __init__(self, api_key: str):
         warnings.warn("Client is deprecated, please use TavilyClient instead",
                       DeprecationWarning, stacklevel=2)
-        super().__init__(kwargs)
+        super().__init__(api_key)
