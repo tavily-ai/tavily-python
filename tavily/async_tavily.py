@@ -42,7 +42,8 @@ class AsyncTavilyClient:
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}"
+                "Authorization": f"Bearer {api_key}",
+                "X-Client-Source": "tavily-python"
             },
             base_url="https://api.tavily.com",
             mounts=proxy_mounts
