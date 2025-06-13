@@ -32,7 +32,8 @@ class TavilyClient:
         self.proxies = resolved_proxies
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
+            "Authorization": f"Bearer {self.api_key}",
+            "X-Client-Source": "tavily-python"
         }
 
     def _search(self,

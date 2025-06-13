@@ -16,6 +16,7 @@ def validate_default(request, response):
     assert request.method == "POST"
     assert request.url == "https://api.tavily.com/crawl"
     assert request.headers["Authorization"] == "Bearer tvly-test"
+    assert request.headers["X-Client-Source"] == "tavily-python"
     assert request.json().get('url') == "https://tavily.com"
     assert response == dummy_response
 
@@ -23,6 +24,7 @@ def validate_specific(request, response):
     assert request.method == "POST"
     assert request.url == "https://api.tavily.com/crawl"
     assert request.headers["Authorization"] == "Bearer tvly-test"
+    assert request.headers["X-Client-Source"] == "tavily-python"
     assert request.timeout == 10
     
     request_json = request.json()
