@@ -38,16 +38,16 @@ class TavilyClient:
 
     def _search(self,
                 query: str,
-                search_depth: Literal["basic", "advanced"] = "basic",
-                topic: Literal["general", "news", "finance"] = "general",
+                search_depth: Literal["basic", "advanced"] = None,
+                topic: Literal["general", "news", "finance"] = None,
                 time_range: Literal["day", "week", "month", "year"] = None,
-                days: int = 7,
-                max_results: int = 5,
+                days: int = None,
+                max_results: int = None,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
-                include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-                include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
-                include_images: bool = False,
+                include_answer: Union[bool, Literal["basic", "advanced"]] = None,
+                include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
+                include_images: bool = None,
                 timeout: int = 60,
                 country: str = None,
                 **kwargs
@@ -105,16 +105,16 @@ class TavilyClient:
 
     def search(self,
                query: str,
-               search_depth: Literal["basic", "advanced"] = "basic",
-               topic: Literal["general", "news", "finance" ] = "general",
+               search_depth: Literal["basic", "advanced"] = None,
+               topic: Literal["general", "news", "finance" ] = None,
                time_range: Literal["day", "week", "month", "year"] = None,
-               days: int = 7,
-               max_results: int = 5,
+               days: int = None,
+               max_results: int = None,
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
-               include_answer: Union[bool, Literal["basic", "advanced"]] = False,
-               include_raw_content: Union[bool, Literal["markdown", "text"]] = False,
-               include_images: bool = False,
+               include_answer: Union[bool, Literal["basic", "advanced"]] = None,
+               include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
+               include_images: bool = None,
                timeout: int = 60,
                country: str = None,
                **kwargs,  # Accept custom arguments
@@ -147,9 +147,9 @@ class TavilyClient:
 
     def _extract(self,
                  urls: Union[List[str], str],
-                 include_images: bool = False,
-                 extract_depth: Literal["basic", "advanced"] = "basic",
-                 format: Literal["markdown", "text"] = "markdown",
+                 include_images: bool = None,
+                 extract_depth: Literal["basic", "advanced"] = None,
+                 format: Literal["markdown", "text"] = None,
                  timeout: int = 60,
                  **kwargs
                  ) -> dict:
@@ -194,9 +194,9 @@ class TavilyClient:
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
-                include_images: bool = False,
-                extract_depth: Literal["basic", "advanced"] = "basic",
-                format: Literal["markdown", "text"] = "markdown",
+                include_images: bool = None,
+                extract_depth: Literal["basic", "advanced"] = None,
+                format: Literal["markdown", "text"] = None,
                 timeout: int = 60,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
