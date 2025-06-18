@@ -71,6 +71,8 @@ class TavilyClient:
             "country": country,
         }
 
+        data = {k: v for k, v in data.items() if v is not None}
+
         if kwargs:
             data.update(kwargs)
 
@@ -162,6 +164,9 @@ class TavilyClient:
             "extract_depth": extract_depth,
             "format": format,
         }
+
+        data = {k: v for k, v in data.items() if v is not None}
+
         if kwargs:
             data.update(kwargs)
 

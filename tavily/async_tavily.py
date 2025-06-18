@@ -85,6 +85,8 @@ class AsyncTavilyClient:
             "country": country,
         }
 
+        data = {k: v for k, v in data.items() if v is not None}
+
         if kwargs:
             data.update(kwargs)
 
@@ -176,6 +178,9 @@ class AsyncTavilyClient:
             "extract_depth": extract_depth,
             "format": format,
         }
+
+        data = {k: v for k, v in data.items() if v is not None}
+
         if kwargs:
             data.update(kwargs)
 
