@@ -36,6 +36,34 @@ class TavilyClient:
             "X-Client-Source": "tavily-python"
         }
 
+    def _raise_for_status_secure(self, response):
+        """
+        Secure version of response.raise_for_status() that prevents API key exposure.
+        
+        This method sanitizes the error message to remove sensitive information like
+        API keys from Authorization headers before raising the exception.
+        
+        Security Note: This prevents API key exposure in logs, error tracking systems,
+        and debug output when HTTP errors occur.
+        """
+        if response.status_code >= 400:
+            # Create a sanitized error message without exposing sensitive headers
+            error_msg = f"{response.status_code} {response.reason} for url: {response.url}"
+            
+            # Create the appropriate exception type based on status code
+            if response.status_code == 400:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+            elif response.status_code == 401:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+            elif response.status_code == 403:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+            elif response.status_code == 404:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+            elif response.status_code >= 500:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+            else:
+                raise requests.exceptions.HTTPError(error_msg, response=response)
+
     def _search(self,
                 query: str,
                 search_depth: Literal["basic", "advanced"] = None,
@@ -102,7 +130,7 @@ class TavilyClient:
                 raise BadRequestError(detail)
             
             else:
-                raise response.raise_for_status()
+                self._raise_for_status_secure(response)
 
 
     def search(self,
@@ -195,7 +223,7 @@ class TavilyClient:
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
-                raise response.raise_for_status()
+                self._raise_for_status_secure(response)
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
@@ -293,7 +321,7 @@ class TavilyClient:
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
-                raise response.raise_for_status()
+                self._raise_for_status_secure(response)
 
     def crawl(self,
               url: str,
@@ -402,7 +430,7 @@ class TavilyClient:
             elif response.status_code == 400:
                 raise BadRequestError(detail)
             else:
-                raise response.raise_for_status()
+                self._raise_for_status_secure(response)
 
     def map(self,
               url: str,
