@@ -65,6 +65,7 @@ class AsyncTavilyClient:
             include_images: bool = None,
             timeout: int = 60,
             country: str = None,
+            auto_parameters: bool = None,
             **kwargs,
     ) -> dict:
         """
@@ -83,6 +84,7 @@ class AsyncTavilyClient:
             "exclude_domains": exclude_domains,
             "include_images": include_images,
             "country": country,
+            "auto_parameters": auto_parameters,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -132,6 +134,7 @@ class AsyncTavilyClient:
                      include_images: bool = None,
                      timeout: int = 60,
                      country: str = None,
+                     auto_parameters: bool = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -151,6 +154,7 @@ class AsyncTavilyClient:
                                            include_images=include_images,
                                            timeout=timeout,
                                            country=country,
+                                           auto_parameters=auto_parameters,
                                            **kwargs,
                                            )
 
