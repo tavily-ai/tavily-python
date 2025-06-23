@@ -5,9 +5,9 @@ from typing import Literal, Sequence, Optional, List, Union
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, normalize_content_encoding
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
-from .config import AllowedCategory
+from .config import AllowedCategory, DEFAULT_NORMALIZE_CONTENT_ENCODING
 
 
 class AsyncTavilyClient:
@@ -17,7 +17,8 @@ class AsyncTavilyClient:
 
     def __init__(self, api_key: Optional[str] = None,
                  company_info_tags: Sequence[str] = ("news", "general", "finance"),
-                 proxies: Optional[dict[str, str]] = None):
+                 proxies: Optional[dict[str, str]] = None,
+                 normalize_content: bool = DEFAULT_NORMALIZE_CONTENT_ENCODING):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -49,6 +50,7 @@ class AsyncTavilyClient:
             mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
+        self.normalize_content = normalize_content
 
     async def _search(
             self,
@@ -101,7 +103,11 @@ class AsyncTavilyClient:
                 raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
@@ -197,7 +203,11 @@ class AsyncTavilyClient:
                 raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
@@ -297,7 +307,11 @@ class AsyncTavilyClient:
                 raise TimeoutError(timeout)
 
             if response.status_code == 200:
-                return response.json()
+                response_data = response.json()
+                # Apply UTF-8 content normalization if enabled
+                if self.normalize_content:
+                    response_data = normalize_content_encoding(response_data)
+                return response_data
             else:
                 detail = ""
                 try:
@@ -406,7 +420,11 @@ class AsyncTavilyClient:
                 raise TimeoutError(timeout)
 
             if response.status_code == 200:
-                return response.json()
+                response_data = response.json()
+                # Apply UTF-8 content normalization if enabled
+                if self.normalize_content:
+                    response_data = normalize_content_encoding(response_data)
+                return response_data
             else:
                 detail = ""
                 try:
