@@ -4,16 +4,17 @@ import warnings
 import os
 from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, normalize_content_encoding
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
-from .config import AllowedCategory
+from .config import AllowedCategory, DEFAULT_NORMALIZE_CONTENT_ENCODING
 
 class TavilyClient:
     """
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, 
+                 normalize_content: bool = DEFAULT_NORMALIZE_CONTENT_ENCODING):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -30,6 +31,7 @@ class TavilyClient:
         self.base_url = "https://api.tavily.com"
         self.api_key = api_key
         self.proxies = resolved_proxies
+        self.normalize_content = normalize_content
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
@@ -86,7 +88,11 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
@@ -182,7 +188,11 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
@@ -280,7 +290,11 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
@@ -389,7 +403,11 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            response_data = response.json()
+            # Apply UTF-8 content normalization if enabled
+            if self.normalize_content:
+                response_data = normalize_content_encoding(response_data)
+            return response_data
         else:
             detail = ""
             try:
