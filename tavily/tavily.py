@@ -13,7 +13,7 @@ class TavilyClient:
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -27,7 +27,7 @@ class TavilyClient:
 
         resolved_proxies = {k: v for k, v in resolved_proxies.items() if v} or None
 
-        self.base_url = "https://api.tavily.com"
+        self.base_url = api_base_url or "https://api.tavily.com"
         self.api_key = api_key
         self.proxies = resolved_proxies
         self.headers = {
