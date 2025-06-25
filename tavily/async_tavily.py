@@ -17,7 +17,8 @@ class AsyncTavilyClient:
 
     def __init__(self, api_key: Optional[str] = None,
                  company_info_tags: Sequence[str] = ("news", "general", "finance"),
-                 proxies: Optional[dict[str, str]] = None):
+                 proxies: Optional[dict[str, str]] = None,
+                 api_base_url: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -39,13 +40,14 @@ class AsyncTavilyClient:
             else None
         )
 
+        self._api_base_url = api_base_url or "https://api.tavily.com"
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}",
                 "X-Client-Source": "tavily-python"
             },
-            base_url="https://api.tavily.com",
+            base_url=self._api_base_url,
             mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
