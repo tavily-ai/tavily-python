@@ -51,6 +51,7 @@ class TavilyClient:
                 timeout: int = 60,
                 country: str = None,
                 auto_parameters: bool = None,
+                include_favicon: bool = None,
                 **kwargs
                 ) -> dict:
         """
@@ -71,6 +72,7 @@ class TavilyClient:
             "include_images": include_images,
             "country": country,
             "auto_parameters": auto_parameters,
+            "include_favicon": include_favicon,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -122,6 +124,7 @@ class TavilyClient:
                timeout: int = 60,
                country: str = None,
                auto_parameters: bool = None,
+               include_favicon: bool = None,
                **kwargs,  # Accept custom arguments
                ) -> dict:
         """
@@ -142,6 +145,7 @@ class TavilyClient:
                                      timeout=timeout,
                                      country=country,
                                      auto_parameters=auto_parameters,
+                                     include_favicon=include_favicon,
                                      **kwargs,
                                      )
 
@@ -157,16 +161,18 @@ class TavilyClient:
                  extract_depth: Literal["basic", "advanced"] = None,
                  format: Literal["markdown", "text"] = None,
                  timeout: int = 60,
+                 include_favicon: bool = None,
                  **kwargs
                  ) -> dict:
         """
-        Internal extract method to send the request to the API.
+        Internal extract method to send the request to the API. 
         """
         data = {
             "urls": urls,
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
+            "include_favicon": include_favicon,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -207,6 +213,7 @@ class TavilyClient:
                 extract_depth: Literal["basic", "advanced"] = None,
                 format: Literal["markdown", "text"] = None,
                 timeout: int = 60,
+                include_favicon: bool = None,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
         """
@@ -218,6 +225,7 @@ class TavilyClient:
                                       extract_depth,
                                       format,
                                       timeout,
+                                      include_favicon=include_favicon,
                                       **kwargs)
 
         tavily_results = response_dict.get("results", [])
@@ -457,6 +465,7 @@ class TavilyClient:
                            max_tokens: int = 4000,
                            timeout: int = 60,
                            country: str = None,
+                           include_favicon: bool = None,
                            **kwargs,  # Accept custom arguments
                            ) -> str:
         """
@@ -480,6 +489,7 @@ class TavilyClient:
                                      include_images=False,
                                      timeout=timeout,
                                      country=country,
+                                     include_favicon=include_favicon,
                                      **kwargs,
                                      )
         sources = response_dict.get("results", [])
@@ -497,6 +507,7 @@ class TavilyClient:
                    exclude_domains: Sequence[str] = None,
                    timeout: int = 60,
                    country: str = None,
+                   include_favicon: bool = None,
                    **kwargs,  # Accept custom arguments
                    ) -> str:
         """
@@ -515,6 +526,7 @@ class TavilyClient:
                                      include_answer=True,
                                      timeout=timeout,
                                      country=country,
+                                     include_favicon=include_favicon,
                                      **kwargs,
                                      )
         return response_dict.get("answer", "")
