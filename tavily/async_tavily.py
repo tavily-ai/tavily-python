@@ -17,7 +17,8 @@ class AsyncTavilyClient:
 
     def __init__(self, api_key: Optional[str] = None,
                  company_info_tags: Sequence[str] = ("news", "general", "finance"),
-                 proxies: Optional[dict[str, str]] = None):
+                 proxies: Optional[dict[str, str]] = None,
+                 api_base_url: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -39,13 +40,14 @@ class AsyncTavilyClient:
             else None
         )
 
+        self._api_base_url = api_base_url or "https://api.tavily.com"
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}",
                 "X-Client-Source": "tavily-python"
             },
-            base_url="https://api.tavily.com",
+            base_url=self._api_base_url,
             mounts=proxy_mounts
         )
         self._company_info_tags = company_info_tags
@@ -66,6 +68,7 @@ class AsyncTavilyClient:
             timeout: int = 60,
             country: str = None,
             auto_parameters: bool = None,
+            include_favicon: bool = None,
             **kwargs,
     ) -> dict:
         """
@@ -85,6 +88,7 @@ class AsyncTavilyClient:
             "include_images": include_images,
             "country": country,
             "auto_parameters": auto_parameters,
+            "include_favicon": include_favicon,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -135,6 +139,7 @@ class AsyncTavilyClient:
                      timeout: int = 60,
                      country: str = None,
                      auto_parameters: bool = None,
+                     include_favicon: bool = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -155,6 +160,7 @@ class AsyncTavilyClient:
                                            timeout=timeout,
                                            country=country,
                                            auto_parameters=auto_parameters,
+                                           include_favicon=include_favicon,
                                            **kwargs,
                                            )
 
@@ -171,16 +177,19 @@ class AsyncTavilyClient:
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
             timeout: int = 60,
+            include_favicon: bool = None,
             **kwargs
     ) -> dict:
         """
         Internal extract method to send the request to the API.
+        include_favicon: If True, include the favicon in the extraction results.
         """
         data = {
             "urls": urls,
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
+            "include_favicon": include_favicon,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -223,10 +232,12 @@ class AsyncTavilyClient:
                       extract_depth: Literal["basic", "advanced"] = None,
                       format: Literal["markdown", "text"] = None,
                       timeout: int = 60,
+                      include_favicon: bool = None,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
         """
         Combined extract method.
+        include_favicon: If True, include the favicon in the extraction results.
         """
         timeout = min(timeout, 120)
         response_dict = await self._extract(urls,
@@ -234,6 +245,7 @@ class AsyncTavilyClient:
                                             extract_depth,
                                             format,
                                             timeout,
+                                            include_favicon=include_favicon,
                                             **kwargs,
                                             )
 
@@ -261,6 +273,7 @@ class AsyncTavilyClient:
                extract_depth: Literal["basic", "advanced"] = None,
                format: Literal["markdown", "text"] = None,
                timeout: int = 60,
+               include_favicon: bool = None,
                **kwargs
                ) -> dict:
         """
@@ -280,7 +293,8 @@ class AsyncTavilyClient:
             "categories": categories,
             "include_images": include_images,
             "extract_depth": extract_depth,
-            "format": format
+            "format": format,
+            "include_favicon": include_favicon,
         }
 
         if kwargs:
@@ -332,6 +346,7 @@ class AsyncTavilyClient:
                     include_images: bool = None,
                     format: Literal["markdown", "text"] = None,
                     timeout: int = 60,
+                    include_favicon: bool = None,
                     **kwargs
                     ) -> dict:
         """
@@ -354,6 +369,7 @@ class AsyncTavilyClient:
                                     include_images=include_images,
                                     format=format,
                                     timeout=timeout,
+                                    include_favicon=include_favicon,
                                     **kwargs)
 
         return response_dict
@@ -474,6 +490,7 @@ class AsyncTavilyClient:
                                  max_tokens: int = 4000,
                                  timeout: int = 60,
                                  country: str = None,
+                                 include_favicon: bool = None,
                                  **kwargs,  # Accept custom arguments
                                  ) -> str:
         """
@@ -497,6 +514,7 @@ class AsyncTavilyClient:
                                            include_images=False,
                                            timeout = timeout,
                                            country=country,
+                                           include_favicon=include_favicon,
                                            **kwargs,
                                            )
         sources = response_dict.get("results", [])
@@ -513,6 +531,7 @@ class AsyncTavilyClient:
                          exclude_domains: Sequence[str] = None,
                          timeout: int = 60,
                          country: str = None,
+                         include_favicon: bool = None,
                          **kwargs,  # Accept custom arguments
                          ) -> str:
         """
@@ -531,6 +550,7 @@ class AsyncTavilyClient:
                                            include_answer=True,
                                            timeout = timeout,
                                            country=country,
+                                           include_favicon=include_favicon,
                                            **kwargs,
                                            )
         return response_dict.get("answer", "")
