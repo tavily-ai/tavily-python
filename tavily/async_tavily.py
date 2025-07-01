@@ -273,6 +273,7 @@ class AsyncTavilyClient:
                extract_depth: Literal["basic", "advanced"] = None,
                format: Literal["markdown", "text"] = None,
                timeout: int = 60,
+               include_favicon: bool = None,
                **kwargs
                ) -> dict:
         """
@@ -293,6 +294,7 @@ class AsyncTavilyClient:
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
+            "include_favicon": include_favicon,
         }
 
         if kwargs:
@@ -344,6 +346,7 @@ class AsyncTavilyClient:
                     include_images: bool = None,
                     format: Literal["markdown", "text"] = None,
                     timeout: int = 60,
+                    include_favicon: bool = None,
                     **kwargs
                     ) -> dict:
         """
@@ -366,6 +369,7 @@ class AsyncTavilyClient:
                                     include_images=include_images,
                                     format=format,
                                     timeout=timeout,
+                                    include_favicon=include_favicon,
                                     **kwargs)
 
         return response_dict

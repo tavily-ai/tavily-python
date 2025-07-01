@@ -252,10 +252,12 @@ class TavilyClient:
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
             timeout: int = 60,
+            include_favicon: bool = None,
             **kwargs
             ) -> dict:
         """
         Internal crawl method to send the request to the API.
+        include_favicon: If True, include the favicon in the crawl results.
         """
         data = {
             "url": url,
@@ -271,7 +273,8 @@ class TavilyClient:
             "include_images": include_images,
             "categories": categories,
             "extract_depth": extract_depth,
-            "format": format
+            "format": format,
+            "include_favicon": include_favicon,
         }
 
         if kwargs:
@@ -323,11 +326,12 @@ class TavilyClient:
               extract_depth: Literal["basic", "advanced"] = None,
               format: Literal["markdown", "text"] = None,
               timeout: int = 60,
+              include_favicon: bool = None,
               **kwargs
               ) -> dict:
         """
         Combined crawl method.
-        
+        include_favicon: If True, include the favicon in the crawl results.
         """
         timeout = min(timeout, 120)
         response_dict = self._crawl(url,
@@ -345,6 +349,7 @@ class TavilyClient:
                                     extract_depth=extract_depth,
                                     format=format,
                                     timeout=timeout,
+                                    include_favicon=include_favicon,
                                     **kwargs)
 
         return response_dict
