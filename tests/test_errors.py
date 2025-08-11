@@ -11,10 +11,7 @@ def set_api_key():
     old_key = os.getenv("TAVILY_API_KEY")
     os.environ["TAVILY_API_KEY"] = "test_api_key"
     yield
-    if old_key is not None:
-        os.environ["TAVILY_API_KEY"] = old_key
-    else:
-        del os.environ["TAVILY_API_KEY"]
+    os.environ["TAVILY_API_KEY"] = old_key
 
 @pytest.fixture
 def clear_api_key():
