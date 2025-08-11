@@ -7,7 +7,6 @@ import httpx
 
 from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
-from .config import AllowedCategory
 
 
 class AsyncTavilyClient:
@@ -266,24 +265,23 @@ class AsyncTavilyClient:
         return response_dict
     
     async def _crawl(self,
-               url: str,
-               max_depth: int = None,
-               max_breadth: int = None,
-               limit: int = None,
-               instructions: str = None,
-               select_paths: Sequence[str] = None,
-               select_domains: Sequence[str] = None,
-               exclude_paths: Sequence[str] = None,
-               exclude_domains: Sequence[str] = None,
-               allow_external: bool = None,
-               include_images: bool = None,
-               categories: Sequence[AllowedCategory] = None,
-               extract_depth: Literal["basic", "advanced"] = None,
-               format: Literal["markdown", "text"] = None,
-               timeout: int = 60,
-               include_favicon: bool = None,
-               **kwargs
-               ) -> dict:
+            url: str,
+            max_depth: int = None,
+            max_breadth: int = None,
+            limit: int = None,
+            instructions: str = None,
+            select_paths: Sequence[str] = None,
+            select_domains: Sequence[str] = None,
+            exclude_paths: Sequence[str] = None,
+            exclude_domains: Sequence[str] = None,
+            allow_external: bool = None,
+            include_images: bool = None,
+            extract_depth: Literal["basic", "advanced"] = None,
+            format: Literal["markdown", "text"] = None,
+            timeout: int = 60,
+            include_favicon: bool = None,
+            **kwargs
+            ) -> dict:
         """
         Internal crawl method to send the request to the API.
         """
@@ -298,7 +296,6 @@ class AsyncTavilyClient:
             "exclude_paths": exclude_paths,
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
-            "categories": categories,
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
@@ -349,7 +346,6 @@ class AsyncTavilyClient:
                     exclude_paths: Sequence[str] = None,
                     exclude_domains: Sequence[str] = None,
                     allow_external: bool = None,
-                    categories: Sequence[AllowedCategory] = None,
                     extract_depth: Literal["basic", "advanced"] = None,
                     include_images: bool = None,
                     format: Literal["markdown", "text"] = None,
@@ -372,32 +368,29 @@ class AsyncTavilyClient:
                                     exclude_paths=exclude_paths,
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
-                                    categories=categories,
-                                    extract_depth=extract_depth,
                                     include_images=include_images,
+                                    extract_depth=extract_depth,
                                     format=format,
                                     timeout=timeout,
                                     include_favicon=include_favicon,
                                     **kwargs)
-
         return response_dict
     
     async def _map(self,
-               url: str,
-               max_depth: int = None,
-               max_breadth: int = None,
-               limit: int = None,
-               instructions: str = None,
-               select_paths: Sequence[str] = None,
-               select_domains: Sequence[str] = None,
-               exclude_paths: Sequence[str] = None,
-               exclude_domains: Sequence[str] = None,
-               allow_external: bool = None,
-               include_images: bool = None,
-               categories: Sequence[AllowedCategory] = None,
-               timeout: int = 60,
-               **kwargs
-               ) -> dict:
+            url: str,
+            max_depth: int = None,
+            max_breadth: int = None,
+            limit: int = None,
+            instructions: str = None,
+            select_paths: Sequence[str] = None,
+            select_domains: Sequence[str] = None,
+            exclude_paths: Sequence[str] = None,
+            exclude_domains: Sequence[str] = None,
+            allow_external: bool = None,
+            include_images: bool = None,
+            timeout: int = 60,
+            **kwargs
+            ) -> dict:
         """
         Internal map method to send the request to the API.
         """
@@ -413,7 +406,6 @@ class AsyncTavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
-            "categories": categories,
         }
 
         if kwargs:
@@ -461,13 +453,12 @@ class AsyncTavilyClient:
                     exclude_domains: Sequence[str] = None,
                     allow_external: bool = None,
                     include_images: bool = None,
-                    categories: Sequence[AllowedCategory] = None,
                     timeout: int = 60,
                     **kwargs
                     ) -> dict:
         """
         Combined map method.
-
+        
         """
         timeout = min(timeout, 120)
         response_dict = await self._map(url,
@@ -481,10 +472,8 @@ class AsyncTavilyClient:
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
                                     include_images=include_images,
-                                    categories=categories,
                                     timeout=timeout,
                                     **kwargs)
-
         return response_dict
 
     async def get_search_context(self,

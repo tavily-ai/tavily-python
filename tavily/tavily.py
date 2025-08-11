@@ -6,7 +6,6 @@ from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
-from .config import AllowedCategory
 
 class TavilyClient:
     """
@@ -256,7 +255,6 @@ class TavilyClient:
             exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
             include_images: bool = None,
-            categories: Sequence[AllowedCategory] = None,
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
             timeout: int = 60,
@@ -279,7 +277,6 @@ class TavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
-            "categories": categories,
             "extract_depth": extract_depth,
             "format": format,
             "include_favicon": include_favicon,
@@ -330,7 +327,6 @@ class TavilyClient:
               exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
               include_images: bool = None,
-              categories: Sequence[AllowedCategory] = None,
               extract_depth: Literal["basic", "advanced"] = None,
               format: Literal["markdown", "text"] = None,
               timeout: int = 60,
@@ -353,13 +349,11 @@ class TavilyClient:
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
                                     include_images=include_images,
-                                    categories=categories,
                                     extract_depth=extract_depth,
                                     format=format,
                                     timeout=timeout,
                                     include_favicon=include_favicon,
                                     **kwargs)
-
         return response_dict
     
     def _map(self,
@@ -374,7 +368,6 @@ class TavilyClient:
             exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
             include_images: bool = None,
-            categories: Sequence[AllowedCategory] = None,
             timeout: int = 60,
             **kwargs
             ) -> dict:
@@ -393,7 +386,6 @@ class TavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
-            "categories": categories,
         }
 
         if kwargs:
@@ -441,7 +433,6 @@ class TavilyClient:
               exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
               include_images: bool = None,
-              categories: Sequence[AllowedCategory] = None,
               timeout: int = 60,
               **kwargs
               ) -> dict:
@@ -461,10 +452,8 @@ class TavilyClient:
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
                                     include_images=include_images,
-                                    categories=categories,
                                     timeout=timeout,
                                     **kwargs)
-
         return response_dict
 
     def get_search_context(self,

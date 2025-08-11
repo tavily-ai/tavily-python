@@ -38,8 +38,7 @@ def validate_specific(request, response):
         "exclude_paths": ["/blog"],
         "exclude_domains": ["example.com"],
         "allow_external": False,
-        "include_images": True,
-        "categories": ["pricing", "documentation"]
+        "include_images": True
     }.items():
         assert request_json.get(key) == value
 
@@ -65,7 +64,6 @@ def test_sync_map_specific(sync_interceptor, sync_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        categories=["pricing", "documentation"],
         timeout=10
     )
 
@@ -92,7 +90,6 @@ def test_async_map_specific(async_interceptor, async_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        categories=["pricing", "documentation"],
         timeout=10
     ))
 
