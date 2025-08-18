@@ -221,7 +221,7 @@ class TavilyClient:
                 include_images: bool = None,
                 extract_depth: Literal["basic", "advanced"] = None,
                 format: Literal["markdown", "text"] = None,
-                timeout: int = 60,
+                timeout: int = 30,
                 include_favicon: bool = None,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
