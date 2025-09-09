@@ -7,7 +7,6 @@ import httpx
 
 from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
-from .config import AllowedCategory
 
 
 class AsyncTavilyClient:
@@ -278,7 +277,6 @@ class AsyncTavilyClient:
                exclude_domains: Sequence[str] = None,
                allow_external: bool = None,
                include_images: bool = None,
-               categories: Sequence[AllowedCategory] = None,
                extract_depth: Literal["basic", "advanced"] = None,
                format: Literal["markdown", "text"] = None,
                timeout: int = 60,
@@ -299,7 +297,6 @@ class AsyncTavilyClient:
             "exclude_paths": exclude_paths,
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
-            "categories": categories,
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
@@ -350,7 +347,6 @@ class AsyncTavilyClient:
                     exclude_paths: Sequence[str] = None,
                     exclude_domains: Sequence[str] = None,
                     allow_external: bool = None,
-                    categories: Sequence[AllowedCategory] = None,
                     extract_depth: Literal["basic", "advanced"] = None,
                     include_images: bool = None,
                     format: Literal["markdown", "text"] = None,
@@ -373,7 +369,6 @@ class AsyncTavilyClient:
                                     exclude_paths=exclude_paths,
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
-                                    categories=categories,
                                     extract_depth=extract_depth,
                                     include_images=include_images,
                                     format=format,
@@ -395,7 +390,6 @@ class AsyncTavilyClient:
                exclude_domains: Sequence[str] = None,
                allow_external: bool = None,
                include_images: bool = None,
-               categories: Sequence[AllowedCategory] = None,
                timeout: int = 60,
                **kwargs
                ) -> dict:
@@ -414,7 +408,6 @@ class AsyncTavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
-            "categories": categories,
         }
 
         if kwargs:
@@ -462,7 +455,6 @@ class AsyncTavilyClient:
                     exclude_domains: Sequence[str] = None,
                     allow_external: bool = None,
                     include_images: bool = None,
-                    categories: Sequence[AllowedCategory] = None,
                     timeout: int = 60,
                     **kwargs
                     ) -> dict:
@@ -482,7 +474,6 @@ class AsyncTavilyClient:
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
                                     include_images=include_images,
-                                    categories=categories,
                                     timeout=timeout,
                                     **kwargs)
 

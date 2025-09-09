@@ -40,7 +40,6 @@ def validate_specific(request, response):
         "exclude_domains": ["example.com"],
         "allow_external": False,
         "include_images": True,
-        "categories": ["pricing", "documentation"],
         "extract_depth": "advanced"
     }.items():
         assert request_json.get(key) == value
@@ -67,7 +66,6 @@ def test_sync_crawl_specific(sync_interceptor, sync_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        categories=["pricing", "documentation"],
         extract_depth="advanced",
         timeout=10
     )
@@ -95,7 +93,6 @@ def test_async_crawl_specific(async_interceptor, async_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        categories=["pricing", "documentation"],
         extract_depth="advanced",
         timeout=10
     ))
