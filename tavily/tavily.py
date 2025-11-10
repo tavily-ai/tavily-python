@@ -258,7 +258,7 @@ class TavilyClient:
             include_images: bool = None,
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
-            timeout: int = 60,
+            timeout: int = 150,
             include_favicon: bool = None,
             **kwargs
             ) -> dict:
@@ -280,6 +280,7 @@ class TavilyClient:
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
+            "timeout": timeout,
             "include_favicon": include_favicon,
         }
 
@@ -288,11 +289,11 @@ class TavilyClient:
         
         data = {k: v for k, v in data.items() if v is not None}
     
-        timeout = min(timeout, 120)
+        request_timeout = min(timeout, 150)
 
         try:
             response = requests.post(
-                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -330,7 +331,7 @@ class TavilyClient:
               include_images: bool = None,
               extract_depth: Literal["basic", "advanced"] = None,
               format: Literal["markdown", "text"] = None,
-              timeout: int = 60,
+              timeout: int = 150,
               include_favicon: bool = None,
               **kwargs
               ) -> dict:
@@ -338,7 +339,7 @@ class TavilyClient:
         Combined crawl method.
         include_favicon: If True, include the favicon in the crawl results.
         """
-        timeout = min(timeout, 120)
+        timeout = min(timeout, 150)
         response_dict = self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -370,7 +371,7 @@ class TavilyClient:
             exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
             include_images: bool = None,
-            timeout: int = 60,
+            timeout: int = 150,
             **kwargs
             ) -> dict:
         """
@@ -388,6 +389,7 @@ class TavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
+            "timeout": timeout,
         }
 
         if kwargs:
@@ -395,11 +397,11 @@ class TavilyClient:
         
         data = {k: v for k, v in data.items() if v is not None}
 
-        timeout = min(timeout, 120)
+        request_timeout = min(timeout, 150)
 
         try:
             response = requests.post(
-                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -435,14 +437,14 @@ class TavilyClient:
               exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
               include_images: bool = None,
-              timeout: int = 60,
+              timeout: int = 150,
               **kwargs
               ) -> dict:
         """
         Combined map method.
         
         """
-        timeout = min(timeout, 120)
+        timeout = min(timeout, 150)
         response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
