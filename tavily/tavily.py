@@ -258,7 +258,7 @@ class TavilyClient:
             include_images: bool = None,
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
-            timeout: int = 150,
+            timeout: float = 150,
             include_favicon: bool = None,
             **kwargs
             ) -> dict:
@@ -331,7 +331,7 @@ class TavilyClient:
               include_images: bool = None,
               extract_depth: Literal["basic", "advanced"] = None,
               format: Literal["markdown", "text"] = None,
-              timeout: int = 150,
+              timeout: float = 150,
               include_favicon: bool = None,
               **kwargs
               ) -> dict:
@@ -371,7 +371,7 @@ class TavilyClient:
             exclude_domains: Sequence[str] = None,
             allow_external: bool = None,
             include_images: bool = None,
-            timeout: int = 150,
+            timeout: float = 150,
             **kwargs
             ) -> dict:
         """
@@ -437,7 +437,7 @@ class TavilyClient:
               exclude_domains: Sequence[str] = None,
               allow_external: bool = None,
               include_images: bool = None,
-              timeout: int = 150,
+              timeout: float = 150,
               **kwargs
               ) -> dict:
         """
