@@ -279,7 +279,7 @@ class AsyncTavilyClient:
                include_images: bool = None,
                extract_depth: Literal["basic", "advanced"] = None,
                format: Literal["markdown", "text"] = None,
-               timeout: int = 60,
+               timeout: float = 150,
                include_favicon: bool = None,
                **kwargs
                ) -> dict:
@@ -300,6 +300,7 @@ class AsyncTavilyClient:
             "include_images": include_images,
             "extract_depth": extract_depth,
             "format": format,
+            "timeout": timeout,
             "include_favicon": include_favicon,
         }
 
@@ -308,11 +309,11 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        timeout = min(timeout, 120)
+        request_timeout = min(timeout, 150)
 
         async with self._client_creator() as client:
             try:
-                response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
+                response = await client.post("/crawl", content=json.dumps(data), timeout=request_timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -350,7 +351,7 @@ class AsyncTavilyClient:
                     extract_depth: Literal["basic", "advanced"] = None,
                     include_images: bool = None,
                     format: Literal["markdown", "text"] = None,
-                    timeout: int = 60,
+                    timeout: float = 150,
                     include_favicon: bool = None,
                     **kwargs
                     ) -> dict:
@@ -358,7 +359,7 @@ class AsyncTavilyClient:
         Combined crawl method.
         
         """
-        timeout = min(timeout, 120)
+        timeout = min(timeout, 150)
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -390,7 +391,7 @@ class AsyncTavilyClient:
                exclude_domains: Sequence[str] = None,
                allow_external: bool = None,
                include_images: bool = None,
-               timeout: int = 60,
+               timeout: float = 150,
                **kwargs
                ) -> dict:
         """
@@ -408,6 +409,7 @@ class AsyncTavilyClient:
             "exclude_domains": exclude_domains,
             "allow_external": allow_external,
             "include_images": include_images,
+            "timeout": timeout,
         }
 
         if kwargs:
@@ -415,11 +417,11 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        timeout = min(timeout, 120)
+        request_timeout = min(timeout, 150)
 
         async with self._client_creator() as client:
             try:
-                response = await client.post("/map", content=json.dumps(data), timeout=timeout)
+                response = await client.post("/map", content=json.dumps(data), timeout=request_timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -455,14 +457,14 @@ class AsyncTavilyClient:
                     exclude_domains: Sequence[str] = None,
                     allow_external: bool = None,
                     include_images: bool = None,
-                    timeout: int = 60,
+                    timeout: float = 150,
                     **kwargs
                     ) -> dict:
         """
         Combined map method.
 
         """
-        timeout = min(timeout, 120)
+        timeout = min(timeout, 150)
         response_dict = await self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
