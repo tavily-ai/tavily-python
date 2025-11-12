@@ -288,12 +288,10 @@ class TavilyClient:
             data.update(kwargs)
         
         data = {k: v for k, v in data.items() if v is not None}
-    
-        request_timeout = min(timeout, 150)
 
         try:
             response = requests.post(
-                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
+                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -339,7 +337,6 @@ class TavilyClient:
         Combined crawl method.
         include_favicon: If True, include the favicon in the crawl results.
         """
-        timeout = min(timeout, 150)
         response_dict = self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -397,11 +394,9 @@ class TavilyClient:
         
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         try:
             response = requests.post(
-                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
+                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -444,7 +439,6 @@ class TavilyClient:
         Combined map method.
         
         """
-        timeout = min(timeout, 150)
         response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,

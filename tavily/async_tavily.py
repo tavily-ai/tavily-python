@@ -309,11 +309,9 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         async with self._client_creator() as client:
             try:
-                response = await client.post("/crawl", content=json.dumps(data), timeout=request_timeout)
+                response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -359,7 +357,6 @@ class AsyncTavilyClient:
         Combined crawl method.
         
         """
-        timeout = min(timeout, 150)
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -417,11 +414,9 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         async with self._client_creator() as client:
             try:
-                response = await client.post("/map", content=json.dumps(data), timeout=request_timeout)
+                response = await client.post("/map", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -464,7 +459,6 @@ class AsyncTavilyClient:
         Combined map method.
 
         """
-        timeout = min(timeout, 150)
         response_dict = await self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
