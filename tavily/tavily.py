@@ -49,7 +49,7 @@ class TavilyClient:
                 include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                 include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                 include_images: bool = None,
-                timeout: int = 60,
+                timeout: float = 60,
                 country: str = None,
                 auto_parameters: bool = None,
                 include_favicon: bool = None,
@@ -126,7 +126,7 @@ class TavilyClient:
                include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                include_images: bool = None,
-               timeout: int = 60,
+               timeout: float = 60,
                country: str = None,
                auto_parameters: bool = None,
                include_favicon: bool = None,
@@ -135,7 +135,7 @@ class TavilyClient:
         """
         Combined search method.
         """
-        timeout = min(timeout, 120)
+
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -167,7 +167,7 @@ class TavilyClient:
                  include_images: bool = None,
                  extract_depth: Literal["basic", "advanced"] = None,
                  format: Literal["markdown", "text"] = None,
-                 timeout: int = 30,
+                 timeout: float = 30,
                  include_favicon: bool = None,
                  **kwargs
                  ) -> dict:
@@ -187,8 +187,6 @@ class TavilyClient:
 
         if kwargs:
             data.update(kwargs)
-
-        timeout = min(timeout, 120)
 
         try:
             response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
@@ -220,14 +218,13 @@ class TavilyClient:
                 include_images: bool = None,
                 extract_depth: Literal["basic", "advanced"] = None,
                 format: Literal["markdown", "text"] = None,
-                timeout: int = 30,
+                timeout: float = 30,
                 include_favicon: bool = None,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
         """
         Combined extract method.
         """
-        timeout = min(timeout, 120)
         response_dict = self._extract(urls,
                                       include_images,
                                       extract_depth,
@@ -288,12 +285,10 @@ class TavilyClient:
             data.update(kwargs)
         
         data = {k: v for k, v in data.items() if v is not None}
-    
-        request_timeout = min(timeout, 150)
 
         try:
             response = requests.post(
-                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
+                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -339,7 +334,6 @@ class TavilyClient:
         Combined crawl method.
         include_favicon: If True, include the favicon in the crawl results.
         """
-        timeout = min(timeout, 150)
         response_dict = self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -397,11 +391,9 @@ class TavilyClient:
         
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         try:
             response = requests.post(
-                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=request_timeout, proxies=self.proxies)
+                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -444,7 +436,6 @@ class TavilyClient:
         Combined map method.
         
         """
-        timeout = min(timeout, 150)
         response_dict = self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -470,7 +461,7 @@ class TavilyClient:
                            include_domains: Sequence[str] = None,
                            exclude_domains: Sequence[str] = None,
                            max_tokens: int = 4000,
-                           timeout: int = 60,
+                           timeout: float = 60,
                            country: str = None,
                            include_favicon: bool = None,
                            **kwargs,  # Accept custom arguments
@@ -483,7 +474,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-        timeout = min(timeout, 120)
+
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -512,7 +503,7 @@ class TavilyClient:
                    max_results: int = 5,
                    include_domains: Sequence[str] = None,
                    exclude_domains: Sequence[str] = None,
-                   timeout: int = 60,
+                   timeout: float = 60,
                    country: str = None,
                    include_favicon: bool = None,
                    **kwargs,  # Accept custom arguments
@@ -520,7 +511,6 @@ class TavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
-        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -543,11 +533,10 @@ class TavilyClient:
                          search_depth: Literal["basic",
                                                "advanced"] = "advanced",
                          max_results: int = 5,
-                         timeout: int = 60,
+                         timeout: float = 60,
                          country: str = None,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
-        timeout = min(timeout, 120)
         def _perform_search(topic):
             return self._search(query,
                                 search_depth=search_depth,

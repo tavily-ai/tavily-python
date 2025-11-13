@@ -66,7 +66,7 @@ class AsyncTavilyClient:
             include_answer: Union[bool, Literal["basic", "advanced"]] = None,
             include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
             include_images: bool = None,
-            timeout: int = 60,
+            timeout: float = 60,
             country: str = None,
             auto_parameters: bool = None,
             include_favicon: bool = None,
@@ -141,7 +141,7 @@ class AsyncTavilyClient:
                      include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                      include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                      include_images: bool = None,
-                     timeout: int = 60,
+                     timeout: float = 60,
                      country: str = None,
                      auto_parameters: bool = None,
                      include_favicon: bool = None,
@@ -183,7 +183,7 @@ class AsyncTavilyClient:
             include_images: bool = None,
             extract_depth: Literal["basic", "advanced"] = None,
             format: Literal["markdown", "text"] = None,
-            timeout: int = 30,
+            timeout: float = 30,
             include_favicon: bool = None,
             **kwargs
     ) -> dict:
@@ -204,8 +204,6 @@ class AsyncTavilyClient:
 
         if kwargs:
             data.update(kwargs)
-
-        timeout = min(timeout, 120)
 
         async with self._client_creator() as client:
             try:
@@ -239,7 +237,7 @@ class AsyncTavilyClient:
                       include_images: bool = None,
                       extract_depth: Literal["basic", "advanced"] = None,
                       format: Literal["markdown", "text"] = None,
-                      timeout: int = 30,
+                      timeout: float = 30,
                       include_favicon: bool = None,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
@@ -247,7 +245,6 @@ class AsyncTavilyClient:
         Combined extract method.
         include_favicon: If True, include the favicon in the extraction results.
         """
-        timeout = min(timeout, 120)
         response_dict = await self._extract(urls,
                                             include_images,
                                             extract_depth,
@@ -309,11 +306,9 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         async with self._client_creator() as client:
             try:
-                response = await client.post("/crawl", content=json.dumps(data), timeout=request_timeout)
+                response = await client.post("/crawl", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -359,7 +354,6 @@ class AsyncTavilyClient:
         Combined crawl method.
         
         """
-        timeout = min(timeout, 150)
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -417,11 +411,9 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        request_timeout = min(timeout, 150)
-
         async with self._client_creator() as client:
             try:
-                response = await client.post("/map", content=json.dumps(data), timeout=request_timeout)
+                response = await client.post("/map", content=json.dumps(data), timeout=timeout)
             except httpx.TimeoutException:
                 raise TimeoutError(timeout)
 
@@ -464,7 +456,6 @@ class AsyncTavilyClient:
         Combined map method.
 
         """
-        timeout = min(timeout, 150)
         response_dict = await self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -490,7 +481,7 @@ class AsyncTavilyClient:
                                  include_domains: Sequence[str] = None,
                                  exclude_domains: Sequence[str] = None,
                                  max_tokens: int = 4000,
-                                 timeout: int = 60,
+                                 timeout: float = 60,
                                  country: str = None,
                                  include_favicon: bool = None,
                                  **kwargs,  # Accept custom arguments
@@ -531,7 +522,7 @@ class AsyncTavilyClient:
                          max_results: int = 5,
                          include_domains: Sequence[str] = None,
                          exclude_domains: Sequence[str] = None,
-                         timeout: int = 60,
+                         timeout: float = 60,
                          country: str = None,
                          include_favicon: bool = None,
                          **kwargs,  # Accept custom arguments
@@ -561,7 +552,7 @@ class AsyncTavilyClient:
                                query: str,
                                search_depth: Literal["basic", "advanced"] = "advanced",
                                max_results: int = 5,
-                               timeout: int = 60,
+                               timeout: float = 60,
                                country: str = None,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
