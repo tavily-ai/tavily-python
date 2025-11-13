@@ -49,7 +49,7 @@ class TavilyClient:
                 include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                 include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                 include_images: bool = None,
-                timeout: int = 60,
+                timeout: float = 60,
                 country: str = None,
                 auto_parameters: bool = None,
                 include_favicon: bool = None,
@@ -126,7 +126,7 @@ class TavilyClient:
                include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                include_images: bool = None,
-               timeout: int = 60,
+               timeout: float = 60,
                country: str = None,
                auto_parameters: bool = None,
                include_favicon: bool = None,
@@ -167,7 +167,7 @@ class TavilyClient:
                  include_images: bool = None,
                  extract_depth: Literal["basic", "advanced"] = None,
                  format: Literal["markdown", "text"] = None,
-                 timeout: int = 30,
+                 timeout: float = 30,
                  include_favicon: bool = None,
                  **kwargs
                  ) -> dict:
@@ -218,7 +218,7 @@ class TavilyClient:
                 include_images: bool = None,
                 extract_depth: Literal["basic", "advanced"] = None,
                 format: Literal["markdown", "text"] = None,
-                timeout: int = 30,
+                timeout: float = 30,
                 include_favicon: bool = None,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
@@ -461,7 +461,7 @@ class TavilyClient:
                            include_domains: Sequence[str] = None,
                            exclude_domains: Sequence[str] = None,
                            max_tokens: int = 4000,
-                           timeout: int = 60,
+                           timeout: float = 60,
                            country: str = None,
                            include_favicon: bool = None,
                            **kwargs,  # Accept custom arguments
@@ -503,7 +503,7 @@ class TavilyClient:
                    max_results: int = 5,
                    include_domains: Sequence[str] = None,
                    exclude_domains: Sequence[str] = None,
-                   timeout: int = 60,
+                   timeout: float = 60,
                    country: str = None,
                    include_favicon: bool = None,
                    **kwargs,  # Accept custom arguments
@@ -534,7 +534,7 @@ class TavilyClient:
                          search_depth: Literal["basic",
                                                "advanced"] = "advanced",
                          max_results: int = 5,
-                         timeout: int = 60,
+                         timeout: float = 60,
                          country: str = None,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
