@@ -205,8 +205,6 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        timeout = min(timeout, 120)
-
         async with self._client_creator() as client:
             try:
                 response = await client.post("/extract", content=json.dumps(data), timeout=timeout)
@@ -247,7 +245,6 @@ class AsyncTavilyClient:
         Combined extract method.
         include_favicon: If True, include the favicon in the extraction results.
         """
-        timeout = min(timeout, 120)
         response_dict = await self._extract(urls,
                                             include_images,
                                             extract_depth,

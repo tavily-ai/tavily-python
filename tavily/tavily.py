@@ -188,8 +188,6 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        timeout = min(timeout, 120)
-
         try:
             response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
         except requests.exceptions.Timeout:
@@ -227,7 +225,6 @@ class TavilyClient:
         """
         Combined extract method.
         """
-        timeout = min(timeout, 120)
         response_dict = self._extract(urls,
                                       include_images,
                                       extract_depth,
