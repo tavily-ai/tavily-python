@@ -135,7 +135,7 @@ class TavilyClient:
         """
         Combined search method.
         """
-        timeout = min(timeout, 120)
+
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -474,7 +474,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
-        timeout = min(timeout, 120)
+
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -511,7 +511,6 @@ class TavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
-        timeout = min(timeout, 120)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -538,7 +537,6 @@ class TavilyClient:
                          country: str = None,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
-        timeout = min(timeout, 120)
         def _perform_search(topic):
             return self._search(query,
                                 search_depth=search_depth,
