@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/tavily-ai/tavily-python)](https://github.com/tavily-ai/tavily-python/blob/main/LICENSE)
 [![CI](https://github.com/tavily-ai/tavily-python/actions/workflows/tests.yml/badge.svg)](https://github.com/tavily-ai/tavily-python/actions)
 
-The Tavily Python wrapper allows for easy interaction with the Tavily API, offering the full range of our search and extract functionalities directly from your Python programs. Easily integrate smart search and content extraction capabilities into your applications, harnessing Tavily's powerful search and extract features.
+The Tavily Python wrapper allows for easy interaction with the Tavily API, offering the full range of our search, extract, crawl, map, and research functionalities directly from your Python programs. Easily integrate smart search, content extraction, and research capabilities into your applications, harnessing Tavily's powerful features.
 
 ## Installing
 
@@ -174,6 +174,39 @@ response = tavily_client.map(
 for result in response["results"]:
     print(f"URL: {result['url']}")
 
+```
+
+# Tavily Research
+
+Research lets you create comprehensive research reports on any topic, with automatic source gathering, analysis, and structured output.
+
+## Usage
+
+Below are some code snippets that demonstrate how to interact with our Research API. Each step and component of this code is explained in greater detail in the API Methods section below.
+
+### Creating a research task and retrieving results
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Creating a research task
+response = tavily_client.research(
+    task_description="Research the latest developments in AI",
+    research_depth="deep",
+    citation_format="apa"
+)
+
+# Step 3. Retrieving the research results
+request_id = response["request_id"]
+result = tavily_client.get_research(request_id)
+
+# Step 4. Printing the research report
+print(f"Status: {result['status']}")
+print(f"Content: {result['content']}")
+print(f"Sources: {len(result['sources'])} sources found")
 ```
 
 ## Documentation

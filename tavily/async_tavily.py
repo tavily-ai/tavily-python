@@ -576,3 +576,128 @@ class AsyncTavilyClient:
         sorted_results = sorted(all_results, key=lambda x: x["score"], reverse=True)[:max_results]
 
         return sorted_results
+
+    async def _research(self,
+                        task_description: str,
+                        research_depth: Literal["basic", "deep", "auto"] = None,
+                        output_schema: dict = None,
+                        stream: bool = False,
+                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                        timeout: Optional[float] = None,
+                        **kwargs
+                        ) -> dict:
+        """
+        Internal research method to send the request to the API.
+        """
+        data = {
+            "task_description": task_description,
+            "research_depth": research_depth,
+            "output_schema": output_schema,
+            "stream": stream,
+            "citation_format": citation_format,
+        }
+
+        data = {k: v for k, v in data.items() if v is not None}
+
+        if kwargs:
+            data.update(kwargs)
+
+        async with self._client_creator() as client:
+            try:
+                response = await client.post("/research", content=json.dumps(data), timeout=timeout)
+            except httpx.TimeoutException:
+                raise TimeoutError(timeout)
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
+
+    async def research(self,
+                       task_description: str,
+                       research_depth: Literal["basic", "deep", "auto"] = None,
+                       output_schema: dict = None,
+                       stream: bool = False,
+                       citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                       timeout: Optional[float] = None,
+                       **kwargs
+                       ) -> dict:
+        """
+        Research method to create a research task.
+        
+        Args:
+            task_description: The research task description (required).
+            research_depth: Research depth - must be either 'basic', 'deep', or 'auto'.
+            output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
+            stream: Whether to stream the research task.
+            citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
+            timeout: Optional HTTP request timeout in seconds. 
+            **kwargs: Additional custom arguments.
+        
+        Returns:
+            dict: Response containing request_id, created_at, status, task_description, and research_depth.
+        """
+        response_dict = await self._research(
+            task_description=task_description,
+            research_depth=research_depth,
+            output_schema=output_schema,
+            stream=stream,
+            citation_format=citation_format,
+            timeout=timeout,
+            **kwargs
+        )
+
+        return response_dict
+
+    async def get_research(self,
+                           request_id: str
+                           ) -> dict:
+        """
+        Get research results by request_id.
+        
+        Args:
+            request_id: The research request ID.
+        
+        Returns:
+            dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
+        """
+        async with self._client_creator() as client:
+            try:
+                response = await client.get(f"/research/{request_id}")
+            except Exception as e:
+                raise Exception(f"Error getting research: {e}")
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()

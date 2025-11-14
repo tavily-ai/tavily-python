@@ -3,6 +3,7 @@ import requests as vanilla_requests
 import httpx
 
 vanilla_async_post = httpx.AsyncClient.post
+vanilla_async_get = httpx.AsyncClient.get
 
 class Request:
     def __init__(self, method, url, headers=None, body=None, timeout=None, proxies=None):
@@ -47,6 +48,10 @@ class Interceptor:
         self._request = Request("POST", url, headers, data, timeout, proxies)
         return self._response
 
+    def get(self, url, headers=None, timeout=None, proxies=None):
+        self._request = Request("GET", url, headers, None, timeout, proxies)
+        return self._response
+
 def intercept_requests(tavily):
     interceptor = Interceptor()
     if hasattr(tavily, 'requests'):
@@ -60,7 +65,15 @@ def intercept_requests(tavily):
                 headers=self.headers,
                 timeout=timeout
             )
-        tavily.httpx.AsyncClient.post = post 
+        tavily.httpx.AsyncClient.post = post
+        
+        async def get(self, url, timeout=None):
+            return interceptor.get(
+                url=str(self._base_url) + url,
+                headers=self.headers,
+                timeout=timeout
+            )
+        tavily.httpx.AsyncClient.get = get
 
     return interceptor
 
@@ -70,3 +83,4 @@ def clear_interceptor(tavily):
 
     if hasattr(tavily, 'httpx'):
         tavily.httpx.AsyncClient.post = vanilla_async_post
+        tavily.httpx.AsyncClient.get = vanilla_async_get
