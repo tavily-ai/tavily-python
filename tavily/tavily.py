@@ -4,7 +4,7 @@ import warnings
 import os
 from typing import Literal, Sequence, Optional, List, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, MCPObject
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 class TavilyClient:
@@ -571,6 +571,7 @@ class TavilyClient:
                   output_schema: dict = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                  mcps: Optional[List[MCPObject]] = None,
                   timeout: Optional[float] = None,
                   **kwargs
                   ) -> dict:
@@ -583,6 +584,7 @@ class TavilyClient:
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
+            "mcps": mcps,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -621,6 +623,7 @@ class TavilyClient:
                  output_schema: dict = None,
                  stream: bool = False,
                  citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                 mcps: Optional[List[MCPObject]] = None,
                  timeout: Optional[float] = None,
                  **kwargs
                  ) -> dict:
@@ -633,6 +636,7 @@ class TavilyClient:
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
+            mcps: List of MCP objects to use for the research task. Each MCP object should be of MCPObject type.
             timeout: Optional HTTP request timeout in seconds. 
             **kwargs: Additional custom arguments.
         
@@ -647,6 +651,7 @@ class TavilyClient:
             output_schema=output_schema,
             stream=stream,
             citation_format=citation_format,
+            mcps=mcps,
             timeout=timeout,
             **kwargs
         )

@@ -1,7 +1,18 @@
 import tiktoken
 import json
-from typing import Sequence, List, Dict
+from typing import Sequence, List, Dict, Literal, Optional, TypedDict
 from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
+
+
+class MCPObject(TypedDict, total=False):
+    """
+    MCP object structure for research tasks.
+    """
+    name: str
+    url: str
+    transport: Literal["streamable_http", "sse"]
+    tools_to_include: Optional[List[str]]
+    headers: Optional[dict]
 
 
 def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL_ENCODING) -> int:

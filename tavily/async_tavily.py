@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, MCPObject
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 
@@ -583,6 +583,7 @@ class AsyncTavilyClient:
                         output_schema: dict = None,
                         stream: bool = False,
                         citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                        mcps: Optional[List[MCPObject]] = None,
                         timeout: Optional[float] = None,
                         **kwargs
                         ) -> dict:
@@ -595,6 +596,7 @@ class AsyncTavilyClient:
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
+            "mcps": mcps,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -634,6 +636,7 @@ class AsyncTavilyClient:
                        output_schema: dict = None,
                        stream: bool = False,
                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                       mcps: Optional[List[MCPObject]] = None,
                        timeout: Optional[float] = None,
                        **kwargs
                        ) -> dict:
@@ -646,6 +649,7 @@ class AsyncTavilyClient:
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
+            mcps: List of MCP objects to use for the research task. Each MCP object should be of type MCPObject.
             timeout: Optional HTTP request timeout in seconds. 
             **kwargs: Additional custom arguments.
         
@@ -658,6 +662,7 @@ class AsyncTavilyClient:
             output_schema=output_schema,
             stream=stream,
             citation_format=citation_format,
+            mcps=mcps,
             timeout=timeout,
             **kwargs
         )
