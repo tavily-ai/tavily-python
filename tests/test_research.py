@@ -6,8 +6,8 @@ dummy_queued_response = {
     "request_id": "test-request-123",
     "created_at": "2024-01-01T00:00:00Z",
     "status": "pending",
-    "task_description": "Research the latest developments in AI",
-    "research_depth": "deep"
+    "input": "Research the latest developments in AI",
+    "model": "tvly-mini"
 }
 
 dummy_research_response = {
@@ -30,7 +30,7 @@ def validate_research_default(request, response):
     assert request.url == f"{BASE_URL}/research"
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
-    assert request.json().get('task_description') == "Research the latest developments in AI"
+    assert request.json().get('input') == "Research the latest developments in AI"
     assert response == dummy_queued_response
 
 def validate_research_specific(request, response):
@@ -41,8 +41,8 @@ def validate_research_specific(request, response):
     
     request_json = request.json()
     for key, value in {
-        "task_description": "Research the latest developments in AI",
-        "research_depth": "deep",
+        "input": "Research the latest developments in AI",
+        "model": "tvly-mini",
         "citation_format": "apa",
         "stream": True,
         "output_schema": {
@@ -75,8 +75,8 @@ def test_sync_research_defaults(sync_interceptor, sync_client):
 def test_sync_research_specific(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_queued_response)
     response = sync_client.research(
-        task_description="Research the latest developments in AI",
-        research_depth="deep",
+        input="Research the latest developments in AI",
+        model="tvly-mini",
         citation_format="apa",
         stream=True,
         timeout=300,
@@ -92,7 +92,9 @@ def test_sync_research_specific(sync_interceptor, sync_client):
     )
 
     request = sync_interceptor.get_request()
-    validate_research_specific(request, response)
+    # When stream=True, response is a generator
+    assert hasattr(response, '__iter__') and not isinstance(response, (str, dict))
+    validate_research_specific(request, dummy_queued_response)
 
 def test_sync_get_research(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_research_response)
@@ -108,25 +110,37 @@ def test_async_research_defaults(async_interceptor, async_client):
 
 def test_async_research_specific(async_interceptor, async_client):
     async_interceptor.set_response(200, json=dummy_queued_response)
-    response = asyncio.run(async_client.research(
-        task_description="Research the latest developments in AI",
-        research_depth="deep",
-        citation_format="apa",
-        stream=True,
-        timeout=300,
-        output_schema={
-            "title": "ResearchReport",
-            "description": "A structured research report",
-            "type": "object",
-            "properties": {
-                "summary": {"type": "string"},
-                "key_points": {"type": "array", "items": {"type": "string"}}
+    
+    async def run_test():
+        response = await async_client.research(
+            input="Research the latest developments in AI",
+            model="tvly-mini",
+            citation_format="apa",
+            stream=True,
+            timeout=300,
+            output_schema={
+                "title": "ResearchReport",
+                "description": "A structured research report",
+                "type": "object",
+                "properties": {
+                    "summary": {"type": "string"},
+                    "key_points": {"type": "array", "items": {"type": "string"}}
+                }
             }
-        }
-    ))
-
+        )
+        # When stream=True, response is an async generator
+        assert hasattr(response, '__aiter__')
+        try:
+            async for chunk in response:
+                # Just consume one chunk to trigger the request
+                break
+        except StopAsyncIteration:
+            pass
+        return response
+    
+    response = asyncio.run(run_test())
     request = async_interceptor.get_request()
-    validate_research_specific(request, response)
+    validate_research_specific(request, dummy_queued_response)
 
 def test_async_get_research(async_interceptor, async_client):
     async_interceptor.set_response(200, json=dummy_research_response)
