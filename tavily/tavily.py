@@ -2,7 +2,7 @@ import requests
 import json
 import warnings
 import os
-from typing import Literal, Sequence, Optional, List, Union
+from typing import Literal, Sequence, Optional, List, Union, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list, MCPObject
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
@@ -566,21 +566,21 @@ class TavilyClient:
         return sorted_results
 
     def _research(self,
-                  task_description: str,
-                  research_depth: Literal["basic", "deep", "auto"] = None,
+                  input: str,
+                  model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
                   output_schema: dict = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
                   mcps: Optional[List[MCPObject]] = None,
                   timeout: Optional[float] = None,
                   **kwargs
-                  ) -> dict:
+                  ) -> Union[dict, Generator[bytes, None, None]]:
         """
         Internal research method to send the request to the API.
         """
         data = {
-            "task_description": task_description,
-            "research_depth": research_depth,
+            "input": input,
+            "model": model,
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
@@ -592,47 +592,94 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        try:
-            response = requests.post(self.base_url + "/research", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
-        except requests.exceptions.Timeout:
-            raise TimeoutError(timeout)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            detail = ""
+        if stream:
             try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
+                response = requests.post(
+                    self.base_url + "/research",
+                    data=json.dumps(data),
+                    headers=self.headers,
+                    timeout=timeout,
+                    proxies=self.proxies,
+                    stream=True
+                )
+            except requests.exceptions.Timeout:
+                raise TimeoutError(timeout)
 
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
+            if response.status_code != 200:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
+
+            def stream_generator() -> Generator[bytes, None, None]:
+                try:
+                    for chunk in response.iter_content(chunk_size=None):
+                        if chunk:
+                            yield chunk
+                finally:
+                    response.close()
+
+            return stream_generator()
+        else:
+            try:
+                response = requests.post(
+                    self.base_url + "/research",
+                    data=json.dumps(data),
+                    headers=self.headers,
+                    timeout=timeout,
+                    proxies=self.proxies
+                )
+            except requests.exceptions.Timeout:
+                raise TimeoutError(timeout)
+
+            if response.status_code == 200:
+                return response.json()
             else:
-                raise response.raise_for_status()
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
 
     def research(self,
-                 task_description: str,
-                 research_depth: Literal["basic", "deep", "auto"] = None,
+                 input: str,
+                 model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
                  output_schema: dict = None,
                  stream: bool = False,
                  citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
                  mcps: Optional[List[MCPObject]] = None,
                  timeout: Optional[float] = None,
                  **kwargs
-                 ) -> dict:
+                 ) -> Union[dict, Generator[bytes, None, None]]:
         """
         Research method to create a research task.
         
         Args:
-            task_description: The research task description (required).
-            research_depth: Research depth - must be either 'basic', 'deep', or 'auto'.
+            input: The research task description (required).
+            model: Research depth - must be either 'tvly-mini', 'tvly-pro', or 'auto'.
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
@@ -646,8 +693,8 @@ class TavilyClient:
 
         
         response_dict = self._research(
-            task_description=task_description,
-            research_depth=research_depth,
+            input=input,
+            model=model,
             output_schema=output_schema,
             stream=stream,
             citation_format=citation_format,

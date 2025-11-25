@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from typing import Literal, Sequence, Optional, List, Union
+from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awaitable
 
 import httpx
 
@@ -577,22 +577,22 @@ class AsyncTavilyClient:
 
         return sorted_results
 
-    async def _research(self,
-                        task_description: str,
-                        research_depth: Literal["basic", "deep", "auto"] = None,
-                        output_schema: dict = None,
-                        stream: bool = False,
-                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
-                        mcps: Optional[List[MCPObject]] = None,
-                        timeout: Optional[float] = None,
-                        **kwargs
-                        ) -> dict:
+    def _research(self,
+                  input: str,
+                  model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
+                  output_schema: dict = None,
+                  stream: bool = False,
+                  citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                  mcps: Optional[List[MCPObject]] = None,
+                  timeout: Optional[float] = None,
+                  **kwargs
+                  ) -> Union[AsyncGenerator[bytes, None], Awaitable[dict]]:
         """
         Internal research method to send the request to the API.
         """
         data = {
-            "task_description": task_description,
-            "research_depth": research_depth,
+            "input": input,
+            "model": model,
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
@@ -604,48 +604,89 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        async with self._client_creator() as client:
-            try:
-                response = await client.post("/research", content=json.dumps(data), timeout=timeout)
-            except httpx.TimeoutException:
-                raise TimeoutError(timeout)
-
-            if response.status_code == 200:
-                return response.json()
-            else:
-                detail = ""
+        if stream:
+            async def stream_generator() -> AsyncGenerator[bytes, None]:
                 try:
-                    detail = response.json().get("detail", {}).get("error", None)
-                except Exception:
-                    pass
+                    async with self._client_creator() as client:
+                        async with client.stream(
+                            "POST",
+                            "/research",
+                            content=json.dumps(data),
+                            timeout=timeout
+                        ) as response:
+                            if response.status_code != 200:
+                                try:
+                                    error_text = await response.aread()
+                                    error_text = error_text.decode('utf-8') if isinstance(error_text, bytes) else error_text
+                                except Exception:
+                                    error_text = "Unknown error"
+                                
+                                if response.status_code == 429:
+                                    raise UsageLimitExceededError(error_text)
+                                elif response.status_code in [403,432,433]:
+                                    raise ForbiddenError(error_text)
+                                elif response.status_code == 401:
+                                    raise InvalidAPIKeyError(error_text)
+                                elif response.status_code == 400:
+                                    raise BadRequestError(error_text)
+                                else:
+                                    raise Exception(f"Error {response.status_code}: {error_text}")
+                            
+                            async for chunk in response.aiter_bytes():
+                                if chunk:
+                                    yield chunk
+                except httpx.TimeoutException:
+                    raise TimeoutError(timeout)
+                except Exception as e:
+                    raise Exception(f"Error during research stream: {str(e)}")
+            
+            return stream_generator()
+        else:
+            async def _make_request():
+                async with self._client_creator() as client:
+                    try:
+                        response = await client.post("/research", content=json.dumps(data), timeout=timeout)
+                    except httpx.TimeoutException:
+                        raise TimeoutError(timeout)
 
-                if response.status_code == 429:
-                    raise UsageLimitExceededError(detail)
-                elif response.status_code in [403,432,433]:
-                    raise ForbiddenError(detail)
-                elif response.status_code == 401:
-                    raise InvalidAPIKeyError(detail)
-                elif response.status_code == 400:
-                    raise BadRequestError(detail)
-                else:
-                    raise response.raise_for_status()
+                    if response.status_code == 200:
+                        return response.json()
+                    else:
+                        detail = ""
+                        try:
+                            detail = response.json().get("detail", {}).get("error", None)
+                        except Exception:
+                            pass
+
+                        if response.status_code == 429:
+                            raise UsageLimitExceededError(detail)
+                        elif response.status_code in [403,432,433]:
+                            raise ForbiddenError(detail)
+                        elif response.status_code == 401:
+                            raise InvalidAPIKeyError(detail)
+                        elif response.status_code == 400:
+                            raise BadRequestError(detail)
+                        else:
+                            raise response.raise_for_status()
+            
+            return _make_request()
 
     async def research(self,
-                       task_description: str,
-                       research_depth: Literal["basic", "deep", "auto"] = None,
+                       input: str,
+                       model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
                        output_schema: dict = None,
                        stream: bool = False,
                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
                        mcps: Optional[List[MCPObject]] = None,
                        timeout: Optional[float] = None,
                        **kwargs
-                       ) -> dict:
+                       ) -> Union[dict, AsyncGenerator[bytes, None]]:
         """
         Research method to create a research task.
         
         Args:
-            task_description: The research task description (required).
-            research_depth: Research depth - must be either 'basic', 'deep', or 'auto'.
+            input: The research task description (required).
+            model: Research depth - must be either 'tvly-mini', 'tvly-pro', or 'auto'.
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
@@ -654,20 +695,23 @@ class AsyncTavilyClient:
             **kwargs: Additional custom arguments.
         
         Returns:
-            dict: Response containing request_id, created_at, status, task_description, and research_depth.
+            When stream=False: dict - the response dictionary.
+            When stream=True: AsyncGenerator[bytes, None] - iterate over this to get streaming chunks.
         """
-        response_dict = await self._research(
-            task_description=task_description,
-            research_depth=research_depth,
-            output_schema=output_schema,
-            stream=stream,
-            citation_format=citation_format,
-            mcps=mcps,
-            timeout=timeout,
-            **kwargs
+        result = self._research(
+                input=input,
+                model=model,
+                output_schema=output_schema,
+                stream=stream,
+                citation_format=citation_format,
+                mcps=mcps,
+                timeout=timeout,
+                **kwargs
         )
-
-        return response_dict
+        if stream:
+            return result # Don't await the result, it's an AsyncGenerator that will be lazy and only execute when iterated over with async for
+        else:
+            return await result 
 
     async def get_research(self,
                            request_id: str
