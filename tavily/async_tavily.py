@@ -579,7 +579,7 @@ class AsyncTavilyClient:
 
     def _research(self,
                   input: str,
-                  model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
+                  model: Literal["mini", "pro", "auto"] = None,
                   output_schema: dict = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
@@ -673,7 +673,7 @@ class AsyncTavilyClient:
 
     async def research(self,
                        input: str,
-                       model: Literal["tvly-mini", "tvly-pro", "auto"] = None,
+                       model: Literal["mini", "pro", "auto"] = None,
                        output_schema: dict = None,
                        stream: bool = False,
                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
@@ -686,7 +686,7 @@ class AsyncTavilyClient:
         
         Args:
             input: The research task description (required).
-            model: Research depth - must be either 'tvly-mini', 'tvly-pro', or 'auto'.
+            model: Research depth - must be either 'mini', 'pro', or 'auto'.
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.

@@ -7,7 +7,7 @@ dummy_queued_response = {
     "created_at": "2024-01-01T00:00:00Z",
     "status": "pending",
     "input": "Research the latest developments in AI",
-    "model": "tvly-mini"
+    "model": "mini"
 }
 
 dummy_research_response = {
@@ -42,7 +42,7 @@ def validate_research_specific(request, response):
     request_json = request.json()
     for key, value in {
         "input": "Research the latest developments in AI",
-        "model": "tvly-mini",
+        "model": "mini",
         "citation_format": "apa",
         "stream": True,
         "output_schema": {
@@ -76,7 +76,7 @@ def test_sync_research_specific(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_queued_response)
     response = sync_client.research(
         input="Research the latest developments in AI",
-        model="tvly-mini",
+        model="mini",
         citation_format="apa",
         stream=True,
         timeout=300,
@@ -114,7 +114,7 @@ def test_async_research_specific(async_interceptor, async_client):
     async def run_test():
         response = await async_client.research(
             input="Research the latest developments in AI",
-            model="tvly-mini",
+            model="mini",
             citation_format="apa",
             stream=True,
             timeout=300,

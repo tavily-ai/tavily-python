@@ -14,6 +14,7 @@ pip install tavily-python
 ```
 
 # Tavily Search
+
 Search lets you search the web for a given query.
 
 ## Usage
@@ -72,6 +73,7 @@ print(answer)
 This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
 
 # Tavily Extract
+
 Extract web page content from one or more specified URLs.
 
 ## Usage
@@ -194,8 +196,8 @@ tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
 # Step 2. Creating a research task
 response = tavily_client.research(
-    task_description="Research the latest developments in AI",
-    research_depth="deep",
+    input="Research the latest developments in AI",
+    model="pro",
     citation_format="apa"
 )
 
