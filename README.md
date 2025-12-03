@@ -211,6 +211,26 @@ print(f"Content: {result['content']}")
 print(f"Sources: {len(result['sources'])} sources found")
 ```
 
+### Streaming research results
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Creating a streaming research task
+stream = tavily_client.research(
+    input="Research the latest developments in AI",
+    model="pro",
+    stream=True
+)
+
+# Step 3. Processing the stream as it arrives
+for chunk in stream:
+    print(chunk.decode('utf-8'))
+```
+
 ## Documentation
 
 For a complete guide on how to use the different endpoints and their parameters, please head to our [Python API Reference](https://docs.tavily.com/sdk/python/reference).
