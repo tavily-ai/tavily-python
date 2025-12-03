@@ -4,7 +4,7 @@ import warnings
 import os
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from .utils import get_max_items_from_list, MCPObject
+from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 class TavilyClient:
@@ -571,7 +571,6 @@ class TavilyClient:
                   output_schema: dict = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
-                  mcps: Optional[List[MCPObject]] = None,
                   timeout: Optional[float] = None,
                   **kwargs
                   ) -> Union[dict, Generator[bytes, None, None]]:
@@ -584,7 +583,6 @@ class TavilyClient:
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
-            "mcps": mcps,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -670,7 +668,6 @@ class TavilyClient:
                  output_schema: dict = None,
                  stream: bool = False,
                  citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
-                 mcps: Optional[List[MCPObject]] = None,
                  timeout: Optional[float] = None,
                  **kwargs
                  ) -> Union[dict, Generator[bytes, None, None]]:
@@ -678,12 +675,11 @@ class TavilyClient:
         Research method to create a research task.
         
         Args:
-            input: The research task description (required).
-            model: Research depth - must be either 'mini', 'pro', or 'auto'.
+            input: The research task or question to investigate (required).
+            model: The model used by the research agent - must be either 'mini', 'pro', or 'auto'.
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
-            mcps: List of MCP objects to use for the research task. Each MCP object should be of MCPObject type.
             timeout: Optional HTTP request timeout in seconds. 
             **kwargs: Additional custom arguments.
         
@@ -698,7 +694,6 @@ class TavilyClient:
             output_schema=output_schema,
             stream=stream,
             citation_format=citation_format,
-            mcps=mcps,
             timeout=timeout,
             **kwargs
         )
@@ -721,13 +716,19 @@ class TavilyClient:
             response = requests.get(
                 self.base_url + f"/research/{request_id}",
                 headers=self.headers,
-                proxies=self.proxies
+                proxies=self.proxies,
             )
         except Exception as e:
             raise Exception(f"Error getting research: {e}")
 
-        if response.status_code == 200:
-            return response.json()
+        if response.status_code in (200, 202):
+            data = response.json()
+            status = data.get("status")
+
+            if status == "failed":
+                data = {"status": status, "request_id": data.get("request_id")}
+
+            return data
         else:
             detail = ""
             try:

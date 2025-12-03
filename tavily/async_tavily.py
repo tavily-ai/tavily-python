@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 
 import httpx
 
-from .utils import get_max_items_from_list, MCPObject
+from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 
@@ -583,7 +583,6 @@ class AsyncTavilyClient:
                   output_schema: dict = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
-                  mcps: Optional[List[MCPObject]] = None,
                   timeout: Optional[float] = None,
                   **kwargs
                   ) -> Union[AsyncGenerator[bytes, None], Awaitable[dict]]:
@@ -596,7 +595,6 @@ class AsyncTavilyClient:
             "output_schema": output_schema,
             "stream": stream,
             "citation_format": citation_format,
-            "mcps": mcps,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -677,7 +675,6 @@ class AsyncTavilyClient:
                        output_schema: dict = None,
                        stream: bool = False,
                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
-                       mcps: Optional[List[MCPObject]] = None,
                        timeout: Optional[float] = None,
                        **kwargs
                        ) -> Union[dict, AsyncGenerator[bytes, None]]:
@@ -690,7 +687,6 @@ class AsyncTavilyClient:
             output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
-            mcps: List of MCP objects to use for the research task. Each MCP object should be of type MCPObject.
             timeout: Optional HTTP request timeout in seconds. 
             **kwargs: Additional custom arguments.
         
@@ -704,7 +700,6 @@ class AsyncTavilyClient:
                 output_schema=output_schema,
                 stream=stream,
                 citation_format=citation_format,
-                mcps=mcps,
                 timeout=timeout,
                 **kwargs
         )
@@ -731,8 +726,14 @@ class AsyncTavilyClient:
             except Exception as e:
                 raise Exception(f"Error getting research: {e}")
 
-            if response.status_code == 200:
-                return response.json()
+            if response.status_code in (200, 202):
+                data = response.json()
+                status = data.get("status")
+
+                if status == "failed":
+                    data = {"status": status, "request_id": data.get("request_id")}
+
+                return data
             else:
                 detail = ""
                 try:
