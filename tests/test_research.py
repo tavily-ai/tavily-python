@@ -20,7 +20,6 @@ dummy_research_response = {
         {
             "title": "AI Research Paper",
             "url": "https://example.com/ai-paper",
-            "content": "Summary of AI research..."
         }
     ]
 }
