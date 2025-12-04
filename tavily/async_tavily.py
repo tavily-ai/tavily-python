@@ -728,11 +728,6 @@ class AsyncTavilyClient:
 
             if response.status_code in (200, 202):
                 data = response.json()
-                status = data.get("status")
-
-                if status == "failed":
-                    data = {"status": status, "request_id": data.get("request_id")}
-
                 return data
             else:
                 detail = ""
