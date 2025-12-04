@@ -2,7 +2,7 @@ import requests
 import json
 import warnings
 import os
-from typing import Literal, Sequence, Optional, List, Union
+from typing import Literal, Sequence, Optional, List, Union, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
@@ -564,6 +564,183 @@ class TavilyClient:
             :max_results]
 
         return sorted_results
+
+    def _research(self,
+                  input: str,
+                  model: Literal["mini", "pro", "auto"] = None,
+                  output_schema: dict = None,
+                  stream: bool = False,
+                  citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                  timeout: Optional[float] = None,
+                  **kwargs
+                  ) -> Union[dict, Generator[bytes, None, None]]:
+        """
+        Internal research method to send the request to the API.
+        """
+        data = {
+            "input": input,
+            "model": model,
+            "output_schema": output_schema,
+            "stream": stream,
+            "citation_format": citation_format,
+        }
+
+        data = {k: v for k, v in data.items() if v is not None}
+
+        if kwargs:
+            data.update(kwargs)
+
+        if stream:
+            try:
+                response = requests.post(
+                    self.base_url + "/research",
+                    data=json.dumps(data),
+                    headers=self.headers,
+                    timeout=timeout,
+                    proxies=self.proxies,
+                    stream=True
+                )
+            except requests.exceptions.Timeout:
+                raise TimeoutError(timeout)
+
+            if response.status_code != 200:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
+
+            def stream_generator() -> Generator[bytes, None, None]:
+                try:
+                    for chunk in response.iter_content(chunk_size=None):
+                        if chunk:
+                            yield chunk
+                finally:
+                    response.close()
+
+            return stream_generator()
+        else:
+            try:
+                response = requests.post(
+                    self.base_url + "/research",
+                    data=json.dumps(data),
+                    headers=self.headers,
+                    timeout=timeout,
+                    proxies=self.proxies
+                )
+            except requests.exceptions.Timeout:
+                raise TimeoutError(timeout)
+
+            if response.status_code == 200:
+                return response.json()
+            else:
+                detail = ""
+                try:
+                    detail = response.json().get("detail", {}).get("error", None)
+                except Exception:
+                    pass
+
+                if response.status_code == 429:
+                    raise UsageLimitExceededError(detail)
+                elif response.status_code in [403,432,433]:
+                    raise ForbiddenError(detail)
+                elif response.status_code == 401:
+                    raise InvalidAPIKeyError(detail)
+                elif response.status_code == 400:
+                    raise BadRequestError(detail)
+                else:
+                    raise response.raise_for_status()
+
+    def research(self,
+                 input: str,
+                 model: Literal["mini", "pro", "auto"] = None,
+                 output_schema: dict = None,
+                 stream: bool = False,
+                 citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
+                 timeout: Optional[float] = None,
+                 **kwargs
+                 ) -> Union[dict, Generator[bytes, None, None]]:
+        """
+        Research method to create a research task.
+        
+        Args:
+            input: The research task or question to investigate (required).
+            model: The model used by the research agent - must be either 'mini', 'pro', or 'auto'.
+            output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
+            stream: Whether to stream the research task.
+            citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
+            timeout: Optional HTTP request timeout in seconds. 
+            **kwargs: Additional custom arguments.
+        
+        Returns:
+            dict: Response containing request_id, created_at, status, input, and model.
+        """
+
+        
+        response_dict = self._research(
+            input=input,
+            model=model,
+            output_schema=output_schema,
+            stream=stream,
+            citation_format=citation_format,
+            timeout=timeout,
+            **kwargs
+        )
+
+        return response_dict
+
+    def get_research(self,
+                     request_id: str
+                     ) -> dict:
+        """
+        Get research results by request_id.
+        
+        Args:
+            request_id: The research request ID.
+        
+        Returns:
+            dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
+        """
+        try:
+            response = requests.get(
+                self.base_url + f"/research/{request_id}",
+                headers=self.headers,
+                proxies=self.proxies,
+            )
+        except Exception as e:
+            raise Exception(f"Error getting research: {e}")
+
+        if response.status_code in (200, 202):
+            data = response.json()
+            return data
+        else:
+            detail = ""
+            try:
+                detail = response.json().get("detail", {}).get("error", None)
+            except Exception:
+                pass
+
+            if response.status_code == 429:
+                raise UsageLimitExceededError(detail)
+            elif response.status_code in [403,432,433]:
+                raise ForbiddenError(detail)
+            elif response.status_code == 401:
+                raise InvalidAPIKeyError(detail)
+            elif response.status_code == 400:
+                raise BadRequestError(detail)
+            else:
+                raise response.raise_for_status()
 
 
 class Client(TavilyClient):
