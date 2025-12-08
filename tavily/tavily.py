@@ -8,11 +8,11 @@ from .utils import get_max_items_from_list
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 class TavilyClient:
-    """
+    """ 
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None, verify: bool = True):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -34,6 +34,7 @@ class TavilyClient:
             "Authorization": f"Bearer {self.api_key}",
             "X-Client-Source": "tavily-python"
         }
+        self.verify = verify
 
     def _search(self,
                 query: str,
@@ -86,7 +87,7 @@ class TavilyClient:
         timeout = min(timeout, 120)
 
         try:
-            response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+            response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies , verify=self.verify)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
