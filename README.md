@@ -13,6 +13,10 @@ The Tavily Python wrapper allows for easy interaction with the Tavily API, offer
 pip install tavily-python
 ```
 
+## Usage Credits
+
+All `search`, `extract`, `crawl`, and `map` calls accept an optional `include_usage` boolean parameter (default `False`). When `True`, the Tavily API response adds a `usage` field that reports the exact credits billed for that request. The value may be `0` if the minimum usage threshold is not met. Leave the parameter unset (or `False`) to omit credit details for backwards compatibility. See [Credits & Pricing](https://github.com/tavily-ai/new-docs/blob/main/docs/credits-pricing.md) for more information.
+
 # Tavily Search
 
 Search lets you search the web for a given query.
@@ -30,7 +34,8 @@ from tavily import TavilyClient
 tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
 # Step 2. Executing a simple search query
-response = tavily_client.search("Who is Leo Messi?")
+response = tavily_client.search("Who is Leo Messi?", include_usage=True)
+print(response.get("usage"))  # Present only when include_usage=True
 
 # Step 3. That's it! You've done a Tavily Search!
 print(response)
@@ -235,10 +240,15 @@ for chunk in stream:
 
 For a complete guide on how to use the different endpoints and their parameters, please head to our [Python API Reference](https://docs.tavily.com/sdk/python/reference).
 
+## LLM Integrations
+
+- **OpenAI** – The examples in `examples/openai_assistant.py` and `examples/company_information.py` work unchanged, and you can now pass `include_usage=True` to `tavily_client.search`, `crawl`, or other helper calls to stream credit data back into your threads or tool outputs.
+- **Anthropic** – When wiring Tavily into Anthropic tools or workflows, forward `include_usage` through the same endpoints to monitor spend per invocation. This keeps prompt responses light by default while letting you surface usage whenever you need it.
+
 ## Cost
 
 Tavily is free for personal use for up to 1,000 credits per month.
-Head to the [Credits & Pricing](https://docs.tavily.com/documentation/api-credits) in our documentation to learn more about how many API credits each request costs.
+Head to the [Credits & Pricing](https://github.com/tavily-ai/new-docs/blob/main/docs/credits-pricing.md) guide to learn more about how many API credits each request costs.
 
 ## License
 

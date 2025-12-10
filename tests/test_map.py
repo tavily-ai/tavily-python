@@ -11,6 +11,11 @@ dummy_response = {
     "response_time": 0.5,
 }
 
+dummy_response_with_usage = {
+    **dummy_response,
+    "usage": 2
+}
+
 def validate_default(request, response):
     assert request.method == "POST"
     assert request.url == "https://api.tavily.com/map"
@@ -38,11 +43,12 @@ def validate_specific(request, response):
         "exclude_paths": ["/blog"],
         "exclude_domains": ["example.com"],
         "allow_external": False,
-        "include_images": True
+        "include_images": True,
+        "include_usage": True,
     }.items():
         assert request_json.get(key) == value
 
-    assert response == dummy_response
+    assert response == dummy_response_with_usage
 
 def test_sync_map_defaults(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_response)
@@ -51,7 +57,7 @@ def test_sync_map_defaults(sync_interceptor, sync_client):
     validate_default(request, response)
 
 def test_sync_map_specific(sync_interceptor, sync_client):
-    sync_interceptor.set_response(200, json=dummy_response)
+    sync_interceptor.set_response(200, json=dummy_response_with_usage)
     response = sync_client.map(
         url="https://tavily.com",
         max_depth=2,
@@ -64,7 +70,8 @@ def test_sync_map_specific(sync_interceptor, sync_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        timeout=10
+        timeout=10,
+        include_usage=True,
     )
 
     request = sync_interceptor.get_request()
@@ -77,7 +84,7 @@ def test_async_map_defaults(async_interceptor, async_client):
     validate_default(request, response)
 
 def test_async_map_specific(async_interceptor, async_client):
-    async_interceptor.set_response(200, json=dummy_response)
+    async_interceptor.set_response(200, json=dummy_response_with_usage)
     response = asyncio.run(async_client.map(
         url="https://tavily.com",
         max_depth=2,
@@ -90,7 +97,8 @@ def test_async_map_specific(async_interceptor, async_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
-        timeout=10
+        timeout=10,
+        include_usage=True,
     ))
 
     request = async_interceptor.get_request()

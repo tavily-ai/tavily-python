@@ -12,6 +12,11 @@ dummy_response = {
     "response_time": 1.5
 }
 
+dummy_response_with_usage = {
+    **dummy_response,
+    "usage": 5
+}
+
 def validate_default(request, response):
     assert request.method == "POST"
     assert request.url == "https://api.tavily.com/crawl"
@@ -40,11 +45,12 @@ def validate_specific(request, response):
         "exclude_domains": ["example.com"],
         "allow_external": False,
         "include_images": True,
-        "extract_depth": "advanced"
+        "extract_depth": "advanced",
+        "include_usage": True,
     }.items():
         assert request_json.get(key) == value
 
-    assert response == dummy_response
+    assert response == dummy_response_with_usage
 
 def test_sync_crawl_defaults(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_response)
@@ -53,7 +59,7 @@ def test_sync_crawl_defaults(sync_interceptor, sync_client):
     validate_default(request, response)
 
 def test_sync_crawl_specific(sync_interceptor, sync_client):
-    sync_interceptor.set_response(200, json=dummy_response)
+    sync_interceptor.set_response(200, json=dummy_response_with_usage)
     response = sync_client.crawl(
         url="https://tavily.com",
         max_depth=2,
@@ -67,7 +73,8 @@ def test_sync_crawl_specific(sync_interceptor, sync_client):
         allow_external=False,
         include_images=True,
         extract_depth="advanced",
-        timeout=10
+        timeout=10,
+        include_usage=True,
     )
 
     request = sync_interceptor.get_request()
@@ -80,7 +87,7 @@ def test_async_crawl_defaults(async_interceptor, async_client):
     validate_default(request, response)
 
 def test_async_crawl_specific(async_interceptor, async_client):
-    async_interceptor.set_response(200, json=dummy_response)
+    async_interceptor.set_response(200, json=dummy_response_with_usage)
     response = asyncio.run(async_client.crawl(
         url="https://tavily.com",
         max_depth=2,
@@ -94,7 +101,8 @@ def test_async_crawl_specific(async_interceptor, async_client):
         allow_external=False,
         include_images=True,
         extract_depth="advanced",
-        timeout=10
+        timeout=10,
+        include_usage=True,
     ))
 
     request = async_interceptor.get_request()
