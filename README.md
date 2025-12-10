@@ -238,7 +238,7 @@ For a complete guide on how to use the different endpoints and their parameters,
 ## Cost
 
 Tavily is free for personal use for up to 1,000 credits per month.
-Head to the [Credits & Pricing](https://docs.tavily.com/documentation/api-credits) guide to learn more about how many API credits each request costs.
+Head to the [Credits & Pricing](https://docs.tavily.com/documentation/api-credits) in our documentation to learn more about how many API credits each request costs.
 
 ## License
 
