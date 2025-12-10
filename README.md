@@ -13,10 +13,6 @@ The Tavily Python wrapper allows for easy interaction with the Tavily API, offer
 pip install tavily-python
 ```
 
-## Usage Credits
-
-All `search`, `extract`, `crawl`, and `map` calls accept an optional `include_usage` boolean parameter (default `False`). When `True`, the Tavily API response adds a `usage` field that reports the exact credits billed for that request. The value may be `0` if the minimum usage threshold is not met. Leave the parameter unset (or `False`) to omit credit details for backwards compatibility. See [Credits & Pricing](https://github.com/tavily-ai/new-docs/blob/main/docs/credits-pricing.md) for more information.
-
 # Tavily Search
 
 Search lets you search the web for a given query.
@@ -242,7 +238,7 @@ For a complete guide on how to use the different endpoints and their parameters,
 ## Cost
 
 Tavily is free for personal use for up to 1,000 credits per month.
-Head to the [Credits & Pricing](https://github.com/tavily-ai/new-docs/blob/main/docs/credits-pricing.md) guide to learn more about how many API credits each request costs.
+Head to the [Credits & Pricing](https://docs.tavily.com/documentation/api-credits) guide to learn more about how many API credits each request costs.
 
 ## License
 
