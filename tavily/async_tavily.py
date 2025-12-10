@@ -147,7 +147,7 @@ class AsyncTavilyClient:
                      country: str = None,
                      auto_parameters: bool = None,
                      include_favicon: bool = None,
-                    include_usage: bool = None,
+                     include_usage: bool = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
