@@ -34,8 +34,7 @@ from tavily import TavilyClient
 tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
 # Step 2. Executing a simple search query
-response = tavily_client.search("Who is Leo Messi?", include_usage=True)
-print(response.get("usage"))  # Present only when include_usage=True
+response = tavily_client.search("Who is Leo Messi?")
 
 # Step 3. That's it! You've done a Tavily Search!
 print(response)
@@ -239,11 +238,6 @@ for chunk in stream:
 ## Documentation
 
 For a complete guide on how to use the different endpoints and their parameters, please head to our [Python API Reference](https://docs.tavily.com/sdk/python/reference).
-
-## LLM Integrations
-
-- **OpenAI** – The examples in `examples/openai_assistant.py` and `examples/company_information.py` work unchanged, and you can now pass `include_usage=True` to `tavily_client.search`, `crawl`, or other helper calls to stream credit data back into your threads or tool outputs.
-- **Anthropic** – When wiring Tavily into Anthropic tools or workflows, forward `include_usage` through the same endpoints to monitor spend per invocation. This keeps prompt responses light by default while letting you surface usage whenever you need it.
 
 ## Cost
 
