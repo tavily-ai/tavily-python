@@ -16,7 +16,9 @@ def validate_default(request, response):
     assert request.url == "https://api.tavily.com/map"
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
-    assert request.json().get('url') == "https://tavily.com"
+    request_json = request.json()
+    assert request_json.get('url') == "https://tavily.com"
+    assert request_json.get("include_usage") is False
     assert response == dummy_response
 
 def validate_specific(request, response):
@@ -38,7 +40,8 @@ def validate_specific(request, response):
         "exclude_paths": ["/blog"],
         "exclude_domains": ["example.com"],
         "allow_external": False,
-        "include_images": True
+        "include_images": True,
+        "include_usage": True,
     }.items():
         assert request_json.get(key) == value
 
@@ -64,6 +67,7 @@ def test_sync_map_specific(sync_interceptor, sync_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
+        include_usage=True,
         timeout=10
     )
 
@@ -90,6 +94,7 @@ def test_async_map_specific(async_interceptor, async_client):
         exclude_domains=["example.com"],
         allow_external=False,
         include_images=True,
+        include_usage=True,
         timeout=10
     ))
 

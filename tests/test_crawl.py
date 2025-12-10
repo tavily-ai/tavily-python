@@ -17,7 +17,9 @@ def validate_default(request, response):
     assert request.url == "https://api.tavily.com/crawl"
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
-    assert request.json().get('url') == "https://tavily.com"
+    request_json = request.json()
+    assert request_json.get('url') == "https://tavily.com"
+    assert request_json.get("include_usage") is False
     assert response == dummy_response
 
 def validate_specific(request, response):
@@ -40,7 +42,8 @@ def validate_specific(request, response):
         "exclude_domains": ["example.com"],
         "allow_external": False,
         "include_images": True,
-        "extract_depth": "advanced"
+        "extract_depth": "advanced",
+        "include_usage": True,
     }.items():
         assert request_json.get(key) == value
 
@@ -67,6 +70,7 @@ def test_sync_crawl_specific(sync_interceptor, sync_client):
         allow_external=False,
         include_images=True,
         extract_depth="advanced",
+        include_usage=True,
         timeout=10
     )
 
@@ -94,6 +98,7 @@ def test_async_crawl_specific(async_interceptor, async_client):
         allow_external=False,
         include_images=True,
         extract_depth="advanced",
+        include_usage=True,
         timeout=10
     ))
 

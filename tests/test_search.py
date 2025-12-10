@@ -23,7 +23,9 @@ def validate_default(request, response):
     assert request.url == "https://api.tavily.com/search"
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
-    assert request.json().get('query') == "What is Tavily?"
+    request_json = request.json()
+    assert request_json.get('query') == "What is Tavily?"
+    assert request_json.get("include_usage") is False
     assert response == dummy_response
 
 def validate_specific(request, response):
@@ -44,7 +46,8 @@ def validate_specific(request, response):
         "exclude_domains": ["example.com"],
         "include_answer": "advanced",
         "include_raw_content": True,
-        "include_images": True
+        "include_images": True,
+        "include_usage": True,
     }.items():
         assert request_json.get(key) == value
 
@@ -69,6 +72,7 @@ def test_sync_search_specific(sync_interceptor, sync_client):
         include_answer="advanced",
         include_raw_content=True,
         include_images=True,
+        include_usage=True,
         timeout=10
     )
 
@@ -94,6 +98,7 @@ def test_async_search_specific(async_interceptor, async_client):
         include_answer="advanced",
         include_raw_content=True,
         include_images=True,
+        include_usage=True,
         timeout=10
     ))
 

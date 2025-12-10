@@ -10,6 +10,8 @@ query = "Information about Nvidia (nvidia.com)"
 
 print(f"Calling Tavily company retrieval with query: {query}...\n[Note]: Using 'advanced' may take up to 10 seconds.")
 context = tavily_client.get_company_info(query=query, search_depth="advanced", max_results=7)
+usage_probe = tavily_client.search(query=query, include_usage=True, max_results=3)
+print(f"Tavily usage payload (may read 0 until thresholds): {usage_probe.get('usage')}")
 
 PROMPT = f"""
 You are a business analyst tasked with collecting and summarizing company information and insights from a given context.

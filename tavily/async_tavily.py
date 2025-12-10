@@ -70,6 +70,7 @@ class AsyncTavilyClient:
             country: str = None,
             auto_parameters: bool = None,
             include_favicon: bool = None,
+            include_usage: bool = False,
             **kwargs,
     ) -> dict:
         """
@@ -92,6 +93,7 @@ class AsyncTavilyClient:
             "country": country,
             "auto_parameters": auto_parameters,
             "include_favicon": include_favicon,
+            "include_usage": include_usage,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -145,6 +147,7 @@ class AsyncTavilyClient:
                      country: str = None,
                      auto_parameters: bool = None,
                      include_favicon: bool = None,
+                     include_usage: bool = False,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -168,6 +171,7 @@ class AsyncTavilyClient:
                                            country=country,
                                            auto_parameters=auto_parameters,
                                            include_favicon=include_favicon,
+                                           include_usage=include_usage,
                                            **kwargs,
                                            )
 
@@ -185,6 +189,7 @@ class AsyncTavilyClient:
             format: Literal["markdown", "text"] = None,
             timeout: float = 30,
             include_favicon: bool = None,
+            include_usage: bool = False,
             **kwargs
     ) -> dict:
         """
@@ -198,6 +203,7 @@ class AsyncTavilyClient:
             "format": format,
             "timeout": timeout,
             "include_favicon": include_favicon,
+            "include_usage": include_usage,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -239,6 +245,7 @@ class AsyncTavilyClient:
                       format: Literal["markdown", "text"] = None,
                       timeout: float = 30,
                       include_favicon: bool = None,
+                      include_usage: bool = False,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
         """
@@ -251,6 +258,7 @@ class AsyncTavilyClient:
                                             format,
                                             timeout,
                                             include_favicon=include_favicon,
+                                            include_usage=include_usage,
                                             **kwargs,
                                             )
 
@@ -278,6 +286,7 @@ class AsyncTavilyClient:
                format: Literal["markdown", "text"] = None,
                timeout: float = 150,
                include_favicon: bool = None,
+               include_usage: bool = False,
                **kwargs
                ) -> dict:
         """
@@ -299,6 +308,7 @@ class AsyncTavilyClient:
             "format": format,
             "timeout": timeout,
             "include_favicon": include_favicon,
+            "include_usage": include_usage,
         }
 
         if kwargs:
@@ -348,6 +358,7 @@ class AsyncTavilyClient:
                     format: Literal["markdown", "text"] = None,
                     timeout: float = 150,
                     include_favicon: bool = None,
+                    include_usage: bool = False,
                     **kwargs
                     ) -> dict:
         """
@@ -369,6 +380,7 @@ class AsyncTavilyClient:
                                     format=format,
                                     timeout=timeout,
                                     include_favicon=include_favicon,
+                                    include_usage=include_usage,
                                     **kwargs)
 
         return response_dict
@@ -386,6 +398,7 @@ class AsyncTavilyClient:
                allow_external: bool = None,
                include_images: bool = None,
                timeout: float = 150,
+               include_usage: bool = False,
                **kwargs
                ) -> dict:
         """
@@ -404,6 +417,7 @@ class AsyncTavilyClient:
             "allow_external": allow_external,
             "include_images": include_images,
             "timeout": timeout,
+            "include_usage": include_usage,
         }
 
         if kwargs:
@@ -450,6 +464,7 @@ class AsyncTavilyClient:
                     allow_external: bool = None,
                     include_images: bool = None,
                     timeout: float = 150,
+                    include_usage: bool = False,
                     **kwargs
                     ) -> dict:
         """
@@ -467,6 +482,7 @@ class AsyncTavilyClient:
                                     exclude_domains=exclude_domains,
                                     allow_external=allow_external,
                                     include_images=include_images,
+                                    include_usage=include_usage,
                                     timeout=timeout,
                                     **kwargs)
 

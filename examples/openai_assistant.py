@@ -21,8 +21,19 @@ Please include relevant url sources in the end of your answers.
 
 # Function to perform a Tavily search
 def tavily_search(query):
-    search_result = tavily_client.get_search_context(query, search_depth="advanced", max_tokens=8000)
-    return search_result
+    context_blob = tavily_client.get_search_context(query, search_depth="advanced", max_tokens=8000)
+    usage_response = tavily_client.search(
+        query=query,
+        search_depth="advanced",
+        include_usage=True,
+        max_results=8,
+        include_answer="advanced",
+    )
+    payload = {
+        "context": json.loads(context_blob),
+        "usage": usage_response.get("usage", {}),
+    }
+    return json.dumps(payload)
 
 # Function to wait for a run to complete
 def wait_for_run_completion(thread_id, run_id):

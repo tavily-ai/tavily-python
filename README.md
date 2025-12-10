@@ -38,6 +38,8 @@ print(response)
 
 This is equivalent to directly querying our REST API.
 
+> `include_usage` (`bool`, optional, default `False`): Set this flag to include credit usage data in each `/search` response. Credit usage may be reported as `0` until usage thresholds are met, and those thresholds vary by endpoint.
+
 ### Generating context for a RAG Application
 
 ```python
@@ -109,6 +111,8 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
+> `include_usage` (`bool`, optional, default `False`): Include this flag in `/extract` calls when you need credit usage metadata alongside the extracted content. Credit usage may be reported as `0` until usage thresholds are met, which can differ per endpoint.
+
 # Tavily Crawl (Open-Access Beta)
 
 Crawl lets you traverse a website's content starting from a base URL.
@@ -145,6 +149,8 @@ for result in response["results"]:
 
 ```
 
+> `include_usage` (`bool`, optional, default `False`): Set this to `True` in `/crawl` requests whenever you want credit usage information returned with the crawl results. Credit usage may be reported as `0` until the endpoint-specific thresholds are reached.
+
 # Tavily Map (Open-Access Beta)
 
 Map lets you discover and visualize the structure of a website starting from a base URL.
@@ -177,6 +183,8 @@ for result in response["results"]:
     print(f"URL: {result['url']}")
 
 ```
+
+> `include_usage` (`bool`, optional, default `False`): Supply this flag on `/map` requests to receive credit usage metadata back with the site-structure payload. Credit usage may read as `0` until per-endpoint thresholds are crossed.
 
 # Tavily Research
 
@@ -230,6 +238,11 @@ stream = tavily_client.research(
 for chunk in stream:
     print(chunk.decode('utf-8'))
 ```
+
+## LLM Integrations
+
+- **OpenAI**: The assistant workflow in `examples/openai_assistant.py` now embeds Tavily credit usage metadata in each tool call response by requesting `include_usage=True`. This makes it easy to propagate usage data into OpenAI runs for budgeting or observability.
+- **Anthropic**: `examples/anthropic_usage.py` demonstrates how to call Tavily from the Anthropic Messages API while setting `include_usage=True` and relaying the resulting credit usage back to Claude. Remember that credit usage may show `0` until the relevant endpoint crosses its reporting threshold.
 
 ## Documentation
 
