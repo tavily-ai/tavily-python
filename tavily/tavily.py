@@ -169,6 +169,8 @@ class TavilyClient:
                  format: Literal["markdown", "text"] = None,
                  timeout: float = 30,
                  include_favicon: bool = None,
+                 query: str = None,
+                 chunks_per_source: int = None,
                  **kwargs
                  ) -> dict:
         """
@@ -181,6 +183,8 @@ class TavilyClient:
             "format": format,
             "timeout": timeout,
             "include_favicon": include_favicon,
+            "query": query,
+            "chunks_per_source": chunks_per_source,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -220,6 +224,8 @@ class TavilyClient:
                 format: Literal["markdown", "text"] = None,
                 timeout: float = 30,
                 include_favicon: bool = None,
+                query: str = None,
+                chunks_per_source: int = None,
                 **kwargs,  # Accept custom arguments
                 ) -> dict:
         """
@@ -231,6 +237,8 @@ class TavilyClient:
                                       format,
                                       timeout,
                                       include_favicon=include_favicon,
+                                      query=query,
+                                      chunks_per_source=chunks_per_source,
                                       **kwargs)
 
         tavily_results = response_dict.get("results", [])
