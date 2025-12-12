@@ -190,6 +190,8 @@ class AsyncTavilyClient:
             timeout: float = 30,
             include_favicon: bool = None,
             include_usage: bool = None,
+            query: str = None,
+            chunks_per_source: int = None,
             **kwargs
     ) -> dict:
         """
@@ -204,6 +206,8 @@ class AsyncTavilyClient:
             "timeout": timeout,
             "include_favicon": include_favicon,
             "include_usage": include_usage,
+            "query": query,
+            "chunks_per_source": chunks_per_source,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -246,6 +250,8 @@ class AsyncTavilyClient:
                       timeout: float = 30,
                       include_favicon: bool = None,
                       include_usage: bool = None,
+                      query: str = None,
+                      chunks_per_source: int = None,
                       **kwargs,  # Accept custom arguments
                       ) -> dict:
         """
@@ -259,6 +265,8 @@ class AsyncTavilyClient:
                                             timeout,
                                             include_favicon=include_favicon,
                                             include_usage=include_usage,
+                                            query=query,
+                                            chunks_per_source=chunks_per_source,
                                             **kwargs,
                                             )
 
@@ -287,6 +295,7 @@ class AsyncTavilyClient:
                timeout: float = 150,
                include_favicon: bool = None,
                include_usage: bool = None,
+               chunks_per_source: int = None,
                **kwargs
                ) -> dict:
         """
@@ -309,6 +318,7 @@ class AsyncTavilyClient:
             "timeout": timeout,
             "include_favicon": include_favicon,
             "include_usage": include_usage,
+            "chunks_per_source": chunks_per_source,
         }
 
         if kwargs:
@@ -359,6 +369,7 @@ class AsyncTavilyClient:
                     timeout: float = 150,
                     include_favicon: bool = None,
                     include_usage: bool = None,
+                    chunks_per_source: int = None,
                     **kwargs
                     ) -> dict:
         """
@@ -381,6 +392,7 @@ class AsyncTavilyClient:
                                     timeout=timeout,
                                     include_favicon=include_favicon,
                                     include_usage=include_usage,
+                                    chunks_per_source=chunks_per_source,
                                     **kwargs)
 
         return response_dict
