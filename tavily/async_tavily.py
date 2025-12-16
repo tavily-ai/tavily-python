@@ -17,7 +17,8 @@ class AsyncTavilyClient:
     def __init__(self, api_key: Optional[str] = None,
                  company_info_tags: Sequence[str] = ("news", "general", "finance"),
                  proxies: Optional[dict[str, str]] = None,
-                 api_base_url: Optional[str] = None):
+                 api_base_url: Optional[str] = None,
+                 client_source: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -44,7 +45,7 @@ class AsyncTavilyClient:
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}",
-                "X-Client-Source": "tavily-python"
+                "X-Client-Source": client_source or "tavily-python"
             },
             base_url=self._api_base_url,
             mounts=proxy_mounts
