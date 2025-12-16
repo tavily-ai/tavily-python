@@ -109,7 +109,7 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
-# Tavily Crawl (Open-Access Beta)
+# Tavily Crawl
 
 Crawl lets you traverse a website's content starting from a base URL.
 
@@ -145,7 +145,7 @@ for result in response["results"]:
 
 ```
 
-# Tavily Map (Open-Access Beta)
+# Tavily Map
 
 Map lets you discover and visualize the structure of a website starting from a base URL.
 
