@@ -1,7 +1,7 @@
 import requests
 import json
-import warnings
 import os
+import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
@@ -502,6 +502,8 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
+        warnings.warn("get_search_context is deprecated and will be removed in future versions.",
+                      DeprecationWarning, stacklevel=2)
 
         response_dict = self._search(query,
                                      search_depth=search_depth,
@@ -539,6 +541,8 @@ class TavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        warnings.warn("qna_search is deprecated and will be removed in future versions.",
+                      DeprecationWarning, stacklevel=2)
         response_dict = self._search(query,
                                      search_depth=search_depth,
                                      topic=topic,
@@ -565,6 +569,8 @@ class TavilyClient:
                          country: str = None,
                          ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
+        warnings.warn("get_company_info is deprecated and will be removed in future versions.",
+                      DeprecationWarning, stacklevel=2)
         def _perform_search(topic):
             return self._search(query,
                                 search_depth=search_depth,
