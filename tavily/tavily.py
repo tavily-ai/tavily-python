@@ -2,6 +2,7 @@ import requests
 import json
 import warnings
 import os
+from warnings import deprecated
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import get_max_items_from_list
@@ -480,6 +481,7 @@ class TavilyClient:
 
         return response_dict
 
+    @deprecated("Will be removed in future versions")
     def get_search_context(self,
                            query: str,
                            search_depth: Literal["basic", "advanced"] = "basic",
@@ -523,6 +525,7 @@ class TavilyClient:
                    for source in sources]
         return json.dumps(get_max_items_from_list(context, max_tokens))
 
+    @deprecated("Will be removed in future versions")
     def qna_search(self,
                    query: str,
                    search_depth: Literal["basic", "advanced"] = "advanced",
@@ -556,6 +559,7 @@ class TavilyClient:
                                      )
         return response_dict.get("answer", "")
 
+    @deprecated("Will be removed in future versions")
     def get_company_info(self,
                          query: str,
                          search_depth: Literal["basic",
