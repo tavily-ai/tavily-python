@@ -12,7 +12,7 @@ class TavilyClient:
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None, client_source: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None, client_source: Optional[str] = None, project_id: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -25,14 +25,17 @@ class TavilyClient:
         }
 
         resolved_proxies = {k: v for k, v in resolved_proxies.items() if v} or None
-
+        tavily_project = project_id or os.getenv("TAVILY_PROJECT")
+        
         self.base_url = api_base_url or "https://api.tavily.com"
         self.api_key = api_key
         self.proxies = resolved_proxies
+        
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
-            "X-Client-Source": client_source or "tavily-python"
+            "X-Client-Source": client_source or "tavily-python",
+            **({"X-Project-ID": tavily_project} if tavily_project else {})
         }
 
     def _search(self,
