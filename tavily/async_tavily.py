@@ -18,7 +18,8 @@ class AsyncTavilyClient:
                  company_info_tags: Sequence[str] = ("news", "general", "finance"),
                  proxies: Optional[dict[str, str]] = None,
                  api_base_url: Optional[str] = None,
-                 client_source: Optional[str] = None):
+                 client_source: Optional[str] = None,
+                 project_id: Optional[str] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -40,12 +41,16 @@ class AsyncTavilyClient:
             else None
         )
 
+        tavily_project = project_id or os.getenv("TAVILY_PROJECT")
+
         self._api_base_url = api_base_url or "https://api.tavily.com"
+        
         self._client_creator = lambda: httpx.AsyncClient(
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {api_key}",
-                "X-Client-Source": client_source or "tavily-python"
+                "X-Client-Source": client_source or "tavily-python",
+                **({"X-Project-ID": tavily_project} if tavily_project else {})
             },
             base_url=self._api_base_url,
             mounts=proxy_mounts
