@@ -37,7 +37,7 @@ class TavilyClient:
 
     def _search(self,
                 query: str,
-                search_depth: Literal["basic", "advanced"] = None,
+                search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = None,
                 topic: Literal["general", "news", "finance"] = None,
                 time_range: Literal["day", "week", "month", "year"] = None,
                 start_date: str = None,
@@ -114,7 +114,7 @@ class TavilyClient:
 
     def search(self,
                query: str,
-               search_depth: Literal["basic", "advanced"] = None,
+               search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = None,
                topic: Literal["general", "news", "finance" ] = None,
                time_range: Literal["day", "week", "month", "year"] = None,
                start_date: str = None,
@@ -454,7 +454,7 @@ class TavilyClient:
 
     def get_search_context(self,
                            query: str,
-                           search_depth: Literal["basic", "advanced"] = "basic",
+                           search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = "basic",
                            topic: Literal["general", "news", "finance"] = "general",
                            days: int = 7,
                            max_results: int = 5,
@@ -497,7 +497,7 @@ class TavilyClient:
 
     def qna_search(self,
                    query: str,
-                   search_depth: Literal["basic", "advanced"] = "advanced",
+                   search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = "advanced",
                    topic: Literal["general", "news", "finance"] = "general",
                    days: int = 7,
                    max_results: int = 5,
@@ -531,7 +531,9 @@ class TavilyClient:
     def get_company_info(self,
                          query: str,
                          search_depth: Literal["basic",
-                                               "advanced"] = "advanced",
+                                               "advanced",
+                                               "fast",
+                                               "ultra-fast"] = "advanced",
                          max_results: int = 5,
                          timeout: float = 60,
                          country: str = None,
