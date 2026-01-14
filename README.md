@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/tavily-ai/tavily-python)](https://github.com/tavily-ai/tavily-python/blob/main/LICENSE)
 [![CI](https://github.com/tavily-ai/tavily-python/actions/workflows/tests.yml/badge.svg)](https://github.com/tavily-ai/tavily-python/actions)
 
-The Tavily Python wrapper allows for easy interaction with the Tavily API, offering the full range of our search and extract functionalities directly from your Python programs. Easily integrate smart search and content extraction capabilities into your applications, harnessing Tavily's powerful search and extract features.
+The Tavily Python wrapper allows for easy interaction with the Tavily API, offering the full range of our search, extract, crawl, map, and research functionalities directly from your Python programs. Easily integrate smart search, content extraction, and research capabilities into your applications, harnessing Tavily's powerful features.
 
 ## Installing
 
@@ -14,6 +14,7 @@ pip install tavily-python
 ```
 
 # Tavily Search
+
 Search lets you search the web for a given query.
 
 ## Usage
@@ -72,6 +73,7 @@ print(answer)
 This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
 
 # Tavily Extract
+
 Extract web page content from one or more specified URLs.
 
 ## Usage
@@ -107,7 +109,7 @@ for result in response["results"]:
 # Note that URLs that could not be extracted will be stored in response["failed_results"]
 ```
 
-# Tavily Crawl (Open-Access Beta)
+# Tavily Crawl
 
 Crawl lets you traverse a website's content starting from a base URL.
 
@@ -143,7 +145,7 @@ for result in response["results"]:
 
 ```
 
-# Tavily Map (Open-Access Beta)
+# Tavily Map
 
 Map lets you discover and visualize the structure of a website starting from a base URL.
 
@@ -174,6 +176,59 @@ response = tavily_client.map(
 for result in response["results"]:
     print(f"URL: {result['url']}")
 
+```
+
+# Tavily Research
+
+Research lets you create comprehensive research reports on any topic, with automatic source gathering, analysis, and structured output.
+
+## Usage
+
+Below are some code snippets that demonstrate how to interact with our Research API. Each step and component of this code is explained in greater detail in the API Methods section below.
+
+### Creating a research task and retrieving results
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Creating a research task
+response = tavily_client.research(
+    input="Research the latest developments in AI",
+    model="pro",
+    citation_format="apa"
+)
+
+# Step 3. Retrieving the research results
+request_id = response["request_id"]
+result = tavily_client.get_research(request_id)
+
+# Step 4. Printing the research report
+print(f"Status: {result['status']}")
+print(f"Content: {result['content']}")
+print(f"Sources: {len(result['sources'])} sources found")
+```
+
+### Streaming research results
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Creating a streaming research task
+stream = tavily_client.research(
+    input="Research the latest developments in AI",
+    model="pro",
+    stream=True
+)
+
+# Step 3. Processing the stream as it arrives
+for chunk in stream:
+    print(chunk.decode('utf-8'))
 ```
 
 ## Documentation

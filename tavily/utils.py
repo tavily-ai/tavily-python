@@ -12,17 +12,6 @@ def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL
     tokens = encoding.encode(string)
     return len(tokens)
 
-
-def get_max_tokens_from_string(string: str, max_tokens: int, encoding_name: str = DEFAULT_MODEL_ENCODING) -> str:
-    """
-        Extract max tokens from string using the specified encoding (based on openai compute)
-    """
-    encoding = tiktoken.encoding_for_model(encoding_name)
-    tokens = encoding.encode(string)
-    token_bytes = [encoding.decode_single_token_bytes(token) for token in tokens[:max_tokens]]
-    return b"".join(token_bytes).decode()
-
-
 def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_TOKENS) -> List[Dict[str,str]]:
     """
         Get max items from list of items based on defined max tokens (based on openai compute)
