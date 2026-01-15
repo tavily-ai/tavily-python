@@ -157,7 +157,7 @@ class AsyncTavilyClient:
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
-        Combined search method. Set search_depth to either "basic" or "advanced".
+        Combined search method. Set search_depth to either "basic", "advanced", "fast", or "ultra-fast".
         """
         timeout = min(timeout, 120)
         response_dict = await self._search(query,
@@ -508,7 +508,7 @@ class AsyncTavilyClient:
 
     async def get_search_context(self,
                                  query: str,
-                                 search_depth: Literal["basic", "advanced"] = "basic",
+                                 search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = "basic",
                                  topic: Literal["general", "news", "finance"] = "general",
                                  days: int = 7,
                                  max_results: int = 5,
@@ -550,7 +550,7 @@ class AsyncTavilyClient:
 
     async def qna_search(self,
                          query: str,
-                         search_depth: Literal["basic", "advanced"] = "advanced",
+                         search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = "advanced",
                          topic: Literal["general", "news", "finance"] = "general",
                          days: int = 7,
                          max_results: int = 5,
@@ -584,7 +584,7 @@ class AsyncTavilyClient:
 
     async def get_company_info(self,
                                query: str,
-                               search_depth: Literal["basic", "advanced"] = "advanced",
+                               search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = "advanced",
                                max_results: int = 5,
                                timeout: float = 60,
                                country: str = None,
