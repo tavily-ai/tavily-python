@@ -46,6 +46,29 @@ class Response:
     def close(self):
         pass
 
+class MockSession:
+    """Mock requests.Session for testing."""
+    def __init__(self, interceptor):
+        self._interceptor = interceptor
+        self.headers = {}
+        self.proxies = {}
+
+    def post(self, url, data=None, headers=None, timeout=None, proxies=None, stream=False):
+        # Merge session headers with request headers (request headers take precedence)
+        merged_headers = {**self.headers, **(headers or {})}
+        merged_proxies = {**self.proxies, **(proxies or {})} if proxies else self.proxies
+        return self._interceptor.post(url, data, merged_headers, timeout, merged_proxies, stream)
+
+    def get(self, url, headers=None, timeout=None, proxies=None):
+        # Merge session headers with request headers (request headers take precedence)
+        merged_headers = {**self.headers, **(headers or {})}
+        merged_proxies = {**self.proxies, **(proxies or {})} if proxies else self.proxies
+        return self._interceptor.get(url, merged_headers, timeout, merged_proxies)
+
+    def close(self):
+        pass
+
+
 class Interceptor:
     def __init__(self):
         self._request = None
@@ -54,6 +77,10 @@ class Interceptor:
         class Exceptions:
             Timeout = TimeoutError
         self.exceptions = Exceptions()
+
+    def Session(self):
+        """Return a mock Session object."""
+        return MockSession(self)
 
     def set_response(self, status_code, headers={}, body=None, json=None):
         if json is not None:
