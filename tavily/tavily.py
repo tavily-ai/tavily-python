@@ -38,6 +38,11 @@ class TavilyClient:
             **({"X-Project-ID": tavily_project} if tavily_project else {})
         }
 
+        self.session = requests.Session()
+        self.session.headers.update(self.headers)
+        if self.proxies:
+            self.session.proxies.update(self.proxies)
+
     def _search(self,
                 query: str,
                 search_depth: Literal["basic", "advanced", "fast", "ultra-fast"] = None,
@@ -91,7 +96,7 @@ class TavilyClient:
         timeout = min(timeout, 120)
 
         try:
-            response = requests.post(self.base_url + "/search", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+            response = self.session.post(self.base_url + "/search", data=json.dumps(data), timeout=timeout)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -202,7 +207,7 @@ class TavilyClient:
             data.update(kwargs)
 
         try:
-            response = requests.post(self.base_url + "/extract", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+            response = self.session.post(self.base_url + "/extract", data=json.dumps(data), timeout=timeout)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -310,8 +315,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = requests.post(
-                self.base_url + "/crawl", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+            response = self.session.post(self.base_url + "/crawl", data=json.dumps(data), timeout=timeout)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -421,8 +425,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = requests.post(
-                self.base_url + "/map", data=json.dumps(data), headers=self.headers, timeout=timeout, proxies=self.proxies)
+            response = self.session.post(self.base_url + "/map", data=json.dumps(data), timeout=timeout)
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -631,12 +634,10 @@ class TavilyClient:
 
         if stream:
             try:
-                response = requests.post(
+                response = self.session.post(
                     self.base_url + "/research",
                     data=json.dumps(data),
-                    headers=self.headers,
                     timeout=timeout,
-                    proxies=self.proxies,
                     stream=True
                 )
             except requests.exceptions.Timeout:
@@ -671,12 +672,10 @@ class TavilyClient:
             return stream_generator()
         else:
             try:
-                response = requests.post(
+                response = self.session.post(
                     self.base_url + "/research",
                     data=json.dumps(data),
-                    headers=self.headers,
-                    timeout=timeout,
-                    proxies=self.proxies
+                    timeout=timeout
                 )
             except requests.exceptions.Timeout:
                 raise TimeoutError(timeout)
@@ -752,11 +751,7 @@ class TavilyClient:
             dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
         """
         try:
-            response = requests.get(
-                self.base_url + f"/research/{request_id}",
-                headers=self.headers,
-                proxies=self.proxies,
-            )
+            response = self.session.get(self.base_url + f"/research/{request_id}")
         except Exception as e:
             raise Exception(f"Error getting research: {e}")
 
