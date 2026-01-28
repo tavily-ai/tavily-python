@@ -12,3 +12,4 @@ __pycache__/
 .DS_Store
 .env
 venv/
+test_local.py
