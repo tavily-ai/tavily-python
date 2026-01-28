@@ -13,3 +13,4 @@ __pycache__/
 .env
 venv/
 test_local.py
+test_local_suite.py
