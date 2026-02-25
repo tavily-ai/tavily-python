@@ -38,6 +38,19 @@ print(response)
 
 This is equivalent to directly querying our REST API.
 
+### Using exact match for precise phrase searches
+
+```python
+from tavily import TavilyClient
+
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Use exact_match to only return results containing the exact phrase(s) inside quotes
+response = tavily_client.search(query='"John Smith" CEO Acme Corp', exact_match=True)
+
+print(response)
+```
+
 ### Generating context for a RAG Application
 
 ```python
