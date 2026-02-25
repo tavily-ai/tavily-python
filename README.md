@@ -72,6 +72,21 @@ print(answer)
 
 This is how you get accurate and concise answers to questions, in one line of code. Perfect for usage by LLMs!
 
+### Searching for exact phrase matches
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Use exact_match to only return results containing the exact phrase(s) inside quotes
+response = tavily_client.search(query='"John Smith" CEO Acme Corp', exact_match=True)
+
+# Step 3. Process results that contain the exact quoted phrase
+print(response)
+```
+
 # Tavily Extract
 
 Extract web page content from one or more specified URLs.

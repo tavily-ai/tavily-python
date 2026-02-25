@@ -99,3 +99,31 @@ def test_async_search_specific(async_interceptor, async_client):
 
     request = async_interceptor.get_request()
     validate_specific(request, response)
+
+def test_sync_search_exact_match(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    response = sync_client.search('"John Smith" CEO', exact_match=True)
+    request = sync_interceptor.get_request()
+    assert request.json().get('exact_match') == True
+    assert response == dummy_response
+
+def test_sync_search_exact_match_false(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    response = sync_client.search('"John Smith" CEO', exact_match=False)
+    request = sync_interceptor.get_request()
+    assert request.json().get('exact_match') == False
+    assert response == dummy_response
+
+def test_sync_search_exact_match_not_set(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    response = sync_client.search("What is Tavily?")
+    request = sync_interceptor.get_request()
+    assert 'exact_match' not in request.json()
+    assert response == dummy_response
+
+def test_async_search_exact_match(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    response = asyncio.run(async_client.search('"John Smith" CEO', exact_match=True))
+    request = async_interceptor.get_request()
+    assert request.json().get('exact_match') == True
+    assert response == dummy_response
