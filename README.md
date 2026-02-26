@@ -36,6 +36,21 @@ response = tavily_client.search("Who is Leo Messi?")
 print(response)
 ```
 
+### Using exact match to find specific names or phrases
+
+```python
+from tavily import TavilyClient
+
+client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Use exact_match=True to only return results containing the exact phrase(s) inside quotes
+response = client.search(
+    query='"John Smith" CEO Acme Corp',
+    exact_match=True
+)
+print(response)
+```
+
 This is equivalent to directly querying our REST API.
 
 ### Generating context for a RAG Application
