@@ -70,8 +70,12 @@ class TavilyClient:
         # Store final headers for reference
         self.headers = dict(self.session.headers)
 
+        # Merge proxies: preserve existing session proxies, add defaults for missing protocols
+        # This allows custom sessions to define their own proxy configuration
         if self.proxies:
-            self.session.proxies.update(self.proxies)
+            for protocol, proxy_url in self.proxies.items():
+                if protocol not in self.session.proxies:
+                    self.session.proxies[protocol] = proxy_url
 
     def close(self):
         """Close the session and release resources.
