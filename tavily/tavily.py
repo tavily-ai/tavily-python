@@ -49,6 +49,8 @@ class TavilyClient:
         self.proxies = resolved_proxies
 
         # Create or use provided session
+        # Track whether session is external to avoid closing it on exit
+        self._external_session = session is not None
         self.session = session if session is not None else requests.Session()
 
         # Build default headers
@@ -72,8 +74,13 @@ class TavilyClient:
             self.session.proxies.update(self.proxies)
 
     def close(self):
-        """Close the session and release resources."""
-        self.session.close()
+        """Close the session and release resources.
+
+        Only closes the session if it was created internally.
+        External sessions provided by the user are not closed.
+        """
+        if not self._external_session:
+            self.session.close()
 
     def __enter__(self):
         return self
