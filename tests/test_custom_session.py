@@ -250,3 +250,46 @@ def test_custom_session_proxies_from_env():
         # Clean up environment variables
         os.environ.pop("TAVILY_HTTP_PROXY", None)
         os.environ.pop("TAVILY_HTTPS_PROXY", None)
+
+
+def test_headers_attribute_contains_only_tavily_headers():
+    """Test that self.headers contains only Tavily-specific headers, not session defaults."""
+    # Create a custom session with extra headers
+    custom_session = requests.Session()
+    custom_session.headers.update(
+        {
+            "X-Custom-Header": "custom-value",
+            "X-Azure-APIM-Key": "apim-key-123",
+        }
+    )
+
+    client = TavilyClient(
+        api_key="test-key", session=custom_session, project_id="test-project"
+    )
+
+    # self.headers should only contain Tavily-specific headers
+    expected_keys = {"Content-Type", "Authorization", "X-Client-Source", "X-Project-ID"}
+    assert set(client.headers.keys()) == expected_keys
+
+    # Verify the values
+    assert client.headers["Content-Type"] == "application/json"
+    assert client.headers["Authorization"] == "Bearer test-key"
+    assert client.headers["X-Client-Source"] == "tavily-python"
+    assert client.headers["X-Project-ID"] == "test-project"
+
+    # self.headers should NOT contain custom session headers
+    assert "X-Custom-Header" not in client.headers
+    assert "X-Azure-APIM-Key" not in client.headers
+
+    # self.headers should NOT contain requests.Session default headers
+    # (like User-Agent, Accept-Encoding, etc.)
+    assert "User-Agent" not in client.headers
+    assert "Accept-Encoding" not in client.headers
+    assert "Accept" not in client.headers
+    assert "Connection" not in client.headers
+
+    # But the session itself should have all headers
+    assert "X-Custom-Header" in client.session.headers
+    assert "X-Azure-APIM-Key" in client.session.headers
+
+    client.close()

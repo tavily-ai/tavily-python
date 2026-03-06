@@ -61,14 +61,14 @@ class TavilyClient:
             **({"X-Project-ID": tavily_project} if tavily_project else {}),
         }
 
+        # Store Tavily-specific headers for reference
+        self.headers = default_headers
+
         # Merge headers: preserve existing session headers, add defaults for missing keys
         # This allows custom sessions to override Authorization and other headers
         for key, value in default_headers.items():
             if key not in self.session.headers:
                 self.session.headers[key] = value
-
-        # Store final headers for reference
-        self.headers = dict(self.session.headers)
 
         # Merge proxies: preserve existing session proxies, add defaults for missing protocols
         # This allows custom sessions to define their own proxy configuration
