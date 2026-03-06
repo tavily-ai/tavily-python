@@ -104,11 +104,13 @@ class TestSyncCustomSession:
 
     # --- API key validation edge cases ---
 
-    def test_no_api_key_no_session_raises(self):
+    def test_no_api_key_no_session_raises(self, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         with pytest.raises(MissingAPIKeyError):
             sync_tavily.TavilyClient()
 
-    def test_no_api_key_with_session_allowed(self, sync_interceptor):
+    def test_no_api_key_with_session_allowed(self, sync_interceptor, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         custom_session = MockSession(sync_interceptor)
         custom_session.headers["Authorization"] = "Bearer apim-token"
         client = sync_tavily.TavilyClient(session=custom_session)
@@ -116,7 +118,8 @@ class TestSyncCustomSession:
         assert "Authorization" not in client.headers
         assert client.session.headers["Authorization"] == "Bearer apim-token"
 
-    def test_no_api_key_with_session_no_auth_header_on_defaults(self, sync_interceptor):
+    def test_no_api_key_with_session_no_auth_header_on_defaults(self, sync_interceptor, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         custom_session = MockSession(sync_interceptor)
         client = sync_tavily.TavilyClient(session=custom_session)
         # No api_key means no Authorization in defaults
@@ -124,7 +127,8 @@ class TestSyncCustomSession:
         # Session shouldn't get an Authorization header either
         assert "Authorization" not in client.session.headers
 
-    def test_no_api_key_with_session_sends_request(self, sync_interceptor):
+    def test_no_api_key_with_session_sends_request(self, sync_interceptor, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         sync_interceptor.set_response(200, json={"results": []})
         custom_session = MockSession(sync_interceptor)
         custom_session.headers["Authorization"] = "Bearer apim-token"
@@ -136,7 +140,8 @@ class TestSyncCustomSession:
         assert req is not None
         assert req.headers["Authorization"] == "Bearer apim-token"
 
-    def test_empty_string_api_key_no_session_raises(self):
+    def test_empty_string_api_key_no_session_raises(self, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         with pytest.raises(MissingAPIKeyError):
             sync_tavily.TavilyClient(api_key="")
 
@@ -331,23 +336,21 @@ class TestAsyncCustomClient:
 
     # --- API key validation edge cases ---
 
-    def test_no_api_key_no_client_raises(self):
+    def test_no_api_key_no_client_raises(self, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         with pytest.raises(MissingAPIKeyError):
             async_tavily.AsyncTavilyClient()
 
-    def test_no_api_key_with_client_allowed(self):
+    def test_no_api_key_with_client_allowed(self, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         custom_client = httpx.AsyncClient(
             headers={"Authorization": "Bearer apim-token"},
         )
         client = async_tavily.AsyncTavilyClient(client=custom_client)
         assert client._client.headers["Authorization"] == "Bearer apim-token"
-        # No Authorization in defaults since no api_key
-        assert "Authorization" not in {
-            "Content-Type": "application/json",
-            "X-Client-Source": "tavily-python",
-        }
 
-    def test_no_api_key_with_client_no_auth_header_on_defaults(self):
+    def test_no_api_key_with_client_no_auth_header_on_defaults(self, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         custom_client = httpx.AsyncClient()
         client = async_tavily.AsyncTavilyClient(client=custom_client)
         # httpx always has headers dict but Authorization shouldn't be added
@@ -355,7 +358,8 @@ class TestAsyncCustomClient:
                                         if k.lower() == "authorization"
                                         and client._client.headers[k].startswith("Bearer None")]
 
-    def test_no_api_key_with_client_sends_request(self, async_interceptor):
+    def test_no_api_key_with_client_sends_request(self, async_interceptor, monkeypatch):
+        monkeypatch.delenv("TAVILY_API_KEY", raising=False)
         async_interceptor.set_response(200, json={"results": []})
         custom_client = httpx.AsyncClient(
             headers={"Authorization": "Bearer apim-token"},
