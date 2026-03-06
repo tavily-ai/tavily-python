@@ -51,3 +51,17 @@ def test_invalid_api_key():
     with pytest.raises(InvalidAPIKeyError):
         print(async_tavily.httpx.AsyncClient.post)
         print(asyncio.run(async_tavily.AsyncTavilyClient(api_key="invalid_api_key").search("What is Tavily?")))
+
+
+def test_deprecated_client_accepts_keyword_args():
+    with pytest.warns(DeprecationWarning):
+        client = sync_tavily.Client(api_key="tvly-test")
+    assert client.api_key == "tvly-test"
+    client.close()
+
+
+def test_deprecated_client_accepts_legacy_dict_kwargs():
+    with pytest.warns(DeprecationWarning):
+        client = sync_tavily.Client({"api_key": "tvly-test"})
+    assert client.api_key == "tvly-test"
+    client.close()

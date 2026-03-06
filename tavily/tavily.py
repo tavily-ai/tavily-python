@@ -739,7 +739,15 @@ class Client(TavilyClient):
     WARNING! This class is deprecated. Please use TavilyClient instead.
     """
 
-    def __init__(self, kwargs):
+    def __init__(self, kwargs=None, **legacy_kwargs):
         warnings.warn("Client is deprecated, please use TavilyClient instead",
                       DeprecationWarning, stacklevel=2)
-        super().__init__(kwargs)
+
+        if isinstance(kwargs, dict):
+            init_kwargs = {**kwargs, **legacy_kwargs}
+        elif kwargs is not None:
+            init_kwargs = {"api_key": kwargs, **legacy_kwargs}
+        else:
+            init_kwargs = legacy_kwargs
+
+        super().__init__(**init_kwargs)
