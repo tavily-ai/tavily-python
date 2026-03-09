@@ -19,48 +19,63 @@ class AsyncTavilyClient:
                  proxies: Optional[dict[str, str]] = None,
                  api_base_url: Optional[str] = None,
                  client_source: Optional[str] = None,
-                 project_id: Optional[str] = None):
+                 project_id: Optional[str] = None,
+                 client: Optional[httpx.AsyncClient] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
-        if not api_key:
+        if not api_key and client is None:
             raise MissingAPIKeyError()
-
-        proxies = proxies or {}
-
-        mapped_proxies = {
-            "http://": proxies.get("http", os.getenv("TAVILY_HTTP_PROXY")),
-            "https://": proxies.get("https", os.getenv("TAVILY_HTTPS_PROXY")),
-        }
-
-        mapped_proxies = {key: value for key, value in mapped_proxies.items() if value}
-
-        proxy_mounts = (
-            {scheme: httpx.AsyncHTTPTransport(proxy=proxy) for scheme, proxy in mapped_proxies.items()}
-            if mapped_proxies
-            else None
-        )
 
         tavily_project = project_id or os.getenv("TAVILY_PROJECT")
 
         self._api_base_url = api_base_url or "https://api.tavily.com"
-
-        # Create a persistent client for connection pooling
-        self._client = httpx.AsyncClient(
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}",
-                "X-Client-Source": client_source or "tavily-python",
-                **({"X-Project-ID": tavily_project} if tavily_project else {})
-            },
-            base_url=self._api_base_url,
-            mounts=proxy_mounts
-        )
         self._company_info_tags = company_info_tags
+
+        default_headers = {
+            "Content-Type": "application/json",
+            **({"Authorization": f"Bearer {api_key}"} if api_key else {}),
+            "X-Client-Source": client_source or "tavily-python",
+            **({"X-Project-ID": tavily_project} if tavily_project else {})
+        }
+
+        self._external_client = client is not None
+
+        if client is not None:
+            self._client = client
+            # Only set headers that aren't already configured on the external client
+            for key, value in default_headers.items():
+                if key not in self._client.headers:
+                    self._client.headers[key] = value
+            # Set base_url if the external client doesn't have one
+            if not str(self._client.base_url):
+                self._client.base_url = self._api_base_url
+        else:
+            proxies = proxies or {}
+
+            mapped_proxies = {
+                "http://": proxies.get("http", os.getenv("TAVILY_HTTP_PROXY")),
+                "https://": proxies.get("https", os.getenv("TAVILY_HTTPS_PROXY")),
+            }
+
+            mapped_proxies = {key: value for key, value in mapped_proxies.items() if value}
+
+            proxy_mounts = (
+                {scheme: httpx.AsyncHTTPTransport(proxy=proxy) for scheme, proxy in mapped_proxies.items()}
+                if mapped_proxies
+                else None
+            )
+
+            self._client = httpx.AsyncClient(
+                headers=default_headers,
+                base_url=self._api_base_url,
+                mounts=proxy_mounts
+            )
 
     async def close(self):
         """Close the client and release connection pool resources."""
-        await self._client.aclose()
+        if not self._external_client:
+            await self._client.aclose()
 
     async def __aenter__(self):
         return self
