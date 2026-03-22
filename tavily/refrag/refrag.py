@@ -104,7 +104,7 @@ class TavilyRefragClient:
         Returns:
             Ordered list of RefragChunk objects.
         """
-        k = chunk_size or self.chunk_size
+        k = chunk_size if chunk_size is not None else self.chunk_size
         chunks: List[RefragChunk] = []
 
         for passage in passages:
