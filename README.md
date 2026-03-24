@@ -246,6 +246,53 @@ for chunk in stream:
     print(chunk.decode('utf-8'))
 ```
 
+## Advanced: Custom Session / Client Injection
+
+For enterprise environments that proxy Tavily traffic through an API gateway (e.g., for centralized auth, logging, or policy enforcement), you can pass a pre-configured HTTP session instead of a Tavily API key.
+
+### Sync (custom `requests.Session`)
+
+```python
+import requests
+from tavily import TavilyClient
+
+# Pre-configure a session with your gateway's auth
+session = requests.Session()
+session.headers["Authorization"] = "Bearer your-gateway-token"
+session.headers["X-Subscription-Key"] = "your-subscription-key"
+
+# No Tavily API key needed — auth is handled by the session
+client = TavilyClient(
+    session=session,
+    api_base_url="https://your-gateway.com/tavily",
+)
+
+response = client.search("latest AI research")
+```
+
+### Async (custom `httpx.AsyncClient`)
+
+```python
+import httpx
+from tavily import AsyncTavilyClient
+
+# Pre-configure an async client with your gateway's auth
+custom_client = httpx.AsyncClient(
+    headers={"Authorization": "Bearer your-gateway-token"},
+    base_url="https://your-gateway.com/tavily",
+)
+
+client = AsyncTavilyClient(client=custom_client)
+
+response = await client.search("latest AI research")
+```
+
+**Key behaviors:**
+- If a custom session/client is provided, `api_key` is optional
+- Custom session headers take precedence over SDK defaults (e.g., your `Authorization` won't be overwritten)
+- Custom session proxies take precedence over SDK proxy settings
+- The SDK will **not** close externally-provided sessions — you manage the lifecycle
+
 ## Documentation
 
 For a complete guide on how to use the different endpoints and their parameters, please head to our [Python API Reference](https://docs.tavily.com/sdk/python/reference).

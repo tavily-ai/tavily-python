@@ -11,11 +11,11 @@ class TavilyClient:
     Tavily API client class.
     """
 
-    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None, client_source: Optional[str] = None, project_id: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, proxies: Optional[dict[str, str]] = None, api_base_url: Optional[str] = None, client_source: Optional[str] = None, project_id: Optional[str] = None, session: Optional[requests.Session] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
-        if not api_key:
+        if not api_key and session is None:
             raise MissingAPIKeyError()
 
         resolved_proxies = {
@@ -32,19 +32,26 @@ class TavilyClient:
         
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
+            **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}),
             "X-Client-Source": client_source or "tavily-python",
             **({"X-Project-ID": tavily_project} if tavily_project else {})
         }
 
-        self.session = requests.Session()
-        self.session.headers.update(self.headers)
+        self._external_session = session is not None
+        self.session = session if session is not None else requests.Session()
+        # For external sessions, only set headers that aren't already configured
+        for key, value in self.headers.items():
+            if key not in self.session.headers:
+                self.session.headers[key] = value
         if self.proxies:
-            self.session.proxies.update(self.proxies)
+            for protocol, url in self.proxies.items():
+                if protocol not in self.session.proxies:
+                    self.session.proxies[protocol] = url
 
     def close(self):
         """Close the session and release resources."""
-        self.session.close()
+        if not self._external_session:
+            self.session.close()
 
     def __enter__(self):
         return self

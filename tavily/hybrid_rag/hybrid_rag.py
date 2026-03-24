@@ -1,6 +1,7 @@
 import os
 from typing import Union, Optional, Literal
 
+import requests
 from tavily import TavilyClient
 
 try:
@@ -76,7 +77,8 @@ class TavilyHybridClient():
             embeddings_field: str = 'embeddings',
             content_field: str = 'content',
             embedding_function: Optional[callable] = None,
-            ranking_function: Optional[callable] = None
+            ranking_function: Optional[callable] = None,
+            session: Optional[requests.Session] = None
         ):
         '''
         A client for performing hybrid RAG using both the Tavily API and a local database collection.
@@ -90,9 +92,10 @@ class TavilyHybridClient():
         content_field (str): The name of the field in the collection that contains the content.
         embedding_function (callable): If provided, this function will be used to generate embeddings for the search query and documents.
         ranking_function (callable): If provided, this function will be used to rerank the combined results.
+        session (requests.Session): If provided, this pre-configured session will be used for HTTP requests. When set, api_key is optional.
         '''
-        
-        self.tavily = TavilyClient(api_key)
+
+        self.tavily = TavilyClient(api_key, session=session)
         
         if db_provider != 'mongodb':
             raise ValueError("Only MongoDB is currently supported as a database provider.")
