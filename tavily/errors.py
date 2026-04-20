@@ -3,7 +3,16 @@ from email.utils import parsedate_to_datetime
 from typing import Mapping, Optional
 
 
-def parse_retry_after(headers):
+def _find_header(headers: Mapping[str, str], name: str) -> Optional[str]:
+    """Return the value of ``name`` from ``headers`` with case-insensitive lookup."""
+    target = name.lower()
+    for key, value in headers.items():
+        if key.lower() == target:
+            return value
+    return None
+
+
+def _parse_retry_after(headers: Optional[Mapping[str, str]]) -> Optional[float]:
     """Parse an HTTP ``Retry-After`` header value into seconds.
 
     Handles both forms defined by RFC 7231 §7.1.3:
@@ -11,19 +20,25 @@ def parse_retry_after(headers):
     - a non-negative decimal integer of seconds, e.g. ``"120"``
     - an HTTP-date, e.g. ``"Wed, 21 Oct 2015 07:28:00 GMT"``
 
-    Returns ``None`` when the header is absent or cannot be parsed.
-    Accepts any mapping-like headers object (``requests`` / ``httpx``).
+    Semantics follow ``urllib3.util.Retry.parse_retry_after``: integer
+    seconds first, then HTTP-date. Negative or past values clamp to ``0.0``.
+    Returns ``None`` when the header is absent or cannot be parsed (including
+    non-integer numerics, ``NaN``/``inf``, and malformed dates).
+
+    Accepts any mapping-like ``headers`` object. Case-insensitive header name
+    lookup is done explicitly so callers passing a plain ``dict`` (not only
+    ``requests``/``httpx`` header containers) work correctly.
     """
     if not headers:
         return None
-    raw = headers.get("Retry-After") or headers.get("retry-after")
+    raw = _find_header(headers, "Retry-After")
     if raw is None:
         return None
     raw = raw.strip()
     if not raw:
         return None
     try:
-        return float(raw)
+        return max(float(int(raw)), 0.0)
     except ValueError:
         pass
     try:
