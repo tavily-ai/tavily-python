@@ -148,7 +148,7 @@ class TavilyClient:
         payload = json.dumps(data)
 
         try:
-            response = self.session.post(url, data=payload, headers=override_headers, timeout=timeout)
+            response = self.session.post(url, data=payload, timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -256,7 +256,7 @@ class TavilyClient:
             data.update(kwargs)
 
         try:
-            response = self.session.post(self.base_url + "/extract", data=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = self.session.post(self.base_url + "/extract", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -360,7 +360,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = self.session.post(self.base_url + "/crawl", data=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = self.session.post(self.base_url + "/crawl", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -469,7 +469,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = self.session.post(self.base_url + "/map", data=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = self.session.post(self.base_url + "/map", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -639,9 +639,9 @@ class TavilyClient:
                 response = self.session.post(
                     self.base_url + "/research",
                     data=json.dumps(data),
-                    headers=override_headers,
                     timeout=timeout,
-                    stream=True
+                    stream=True,
+                    **({"headers": override_headers} if override_headers else {})
                 )
             except requests.exceptions.Timeout:
                 raise TimeoutError(timeout)
@@ -678,8 +678,8 @@ class TavilyClient:
                 response = self.session.post(
                     self.base_url + "/research",
                     data=json.dumps(data),
-                    headers=override_headers,
-                    timeout=timeout
+                    timeout=timeout,
+                    **({"headers": override_headers} if override_headers else {})
                 )
             except requests.exceptions.Timeout:
                 raise TimeoutError(timeout)

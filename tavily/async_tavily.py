@@ -162,7 +162,7 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         try:
-            response = await self._client.post("/search", content=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -276,7 +276,7 @@ class AsyncTavilyClient:
             data.update(kwargs)
 
         try:
-            response = await self._client.post("/extract", content=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -387,7 +387,7 @@ class AsyncTavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/crawl", content=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -498,7 +498,7 @@ class AsyncTavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/map", content=json.dumps(data), headers=override_headers, timeout=timeout)
+            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -697,8 +697,8 @@ class AsyncTavilyClient:
                         "POST",
                         "/research",
                         content=json.dumps(data),
-                        headers=override_headers,
-                        timeout=timeout
+                        timeout=timeout,
+                        **({"headers": override_headers} if override_headers else {})
                     ) as response:
                         if response.status_code != 200:
                             try:
@@ -730,7 +730,7 @@ class AsyncTavilyClient:
         else:
             async def _make_request():
                 try:
-                    response = await self._client.post("/research", content=json.dumps(data), headers=override_headers, timeout=timeout)
+                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
 
