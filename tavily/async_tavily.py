@@ -723,8 +723,11 @@ class AsyncTavilyClient:
                                 yield chunk
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
+                except (UsageLimitExceededError, ForbiddenError, InvalidAPIKeyError, BadRequestError, TimeoutError):
+                    # Preserve Tavily-specific error types for callers in streaming mode.
+                    raise
                 except Exception as e:
-                    raise Exception(f"Error during research stream: {str(e)}")
+                    raise Exception(f"Error during research stream: {str(e)}") from e
 
             return stream_generator()
         else:
