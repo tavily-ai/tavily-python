@@ -20,6 +20,9 @@ class AsyncTavilyClient:
                  api_base_url: Optional[str] = None,
                  client_source: Optional[str] = None,
                  project_id: Optional[str] = None,
+                 session_id: Optional[str] = None,
+                 human_id: Optional[str] = None,
+                 client_name: Optional[str] = None,
                  client: Optional[httpx.AsyncClient] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
@@ -36,7 +39,10 @@ class AsyncTavilyClient:
             "Content-Type": "application/json",
             **({"Authorization": f"Bearer {api_key}"} if api_key else {}),
             "X-Client-Source": client_source or "tavily-python",
-            **({"X-Project-ID": tavily_project} if tavily_project else {})
+            **({"X-Project-ID": tavily_project} if tavily_project else {}),
+            **({"X-Session-Id": session_id} if session_id else {}),
+            **({"X-Human-Id": human_id} if human_id else {}),
+            **({"X-Client-Name": client_name} if client_name else {}),
         }
 
         self._external_client = client is not None
@@ -82,6 +88,23 @@ class AsyncTavilyClient:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
+
+    @staticmethod
+    def _pop_request_headers(kwargs: dict) -> Optional[dict]:
+        """Pop session_id, human_id, and client_name from kwargs and return them as headers.
+
+        Returns None when no overrides are provided so callers can omit the headers kwarg.
+        """
+        overrides = {}
+        for key, header_name in (
+            ("session_id", "X-Session-Id"),
+            ("human_id", "X-Human-Id"),
+            ("client_name", "X-Client-Name"),
+        ):
+            value = kwargs.pop(key, None)
+            if value is not None:
+                overrides[header_name] = str(value)
+        return overrides or None
 
     async def _search(
             self,
@@ -132,13 +155,14 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         timeout = min(timeout, 120)
 
         try:
-            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -247,11 +271,12 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         try:
-            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -355,13 +380,14 @@ class AsyncTavilyClient:
             "chunks_per_source": chunks_per_source,
         }
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -465,13 +491,14 @@ class AsyncTavilyClient:
             "include_usage": include_usage,
         }
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -659,6 +686,7 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
@@ -669,7 +697,8 @@ class AsyncTavilyClient:
                         "POST",
                         "/research",
                         content=json.dumps(data),
-                        timeout=timeout
+                        timeout=timeout,
+                        **({"headers": override_headers} if override_headers else {})
                     ) as response:
                         if response.status_code != 200:
                             try:
@@ -701,7 +730,7 @@ class AsyncTavilyClient:
         else:
             async def _make_request():
                 try:
-                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout)
+                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
 
