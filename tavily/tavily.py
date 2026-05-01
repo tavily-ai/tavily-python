@@ -4,7 +4,7 @@ import os
 import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
+from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError, _parse_retry_after
 
 class TavilyClient:
     """
@@ -162,7 +162,7 @@ class TavilyClient:
                 pass
 
             if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
+                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
             elif response.status_code in [403, 432, 433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
@@ -270,7 +270,7 @@ class TavilyClient:
                 pass
 
             if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
+                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
             elif response.status_code in [403, 432, 433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
@@ -374,7 +374,7 @@ class TavilyClient:
                 pass
 
             if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
+                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
             elif response.status_code in [403, 432, 433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
@@ -483,7 +483,7 @@ class TavilyClient:
                 pass
 
             if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
+                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
             elif response.status_code in [403, 432, 433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
@@ -654,7 +654,7 @@ class TavilyClient:
                     pass
 
                 if response.status_code == 429:
-                    raise UsageLimitExceededError(detail)
+                    raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
                 elif response.status_code in [403, 432, 433]:
                     raise ForbiddenError(detail)
                 elif response.status_code == 401:
@@ -694,7 +694,7 @@ class TavilyClient:
                     pass
 
                 if response.status_code == 429:
-                    raise UsageLimitExceededError(detail)
+                    raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
                 elif response.status_code in [403, 432, 433]:
                     raise ForbiddenError(detail)
                 elif response.status_code == 401:
@@ -766,7 +766,7 @@ class TavilyClient:
                 pass
 
             if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
+                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
             elif response.status_code in [403, 432, 433]:
                 raise ForbiddenError(detail)
             elif response.status_code == 401:
