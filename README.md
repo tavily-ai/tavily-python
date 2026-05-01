@@ -290,8 +290,10 @@ response = await client.search("latest AI research")
 **Key behaviors:**
 - If a custom session/client is provided, `api_key` is optional
 - Custom session headers take precedence over SDK defaults (e.g., your `Authorization` won't be overwritten)
+- If you provide a custom session/client and also pass `api_key`, Tavily fills in any missing default headers on that object, including `Authorization`, `Content-Type`, and `X-Client-Source`
 - Custom session proxies take precedence over SDK proxy settings
 - The SDK will **not** close externally-provided sessions — you manage the lifecycle
+- If you want Tavily defaults isolated from other traffic, use a dedicated session/client for Tavily requests
 
 ## Session & User Tracking
 
