@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, resolve_output_schema
 from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
 
 
@@ -667,7 +667,7 @@ class AsyncTavilyClient:
     def _research(self,
                   input: str,
                   model: Literal["mini", "pro", "auto"] = None,
-                  output_schema: dict = None,
+                  output_schema: Union[dict, type] = None,
                   stream: bool = False,
                   citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
                   timeout: Optional[float] = None,
@@ -676,6 +676,7 @@ class AsyncTavilyClient:
         """
         Internal research method to send the request to the API.
         """
+        output_schema = resolve_output_schema(output_schema)
         data = {
             "input": input,
             "model": model,
@@ -759,7 +760,7 @@ class AsyncTavilyClient:
     async def research(self,
                        input: str,
                        model: Literal["mini", "pro", "auto"] = None,
-                       output_schema: dict = None,
+                       output_schema: Union[dict, type] = None,
                        stream: bool = False,
                        citation_format: Literal["numbered", "mla", "apa", "chicago"] = "numbered",
                        timeout: Optional[float] = None,
@@ -771,7 +772,8 @@ class AsyncTavilyClient:
         Args:
             input: The research task description (required).
             model: Research depth - must be either 'mini', 'pro', or 'auto'.
-            output_schema: Schema for the 'structured_output' response format (JSON Schema dict).
+            output_schema: Schema for structured output. Accepts a JSON Schema dict or a
+                Pydantic BaseModel subclass (converted automatically).
             stream: Whether to stream the research task.
             citation_format: Citation format - must be either 'numbered', 'mla', 'apa', or 'chicago'.
             timeout: Optional HTTP request timeout in seconds.

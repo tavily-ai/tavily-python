@@ -1,7 +1,42 @@
 import tiktoken
 import json
-from typing import Sequence, List, Dict
+from typing import Sequence, List, Dict, Union
 from .config import DEFAULT_MODEL_ENCODING, DEFAULT_MAX_TOKENS
+
+
+def resolve_output_schema(output_schema) -> Union[dict, None]:
+    """Convert a Pydantic BaseModel subclass to a Tavily-compatible JSON schema dict.
+
+    Tavily's API only accepts 'properties' and 'required' at the top level.
+    This strips the full Pydantic JSON schema down to those keys and resolves
+    any $ref/$defs references inline so nested models are inlined.
+
+    Plain dicts are passed through unchanged. If pydantic is not installed
+    and a non-dict is passed, it is returned as-is.
+    """
+    if output_schema is None:
+        return None
+    try:
+        from pydantic import BaseModel
+        if isinstance(output_schema, type) and issubclass(output_schema, BaseModel):
+            schema = output_schema.model_json_schema()
+            defs = schema.get("$defs", {})
+
+            def _resolve(obj):
+                if isinstance(obj, dict):
+                    if "$ref" in obj:
+                        ref_name = obj["$ref"].split("/")[-1]
+                        return _resolve(defs[ref_name])
+                    return {k: _resolve(v) for k, v in obj.items() if k != "title"}
+                if isinstance(obj, list):
+                    return [_resolve(i) for i in obj]
+                return obj
+
+            resolved = _resolve(schema)
+            return {k: resolved[k] for k in ("properties", "required") if k in resolved}
+    except ImportError:
+        pass
+    return output_schema
 
 
 def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL_ENCODING) -> int:

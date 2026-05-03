@@ -1,4 +1,6 @@
 import asyncio
+from pydantic import BaseModel, Field
+from typing import List
 
 BASE_URL = "https://api.tavily.com"
 
@@ -146,4 +148,65 @@ def test_async_get_research(async_interceptor, async_client):
     response = asyncio.run(async_client.get_research("test-request-123"))
     request = async_interceptor.get_request()
     validate_get_research(request, response)
+
+
+# --- Pydantic output_schema tests ---
+
+class KeyPoint(BaseModel):
+    point: str = Field(description="A key finding")
+
+class ResearchReport(BaseModel):
+    summary: str = Field(description="Executive summary")
+    key_points: List[KeyPoint] = Field(description="List of key findings")
+
+expected_pydantic_schema = {
+    "properties": {
+        "summary": {"type": "string", "description": "Executive summary"},
+        "key_points": {
+            "type": "array",
+            "description": "List of key findings",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "point": {"type": "string", "description": "A key finding"}
+                },
+                "required": ["point"]
+            }
+        }
+    },
+    "required": ["summary", "key_points"]
+}
+
+def test_sync_research_pydantic_schema(sync_interceptor, sync_client):
+    """Passing a Pydantic BaseModel is automatically converted to a Tavily-compatible schema."""
+    sync_interceptor.set_response(200, json=dummy_queued_response)
+    response = sync_client.research(
+        input="Research the latest developments in AI",
+        output_schema=ResearchReport,
+    )
+    request = sync_interceptor.get_request()
+    assert request.json().get("output_schema") == expected_pydantic_schema
+    assert response == dummy_queued_response
+
+def test_async_research_pydantic_schema(async_interceptor, async_client):
+    """Passing a Pydantic BaseModel is automatically converted to a Tavily-compatible schema (async)."""
+    async_interceptor.set_response(200, json=dummy_queued_response)
+    response = asyncio.run(async_client.research(
+        input="Research the latest developments in AI",
+        output_schema=ResearchReport,
+    ))
+    request = async_interceptor.get_request()
+    assert request.json().get("output_schema") == expected_pydantic_schema
+    assert response == dummy_queued_response
+
+def test_sync_research_dict_schema_unchanged(sync_interceptor, sync_client):
+    """Plain dict schemas are passed through unchanged."""
+    plain_schema = {"properties": {"answer": {"type": "string"}}, "required": ["answer"]}
+    sync_interceptor.set_response(200, json=dummy_queued_response)
+    sync_client.research(
+        input="Research the latest developments in AI",
+        output_schema=plain_schema,
+    )
+    request = sync_interceptor.get_request()
+    assert request.json().get("output_schema") == plain_schema
 
