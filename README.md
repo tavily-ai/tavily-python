@@ -13,6 +13,29 @@ The Tavily Python wrapper allows for easy interaction with the Tavily API, offer
 pip install tavily-python
 ```
 
+## Keyless mode
+
+You can try Tavily without an API key. Instantiate `TavilyClient()` with no arguments and the SDK runs in keyless mode against the public Tavily API. Keyless mode supports `search()` and `extract()` only; other methods raise an error explaining that an API key is required.
+
+```python
+from tavily import TavilyClient, TavilyKeylessLimitError
+
+# No API key needed
+client = TavilyClient()
+
+try:
+    response = client.search("Who is Leo Messi?")
+    print(response)
+except TavilyKeylessLimitError as e:
+    # Rate-limit cap reached. The exception carries the human-readable
+    # message plus structured fields (code, window, retry_after_seconds,
+    # next_actions) returned by the Tavily API.
+    print(e)
+    print("retry after:", e.retry_after_seconds, "seconds")
+```
+
+Keyless usage is rate-limited. For higher limits and the full set of endpoints (including `crawl`, `map`, and `research`), [sign up for a Tavily API key](https://tavily.com) and pass it as `TavilyClient(api_key="tvly-...")`.
+
 # Tavily Search
 
 Search lets you search the web for a given query.

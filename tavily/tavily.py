@@ -4,7 +4,38 @@ import os
 import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError
+from .errors import (
+    UsageLimitExceededError,
+    InvalidAPIKeyError,
+    MissingAPIKeyError,
+    BadRequestError,
+    ForbiddenError,
+    TimeoutError,
+    TavilyKeylessLimitError,
+    KeylessUnsupportedEndpointError,
+)
+
+
+def _is_keyless_envelope(body) -> bool:
+    """Return True when the response body matches the Tavily recoverable-error envelope shape."""
+    return (
+        isinstance(body, dict)
+        and isinstance(body.get("error"), dict)
+        and isinstance(body["error"].get("code"), str)
+    )
+
+
+def _raise_keyless_envelope(body) -> None:
+    """Raise ``TavilyKeylessLimitError`` from an envelope-shaped response body."""
+    err = body["error"]
+    raise TavilyKeylessLimitError(
+        message=err.get("message") or "",
+        code=err.get("code"),
+        window=err.get("window"),
+        retry_after_seconds=err.get("retry_after_seconds"),
+        next_actions=err.get("next_actions") or [],
+    )
+
 
 class TavilyClient:
     """
@@ -26,8 +57,7 @@ class TavilyClient:
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
-        if not api_key and session is None:
-            raise MissingAPIKeyError()
+        api_key = api_key or None
 
         resolved_proxies = {
             "http": proxies.get("http") if proxies else os.getenv("TAVILY_HTTP_PROXY"),
@@ -39,12 +69,19 @@ class TavilyClient:
 
         self.base_url = api_base_url or "https://api.tavily.com"
         self.api_key = api_key
+        self._keyless = api_key is None and session is None
         self.proxies = resolved_proxies
+
+        if self._keyless:
+            client_source_header = client_source or "tavily-python-keyless"
+        else:
+            client_source_header = client_source or "tavily-python"
 
         self.headers = {
             "Content-Type": "application/json",
             **({"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}),
-            "X-Client-Source": client_source or "tavily-python",
+            **({"X-Tavily-Access-Mode": "keyless"} if self._keyless else {}),
+            "X-Client-Source": client_source_header,
             **({"X-Project-ID": tavily_project} if tavily_project else {}),
             **({"X-Session-Id": session_id} if session_id else {}),
             **({"X-Human-Id": human_id} if human_id else {}),
@@ -72,6 +109,40 @@ class TavilyClient:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+    def _handle_error_response(self, response) -> None:
+        """Raise an appropriate exception for a non-2xx response."""
+        body = None
+        try:
+            body = response.json()
+        except Exception:
+            body = None
+
+        if self._keyless and _is_keyless_envelope(body):
+            _raise_keyless_envelope(body)
+
+        detail = ""
+        if isinstance(body, dict):
+            try:
+                detail = body.get("detail", {}).get("error", None) or ""
+            except Exception:
+                detail = ""
+
+        if response.status_code == 429:
+            raise UsageLimitExceededError(detail)
+        elif response.status_code in [403, 432, 433]:
+            raise ForbiddenError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError(detail)
+        elif response.status_code == 400:
+            raise BadRequestError(detail)
+        else:
+            raise response.raise_for_status()
+
+    def _check_keyless_supported(self, method: str) -> None:
+        """Raise ``KeylessUnsupportedEndpointError`` when running in keyless mode."""
+        if self._keyless:
+            raise KeylessUnsupportedEndpointError(method)
 
     @staticmethod
     def _pop_request_headers(kwargs: dict) -> Optional[dict]:
@@ -155,22 +226,7 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403, 432, 433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
 
     def search(self,
@@ -263,22 +319,7 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403, 432, 433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     def extract(self,
                 urls: Union[List[str], str],  # Accept a list of URLs or a single URL
@@ -367,22 +408,7 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403, 432, 433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     def crawl(self,
               url: str,
@@ -408,6 +434,7 @@ class TavilyClient:
         Combined crawl method.
         include_favicon: If True, include the favicon in the crawl results.
         """
+        self._check_keyless_supported("crawl")
         return self._crawl(url,
                            max_depth=max_depth,
                            max_breadth=max_breadth,
@@ -476,22 +503,7 @@ class TavilyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403, 432, 433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     def map(self,
               url: str,
@@ -511,8 +523,9 @@ class TavilyClient:
               ) -> dict:
         """
         Combined map method.
-        
+
         """
+        self._check_keyless_supported("map")
         return self._map(url,
                          max_depth=max_depth,
                          max_breadth=max_breadth,
@@ -550,6 +563,7 @@ class TavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
+        self._check_keyless_supported("get_search_context")
         warnings.warn("get_search_context is deprecated and will be removed in future versions.",
                       DeprecationWarning, stacklevel=2)
 
@@ -589,6 +603,7 @@ class TavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        self._check_keyless_supported("qna_search")
         warnings.warn("qna_search is deprecated and will be removed in future versions.",
                       DeprecationWarning, stacklevel=2)
         response_dict = self._search(query,
@@ -647,22 +662,7 @@ class TavilyClient:
                 raise TimeoutError(timeout)
 
             if response.status_code != 200:
-                detail = ""
-                try:
-                    detail = response.json().get("detail", {}).get("error", None)
-                except Exception:
-                    pass
-
-                if response.status_code == 429:
-                    raise UsageLimitExceededError(detail)
-                elif response.status_code in [403, 432, 433]:
-                    raise ForbiddenError(detail)
-                elif response.status_code == 401:
-                    raise InvalidAPIKeyError(detail)
-                elif response.status_code == 400:
-                    raise BadRequestError(detail)
-                else:
-                    raise response.raise_for_status()
+                self._handle_error_response(response)
 
             def stream_generator() -> Generator[bytes, None, None]:
                 try:
@@ -687,22 +687,7 @@ class TavilyClient:
             if response.status_code == 200:
                 return response.json()
             else:
-                detail = ""
-                try:
-                    detail = response.json().get("detail", {}).get("error", None)
-                except Exception:
-                    pass
-
-                if response.status_code == 429:
-                    raise UsageLimitExceededError(detail)
-                elif response.status_code in [403, 432, 433]:
-                    raise ForbiddenError(detail)
-                elif response.status_code == 401:
-                    raise InvalidAPIKeyError(detail)
-                elif response.status_code == 400:
-                    raise BadRequestError(detail)
-                else:
-                    raise response.raise_for_status()
+                self._handle_error_response(response)
 
     def research(self,
                  input: str,
@@ -728,6 +713,7 @@ class TavilyClient:
         Returns:
             dict: Response containing request_id, created_at, status, input, and model.
         """
+        self._check_keyless_supported("research")
 
         return self._research(
             input=input,
@@ -751,6 +737,7 @@ class TavilyClient:
         Returns:
             dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
         """
+        self._check_keyless_supported("get_research")
         try:
             response = self.session.get(self.base_url + f"/research/{request_id}")
         except Exception as e:
@@ -759,22 +746,7 @@ class TavilyClient:
         if response.status_code in (200, 202):
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail)
-            elif response.status_code in [403, 432, 433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
 
 class Client(TavilyClient):
