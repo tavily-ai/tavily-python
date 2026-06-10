@@ -82,7 +82,7 @@ class AsyncTavilyClient:
             **({"X-Tavily-Access-Mode": "keyless"} if self._keyless else {}),
             "X-Client-Source": client_source_header,
             **({"X-Project-ID": tavily_project} if tavily_project else {}),
-            **({"x-tavily-orgid": tavily_org} if tavily_org else {}),
+            **({"X-Tavily-Orgid": tavily_org} if tavily_org else {}),
             **({"X-Session-Id": session_id} if session_id else {}),
             **({"X-Human-Id": human_id} if human_id else {}),
             **({"X-Client-Name": client_name} if client_name else {}),
