@@ -50,6 +50,7 @@ class AsyncTavilyClient:
                  api_base_url: Optional[str] = None,
                  client_source: Optional[str] = None,
                  project_id: Optional[str] = None,
+                 org_id: Optional[str] = None,
                  session_id: Optional[str] = None,
                  human_id: Optional[str] = None,
                  client_name: Optional[str] = None,
@@ -62,6 +63,7 @@ class AsyncTavilyClient:
         api_key = api_key or None
 
         tavily_project = project_id or os.getenv("TAVILY_PROJECT")
+        tavily_org = org_id or os.getenv("TAVILY_ORG_ID")
 
         self._api_base_url = api_base_url or "https://api.tavily.com"
         self._company_info_tags = company_info_tags
@@ -80,6 +82,7 @@ class AsyncTavilyClient:
             **({"X-Tavily-Access-Mode": "keyless"} if self._keyless else {}),
             "X-Client-Source": client_source_header,
             **({"X-Project-ID": tavily_project} if tavily_project else {}),
+            **({"x-tavily-orgid": tavily_org} if tavily_org else {}),
             **({"X-Session-Id": session_id} if session_id else {}),
             **({"X-Human-Id": human_id} if human_id else {}),
             **({"X-Client-Name": client_name} if client_name else {}),
