@@ -13,6 +13,29 @@ The Tavily Python wrapper allows for easy interaction with the Tavily API, offer
 pip install tavily-python
 ```
 
+## Keyless mode
+
+You can try Tavily without an API key. Instantiate `TavilyClient()` with no arguments and the SDK runs in keyless mode against the public Tavily API. Keyless mode supports `search()` and `extract()` only; other methods raise an error explaining that an API key is required.
+
+```python
+from tavily import TavilyClient, TavilyKeylessLimitError
+
+# No API key needed
+client = TavilyClient()
+
+try:
+    response = client.search("Who is Leo Messi?")
+    print(response)
+except TavilyKeylessLimitError as e:
+    # Rate-limit cap reached. The exception carries the human-readable
+    # message plus structured fields (code, window, retry_after_seconds,
+    # next_actions) returned by the Tavily API.
+    print(e)
+    print("retry after:", e.retry_after_seconds, "seconds")
+```
+
+Keyless usage is rate-limited. For higher limits and the full set of endpoints (including `crawl`, `map`, and `research`), [sign up for a Tavily API key](https://tavily.com) and pass it as `TavilyClient(api_key="tvly-...")`.
+
 # Tavily Search
 
 Search lets you search the web for a given query.
@@ -292,6 +315,29 @@ response = await client.search("latest AI research")
 - Custom session headers take precedence over SDK defaults (e.g., your `Authorization` won't be overwritten)
 - Custom session proxies take precedence over SDK proxy settings
 - The SDK will **not** close externally-provided sessions — you manage the lifecycle
+
+## Session & User Tracking
+
+`session_id`, `human_id`, and `client_name` are optional identifiers that help attribute requests to a logical session, an end user, and a named client. All three are sent as HTTP headers (`X-Session-Id`, `X-Human-Id`, `X-Client-Name`) and are never persisted in raw form — `human_id` is hashed server-side.
+
+Set them once at client init, or per-call (per-call wins):
+
+```python
+from tavily import TavilyClient
+
+# Client-level — applied to every request
+client = TavilyClient(
+    api_key="tvly-YOUR_API_KEY",
+    session_id="my-session-123",
+    human_id="internal-user-id-42",
+    client_name="my-app",
+)
+
+# Per-call override
+client.search("hello", session_id="ad-hoc-session")
+```
+
+All three are opt-in. Leave them unset and the SDK sends nothing — behavior is identical to earlier versions.
 
 ## Documentation
 

@@ -6,7 +6,38 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 import httpx
 
 from .utils import get_max_items_from_list
-from .errors import UsageLimitExceededError, InvalidAPIKeyError, MissingAPIKeyError, BadRequestError, ForbiddenError, TimeoutError, _parse_retry_after
+from .errors import (
+    UsageLimitExceededError,
+    InvalidAPIKeyError,
+    MissingAPIKeyError,
+    BadRequestError,
+    ForbiddenError,
+    TimeoutError,
+    TavilyKeylessLimitError,
+    KeylessUnsupportedEndpointError,
+    _parse_retry_after
+)
+
+
+def _is_keyless_envelope(body) -> bool:
+    """Return True when the response body matches the Tavily recoverable-error envelope shape."""
+    return (
+        isinstance(body, dict)
+        and isinstance(body.get("error"), dict)
+        and isinstance(body["error"].get("code"), str)
+    )
+
+
+def _raise_keyless_envelope(body) -> None:
+    """Raise ``TavilyKeylessLimitError`` from an envelope-shaped response body."""
+    err = body["error"]
+    raise TavilyKeylessLimitError(
+        message=err.get("message") or "",
+        code=err.get("code"),
+        window=err.get("window"),
+        retry_after_seconds=err.get("retry_after_seconds"),
+        next_actions=err.get("next_actions") or [],
+    )
 
 
 class AsyncTavilyClient:
@@ -20,23 +51,42 @@ class AsyncTavilyClient:
                  api_base_url: Optional[str] = None,
                  client_source: Optional[str] = None,
                  project_id: Optional[str] = None,
+                 org_id: Optional[str] = None,
+                 session_id: Optional[str] = None,
+                 human_id: Optional[str] = None,
+                 client_name: Optional[str] = None,
                  client: Optional[httpx.AsyncClient] = None):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
-        if not api_key and client is None:
-            raise MissingAPIKeyError()
+        # api_key is optional: when absent, the client runs in keyless mode.
+        # Only `search` and `extract` are available in keyless mode.
+        api_key = api_key or None
 
         tavily_project = project_id or os.getenv("TAVILY_PROJECT")
+        tavily_org = org_id or os.getenv("TAVILY_ORG_ID")
 
         self._api_base_url = api_base_url or "https://api.tavily.com"
         self._company_info_tags = company_info_tags
+        self._keyless = api_key is None and client is None
+
+        if self._keyless:
+            # Honor an explicit client_source so non-SDK keyless surfaces
+            # (e.g. tavily-cli-keyless) are attributed correctly by the server.
+            client_source_header = client_source or "tavily-python-keyless"
+        else:
+            client_source_header = client_source or "tavily-python"
 
         default_headers = {
             "Content-Type": "application/json",
             **({"Authorization": f"Bearer {api_key}"} if api_key else {}),
-            "X-Client-Source": client_source or "tavily-python",
-            **({"X-Project-ID": tavily_project} if tavily_project else {})
+            **({"X-Tavily-Access-Mode": "keyless"} if self._keyless else {}),
+            "X-Client-Source": client_source_header,
+            **({"X-Project-ID": tavily_project} if tavily_project else {}),
+            **({"X-Tavily-Orgid": tavily_org} if tavily_org else {}),
+            **({"X-Session-Id": session_id} if session_id else {}),
+            **({"X-Human-Id": human_id} if human_id else {}),
+            **({"X-Client-Name": client_name} if client_name else {}),
         }
 
         self._external_client = client is not None
@@ -82,6 +132,66 @@ class AsyncTavilyClient:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.close()
+
+    def _handle_error_response(self, response, body_override=None) -> None:
+        """Raise an appropriate exception for a non-2xx httpx response.
+
+        On keyless calls, checks the response body for the recoverable-error
+        envelope shape and raises ``TavilyKeylessLimitError`` with the
+        envelope's structured fields when present.
+        """
+        if body_override is not None:
+            body = body_override
+        else:
+            try:
+                body = response.json()
+            except Exception:
+                body = None
+
+        if self._keyless and _is_keyless_envelope(body):
+            _raise_keyless_envelope(body)
+
+        detail = ""
+        if isinstance(body, dict):
+            try:
+                detail = body.get("detail", {}).get("error", None) or ""
+            except Exception:
+                detail = ""
+        elif isinstance(body, str):
+            detail = body
+
+        if response.status_code == 429:
+            raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
+        elif response.status_code in [403, 432, 433]:
+            raise ForbiddenError(detail)
+        elif response.status_code == 401:
+            raise InvalidAPIKeyError(detail)
+        elif response.status_code == 400:
+            raise BadRequestError(detail)
+        else:
+            raise response.raise_for_status()
+
+    def _check_keyless_supported(self, method: str) -> None:
+        """Raise ``KeylessUnsupportedEndpointError`` when running in keyless mode."""
+        if self._keyless:
+            raise KeylessUnsupportedEndpointError(method)
+
+    @staticmethod
+    def _pop_request_headers(kwargs: dict) -> Optional[dict]:
+        """Pop session_id, human_id, and client_name from kwargs and return them as headers.
+
+        Returns None when no overrides are provided so callers can omit the headers kwarg.
+        """
+        overrides = {}
+        for key, header_name in (
+            ("session_id", "X-Session-Id"),
+            ("human_id", "X-Human-Id"),
+            ("client_name", "X-Client-Name"),
+        ):
+            value = kwargs.pop(key, None)
+            if value is not None:
+                overrides[header_name] = str(value)
+        return overrides or None
 
     async def _search(
             self,
@@ -132,35 +242,21 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         timeout = min(timeout, 120)
 
         try:
-            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     async def search(self,
                      query: str,
@@ -247,34 +343,19 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         try:
-            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     async def extract(self,
                       urls: Union[List[str], str],  # Accept a list of URLs or a single URL
@@ -355,35 +436,21 @@ class AsyncTavilyClient:
             "chunks_per_source": chunks_per_source,
         }
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     async def crawl(self,
                     url: str,
@@ -409,6 +476,7 @@ class AsyncTavilyClient:
         Combined crawl method.
 
         """
+        self._check_keyless_supported("crawl")
         response_dict = await self._crawl(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -465,35 +533,21 @@ class AsyncTavilyClient:
             "include_usage": include_usage,
         }
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout)
+            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
             return response.json()
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._handle_error_response(response)
 
     async def map(self,
                     url: str,
@@ -515,6 +569,7 @@ class AsyncTavilyClient:
         Combined map method.
 
         """
+        self._check_keyless_supported("map")
         response_dict = await self._map(url,
                                     max_depth=max_depth,
                                     max_breadth=max_breadth,
@@ -554,6 +609,7 @@ class AsyncTavilyClient:
 
         Returns a string of JSON containing the search context up to context limit.
         """
+        self._check_keyless_supported("get_search_context")
         timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
@@ -590,6 +646,7 @@ class AsyncTavilyClient:
         """
         Q&A search method. Search depth is advanced by default to get the best answer.
         """
+        self._check_keyless_supported("qna_search")
         timeout = min(timeout, 120)
         response_dict = await self._search(query,
                                            search_depth=search_depth,
@@ -616,6 +673,7 @@ class AsyncTavilyClient:
                                country: str = None,
                                ) -> Sequence[dict]:
         """ Company information search method. Search depth is advanced by default to get the best answer. """
+        self._check_keyless_supported("get_company_info")
         timeout = min(timeout, 120)
 
         async def _perform_search(topic: str):
@@ -659,6 +717,7 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
+        override_headers = self._pop_request_headers(kwargs)
         if kwargs:
             data.update(kwargs)
 
@@ -669,7 +728,8 @@ class AsyncTavilyClient:
                         "POST",
                         "/research",
                         content=json.dumps(data),
-                        timeout=timeout
+                        timeout=timeout,
+                        **({"headers": override_headers} if override_headers else {})
                     ) as response:
                         if response.status_code != 200:
                             try:
@@ -678,16 +738,13 @@ class AsyncTavilyClient:
                             except Exception:
                                 error_text = "Unknown error"
 
-                            if response.status_code == 429:
-                                raise UsageLimitExceededError(error_text, retry_after=_parse_retry_after(response.headers))
-                            elif response.status_code in [403,432,433]:
-                                raise ForbiddenError(error_text)
-                            elif response.status_code == 401:
-                                raise InvalidAPIKeyError(error_text)
-                            elif response.status_code == 400:
-                                raise BadRequestError(error_text)
-                            else:
-                                raise Exception(f"Error {response.status_code}: {error_text}")
+                            body_override = None
+                            try:
+                                body_override = json.loads(error_text)
+                            except Exception:
+                                body_override = error_text
+
+                            self._handle_error_response(response, body_override=body_override)
 
                         async for chunk in response.aiter_bytes():
                             if chunk:
@@ -701,29 +758,14 @@ class AsyncTavilyClient:
         else:
             async def _make_request():
                 try:
-                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout)
+                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
 
                 if response.status_code == 200:
                     return response.json()
                 else:
-                    detail = ""
-                    try:
-                        detail = response.json().get("detail", {}).get("error", None)
-                    except Exception:
-                        pass
-
-                    if response.status_code == 429:
-                        raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-                    elif response.status_code in [403,432,433]:
-                        raise ForbiddenError(detail)
-                    elif response.status_code == 401:
-                        raise InvalidAPIKeyError(detail)
-                    elif response.status_code == 400:
-                        raise BadRequestError(detail)
-                    else:
-                        raise response.raise_for_status()
+                    self._handle_error_response(response)
 
             return _make_request()
 
@@ -752,6 +794,7 @@ class AsyncTavilyClient:
             When stream=False: dict - the response dictionary.
             When stream=True: AsyncGenerator[bytes, None] - iterate over this to get streaming chunks.
         """
+        self._check_keyless_supported("research")
         result = self._research(
                 input=input,
                 model=model,
@@ -778,6 +821,7 @@ class AsyncTavilyClient:
         Returns:
             dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
         """
+        self._check_keyless_supported("get_research")
         try:
             response = await self._client.get(f"/research/{request_id}")
         except Exception as e:
@@ -787,19 +831,5 @@ class AsyncTavilyClient:
             data = response.json()
             return data
         else:
-            detail = ""
-            try:
-                detail = response.json().get("detail", {}).get("error", None)
-            except Exception:
-                pass
-
-            if response.status_code == 429:
-                raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
-            elif response.status_code in [403,432,433]:
-                raise ForbiddenError(detail)
-            elif response.status_code == 401:
-                raise InvalidAPIKeyError(detail)
-            elif response.status_code == 400:
-                raise BadRequestError(detail)
-            else:
-                raise response.raise_for_status()
+            self._
+  (response)
