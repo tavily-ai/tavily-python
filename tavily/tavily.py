@@ -12,7 +12,7 @@ from .errors import (
     ForbiddenError,
     TimeoutError,
     TavilyKeylessLimitError,
-    KeylessUnsupportedEndpointError
+    KeylessUnsupportedEndpointError,
 )
 
 
