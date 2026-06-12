@@ -13,6 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     packages=find_packages(exclude=['tests']),
+    package_data={'tavily': ['py.typed']},
     install_requires=['requests', 'tiktoken>=0.5.1', 'httpx'],
     classifiers=[
         'Programming Language :: Python :: 3',
