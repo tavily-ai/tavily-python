@@ -12,8 +12,7 @@ from .errors import (
     ForbiddenError,
     TimeoutError,
     TavilyKeylessLimitError,
-    KeylessUnsupportedEndpointError,
-    _parse_retry_after
+    KeylessUnsupportedEndpointError
 )
 
 
