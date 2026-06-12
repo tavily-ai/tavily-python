@@ -831,5 +831,4 @@ class AsyncTavilyClient:
             data = response.json()
             return data
         else:
-            self._
-  (response)
+            self._handle_error_response(response)
