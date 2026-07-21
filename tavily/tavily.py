@@ -172,7 +172,8 @@ class TavilyClient:
                 start_date: str = None,
                 end_date: str = None,
                 days: int = None,
-                max_results: int = None,
+                max_results: Union[int, Literal["auto"]] = None,
+                chunks_per_source: Union[int, Literal["auto"]] = None,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
                 include_answer: Union[bool, Literal["basic", "advanced"]] = None,
@@ -201,6 +202,7 @@ class TavilyClient:
             "include_answer": include_answer,
             "include_raw_content": include_raw_content,
             "max_results": max_results,
+            "chunks_per_source": chunks_per_source,
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
             "include_images": include_images,
@@ -240,7 +242,8 @@ class TavilyClient:
                start_date: str = None,
                end_date: str = None,
                days: int = None,
-               max_results: int = None,
+               max_results: Union[int, Literal["auto"]] = None,
+               chunks_per_source: Union[int, Literal["auto"]] = None,
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
                include_answer: Union[bool, Literal["basic", "advanced"]] = None,
@@ -256,6 +259,10 @@ class TavilyClient:
                ) -> dict:
         """
         Combined search method.
+
+        Set max_results and/or chunks_per_source to "auto" for adaptive retrieval:
+        Tavily decides how many sources and how much content per source to return
+        based on the query.
         """
 
         response_dict = self._search(query,
@@ -266,6 +273,7 @@ class TavilyClient:
                                      end_date=end_date,
                                      days=days,
                                      max_results=max_results,
+                                     chunks_per_source=chunks_per_source,
                                      include_domains=include_domains,
                                      exclude_domains=exclude_domains,
                                      include_answer=include_answer,

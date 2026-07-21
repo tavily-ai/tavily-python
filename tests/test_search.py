@@ -154,3 +154,43 @@ def test_async_search_exact_match_query_quotes_escaped_in_payload(async_intercep
     request = async_interceptor.get_request()
     assert r'\"John Smith\"' in request.body
     assert request.json()["query"] == '"John Smith" CEO Acme Corp'
+
+def test_sync_search_adaptive_retrieval_not_sent_by_default(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?")
+    request = sync_interceptor.get_request()
+    assert "chunks_per_source" not in request.json()
+
+def test_sync_search_adaptive_retrieval_auto(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?", max_results="auto", chunks_per_source="auto")
+    request = sync_interceptor.get_request()
+    assert request.json()["max_results"] == "auto"
+    assert request.json()["chunks_per_source"] == "auto"
+
+def test_sync_search_chunks_per_source_int(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?", max_results=5, chunks_per_source=3)
+    request = sync_interceptor.get_request()
+    assert request.json()["max_results"] == 5
+    assert request.json()["chunks_per_source"] == 3
+
+def test_async_search_adaptive_retrieval_not_sent_by_default(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?"))
+    request = async_interceptor.get_request()
+    assert "chunks_per_source" not in request.json()
+
+def test_async_search_adaptive_retrieval_auto(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?", max_results="auto", chunks_per_source="auto"))
+    request = async_interceptor.get_request()
+    assert request.json()["max_results"] == "auto"
+    assert request.json()["chunks_per_source"] == "auto"
+
+def test_async_search_chunks_per_source_int(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?", max_results=5, chunks_per_source=3))
+    request = async_interceptor.get_request()
+    assert request.json()["max_results"] == 5
+    assert request.json()["chunks_per_source"] == 3
