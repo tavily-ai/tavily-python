@@ -106,19 +106,26 @@ def intercept_requests(tavily):
         tavily.requests = interceptor
 
     if hasattr(tavily, 'httpx'):
-        async def post(self, url, content, timeout):
+        def merge_headers(client_headers, request_headers):
+            # Merge client headers with request headers (request headers take
+            # precedence), preserving httpx's case-insensitive lookup semantics.
+            merged = httpx.Headers(client_headers)
+            merged.update(request_headers or {})
+            return merged
+
+        async def post(self, url, content, timeout, headers=None):
             return interceptor.post(
                 url=str(self._base_url) + url,
                 data=content,
-                headers=self.headers,
+                headers=merge_headers(self.headers, headers),
                 timeout=timeout
             )
         tavily.httpx.AsyncClient.post = post
-        
-        async def get(self, url, timeout=None):
+
+        async def get(self, url, timeout=None, headers=None):
             return interceptor.get(
                 url=str(self._base_url) + url,
-                headers=self.headers,
+                headers=merge_headers(self.headers, headers),
                 timeout=timeout
             )
         tavily.httpx.AsyncClient.get = get
@@ -144,9 +151,9 @@ def intercept_requests(tavily):
                 pass
         
         @asynccontextmanager
-        async def stream(self, method, url, content=None, timeout=None):
+        async def stream(self, method, url, content=None, timeout=None, headers=None):
             if method == "POST":
-                interceptor._request = Request("POST", str(self._base_url) + url, self.headers, content, timeout, None)
+                interceptor._request = Request("POST", str(self._base_url) + url, merge_headers(self.headers, headers), content, timeout, None)
             yield StreamResponse(interceptor._response)
         
         tavily.httpx.AsyncClient.stream = stream
