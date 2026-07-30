@@ -318,7 +318,7 @@ response = await client.search("latest AI research")
 
 ## Session & User Tracking
 
-`session_id`, `human_id`, and `client_name` are optional identifiers that help attribute requests to a logical session, an end user, and a named client. All three are sent as HTTP headers (`X-Session-Id`, `X-Human-Id`, `X-Client-Name`) and are never persisted in raw form — `human_id` is hashed server-side.
+`project_id`, `session_id`, `human_id`, and `client_name` are optional identifiers that help attribute requests to a project, a logical session, an end user, and a named client. All four are sent as HTTP headers (`X-Project-ID`, `X-Session-Id`, `X-Human-Id`, `X-Client-Name`) and are never persisted in raw form — `human_id` is hashed server-side.
 
 Set them once at client init, or per-call (per-call wins):
 
@@ -328,16 +328,17 @@ from tavily import TavilyClient
 # Client-level — applied to every request
 client = TavilyClient(
     api_key="tvly-YOUR_API_KEY",
+    project_id="my-project",
     session_id="my-session-123",
     human_id="internal-user-id-42",
     client_name="my-app",
 )
 
 # Per-call override
-client.search("hello", session_id="ad-hoc-session")
+client.search("hello", project_id="another-project")
 ```
 
-All three are opt-in. Leave them unset and the SDK sends nothing — behavior is identical to earlier versions.
+All four are opt-in. Leave them unset and the SDK sends nothing — behavior is identical to earlier versions.
 
 ## Documentation
 
