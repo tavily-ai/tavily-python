@@ -177,12 +177,13 @@ class AsyncTavilyClient:
 
     @staticmethod
     def _pop_request_headers(kwargs: dict) -> Optional[dict]:
-        """Pop session_id, human_id, and client_name from kwargs and return them as headers.
+        """Pop project_id, session_id, human_id, and client_name from kwargs and return them as headers.
 
         Returns None when no overrides are provided so callers can omit the headers kwarg.
         """
         overrides = {}
         for key, header_name in (
+            ("project_id", "X-Project-ID"),
             ("session_id", "X-Session-Id"),
             ("human_id", "X-Human-Id"),
             ("client_name", "X-Client-Name"),
