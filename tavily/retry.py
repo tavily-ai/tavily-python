@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import Callable, Optional
+from typing import Collection, Optional
 
 
 RETRYABLE_STATUS_CODES = frozenset({429, 502, 503, 504})
@@ -52,5 +52,15 @@ def retry_delay(
     return (random_value if random_value is not None else random.random()) * upper_bound
 
 
-def should_retry(attempt: int, max_retries: int, status_code: Optional[int] = None) -> bool:
-    return attempt < max_retries and (status_code is None or is_retryable_status(status_code))
+def should_retry(
+    attempt: int,
+    max_retries: int,
+    status_code: Optional[int] = None,
+    retryable_statuses: Optional[Collection[int]] = None,
+) -> bool:
+    if attempt >= max_retries:
+        return False
+    if status_code is None:
+        return True
+    statuses = retryable_statuses or RETRYABLE_STATUS_CODES
+    return status_code in statuses

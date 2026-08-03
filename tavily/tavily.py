@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import warnings
+import time
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from .utils import get_max_items_from_list
 from .errors import (
@@ -14,6 +15,7 @@ from .errors import (
     TavilyKeylessLimitError,
     KeylessUnsupportedEndpointError,
 )
+from .retry import retry_delay, should_retry
 
 
 def _is_keyless_envelope(body) -> bool:
@@ -54,6 +56,7 @@ class TavilyClient:
         human_id: Optional[str] = None,
         client_name: Optional[str] = None,
         session: Optional[requests.Session] = None,
+        max_retries: int = 0,
     ):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
@@ -73,6 +76,7 @@ class TavilyClient:
         self.api_key = api_key
         self._keyless = api_key is None and session is None
         self.proxies = resolved_proxies
+        self.max_retries = max(0, max_retries)
 
         if self._keyless:
             client_source_header = client_source or "tavily-python-keyless"
@@ -146,6 +150,36 @@ class TavilyClient:
         """Raise ``KeylessUnsupportedEndpointError`` when running in keyless mode."""
         if self._keyless:
             raise KeylessUnsupportedEndpointError(method)
+
+    def _post_with_retry(self, url: str, payload: str, timeout: float, headers: Optional[dict] = None, retryable_statuses=None):
+        started_at = time.monotonic()
+        timeout_budget = timeout if timeout is not None else float("inf")
+        for attempt in range(self.max_retries + 1):
+            try:
+                response = self.session.post(
+                    url, data=payload, timeout=timeout, **({"headers": headers} if headers else {})
+                )
+            except requests.exceptions.Timeout:
+                raise TimeoutError(timeout)
+            except requests.exceptions.RequestException:
+                if retryable_statuses is not None or not should_retry(attempt, self.max_retries):
+                    raise
+                delay = retry_delay(attempt)
+                remaining = timeout_budget - (time.monotonic() - started_at)
+                if remaining <= 0:
+                    raise TimeoutError(timeout)
+                time.sleep(min(delay, remaining))
+                continue
+
+            if response.status_code == 200 or not should_retry(attempt, self.max_retries, response.status_code, retryable_statuses):
+                return response
+            delay = retry_delay(attempt, response.headers.get("Retry-After"))
+            remaining = timeout_budget - (time.monotonic() - started_at)
+            if remaining <= 0:
+                return response
+            time.sleep(min(delay, remaining))
+
+        return response
 
     @staticmethod
     def _pop_request_headers(kwargs: dict) -> Optional[dict]:
@@ -222,10 +256,7 @@ class TavilyClient:
         url = self.base_url + "/search"
         payload = json.dumps(data)
 
-        try:
-            response = self.session.post(url, data=payload, timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except requests.exceptions.Timeout:
-            raise TimeoutError(timeout)
+        response = self._post_with_retry(url, payload, timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -315,10 +346,7 @@ class TavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        try:
-            response = self.session.post(self.base_url + "/extract", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except requests.exceptions.Timeout:
-            raise TimeoutError(timeout)
+        response = self._post_with_retry(self.base_url + "/extract", json.dumps(data), timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -404,10 +432,7 @@ class TavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        try:
-            response = self.session.post(self.base_url + "/crawl", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except requests.exceptions.Timeout:
-            raise TimeoutError(timeout)
+        response = self._post_with_retry(self.base_url + "/crawl", json.dumps(data), timeout, override_headers, {429})
 
         if response.status_code == 200:
             return response.json()
@@ -499,10 +524,7 @@ class TavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        try:
-            response = self.session.post(self.base_url + "/map", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except requests.exceptions.Timeout:
-            raise TimeoutError(timeout)
+        response = self._post_with_retry(self.base_url + "/map", json.dumps(data), timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -678,15 +700,9 @@ class TavilyClient:
 
             return stream_generator()
         else:
-            try:
-                response = self.session.post(
-                    self.base_url + "/research",
-                    data=json.dumps(data),
-                    timeout=timeout,
-                    **({"headers": override_headers} if override_headers else {})
-                )
-            except requests.exceptions.Timeout:
-                raise TimeoutError(timeout)
+            response = self._post_with_retry(
+                self.base_url + "/research", json.dumps(data), timeout, override_headers, {429}
+            )
 
             if response.status_code == 200:
                 return response.json()

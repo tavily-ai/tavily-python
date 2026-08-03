@@ -16,6 +16,7 @@ from .errors import (
     TavilyKeylessLimitError,
     KeylessUnsupportedEndpointError,
 )
+from .retry import retry_delay, should_retry
 
 
 def _is_keyless_envelope(body) -> bool:
@@ -54,7 +55,8 @@ class AsyncTavilyClient:
                  session_id: Optional[str] = None,
                  human_id: Optional[str] = None,
                  client_name: Optional[str] = None,
-                 client: Optional[httpx.AsyncClient] = None):
+                 client: Optional[httpx.AsyncClient] = None,
+                 max_retries: int = 0):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -68,6 +70,7 @@ class AsyncTavilyClient:
         self._api_base_url = api_base_url or "https://api.tavily.com"
         self._company_info_tags = company_info_tags
         self._keyless = api_key is None and client is None
+        self.max_retries = max(0, max_retries)
 
         if self._keyless:
             # Honor an explicit client_source so non-SDK keyless surfaces
@@ -175,6 +178,33 @@ class AsyncTavilyClient:
         if self._keyless:
             raise KeylessUnsupportedEndpointError(method)
 
+    async def _post_with_retry(self, url: str, payload: str, timeout: float, headers: Optional[dict] = None, retryable_statuses=None):
+        loop = asyncio.get_running_loop()
+        started_at = loop.time()
+        timeout_budget = timeout if timeout is not None else float("inf")
+        for attempt in range(self.max_retries + 1):
+            try:
+                response = await self._client.post(url, content=payload, timeout=timeout, **({"headers": headers} if headers else {}))
+            except httpx.TimeoutException:
+                raise TimeoutError(timeout)
+            except httpx.RequestError:
+                if retryable_statuses is not None or not should_retry(attempt, self.max_retries):
+                    raise
+                delay = retry_delay(attempt)
+                remaining = timeout_budget - (loop.time() - started_at)
+                if remaining <= 0:
+                    raise TimeoutError(timeout)
+                await asyncio.sleep(min(delay, remaining))
+                continue
+            if response.status_code == 200 or not should_retry(attempt, self.max_retries, response.status_code, retryable_statuses):
+                return response
+            delay = retry_delay(attempt, response.headers.get("Retry-After"))
+            remaining = timeout_budget - (loop.time() - started_at)
+            if remaining <= 0:
+                return response
+            await asyncio.sleep(min(delay, remaining))
+        return response
+
     @staticmethod
     def _pop_request_headers(kwargs: dict) -> Optional[dict]:
         """Pop project_id, session_id, human_id, and client_name from kwargs and return them as headers.
@@ -248,10 +278,7 @@ class AsyncTavilyClient:
 
         timeout = min(timeout, 120)
 
-        try:
-            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except httpx.TimeoutException:
-            raise TimeoutError(timeout)
+        response = await self._post_with_retry("/search", json.dumps(data), timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -347,10 +374,7 @@ class AsyncTavilyClient:
         if kwargs:
             data.update(kwargs)
 
-        try:
-            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except httpx.TimeoutException:
-            raise TimeoutError(timeout)
+        response = await self._post_with_retry("/extract", json.dumps(data), timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -442,10 +466,7 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        try:
-            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except httpx.TimeoutException:
-            raise TimeoutError(timeout)
+        response = await self._post_with_retry("/crawl", json.dumps(data), timeout, override_headers, {429})
 
         if response.status_code == 200:
             return response.json()
@@ -539,10 +560,7 @@ class AsyncTavilyClient:
 
         data = {k: v for k, v in data.items() if v is not None}
 
-        try:
-            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-        except httpx.TimeoutException:
-            raise TimeoutError(timeout)
+        response = await self._post_with_retry("/map", json.dumps(data), timeout, override_headers)
 
         if response.status_code == 200:
             return response.json()
@@ -757,10 +775,7 @@ class AsyncTavilyClient:
             return stream_generator()
         else:
             async def _make_request():
-                try:
-                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
-                except httpx.TimeoutException:
-                    raise TimeoutError(timeout)
+                response = await self._post_with_retry("/research", json.dumps(data), timeout, override_headers, {429})
 
                 if response.status_code == 200:
                     return response.json()

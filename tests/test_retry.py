@@ -7,6 +7,7 @@ def test_parse_retry_after_seconds_and_invalid_values():
     assert parse_retry_after("3") == 3
     assert parse_retry_after("invalid") is None
     assert parse_retry_after(None) is None
+    assert parse_retry_after("-1") == 0
 
 
 def test_parse_retry_after_http_date():
@@ -26,3 +27,5 @@ def test_retry_policy_limits_attempts_and_statuses():
     assert should_retry(0, 1, 429)
     assert not should_retry(1, 1, 429)
     assert not should_retry(0, 1, 400)
+    assert should_retry(0, 1, 429, {429})
+    assert not should_retry(0, 1, 503, {429})
