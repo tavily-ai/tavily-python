@@ -1,5 +1,9 @@
 import asyncio
 
+import pytest
+
+from tavily.errors import UsageLimitExceededError
+
 BASE_URL = "https://api.tavily.com"
 
 dummy_queued_response = {
@@ -146,4 +150,20 @@ def test_async_get_research(async_interceptor, async_client):
     response = asyncio.run(async_client.get_research("test-request-123"))
     request = async_interceptor.get_request()
     validate_get_research(request, response)
+
+
+def test_async_research_stream_preserves_usage_limit_error(async_interceptor, async_client):
+    async_interceptor.set_response(429, json={"detail": {"error": "quota exceeded"}})
+
+    async def run_test():
+        stream = await async_client.research(
+            input="Research the latest developments in AI",
+            stream=True,
+        )
+
+        with pytest.raises(UsageLimitExceededError, match="quota exceeded"):
+            async for _ in stream:
+                pass
+
+    asyncio.run(run_test())
 
