@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import filter_results_by_domains, get_max_items_from_list
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -308,7 +308,7 @@ class AsyncTavilyClient:
 
         tavily_results = response_dict.get("results", [])
 
-        response_dict["results"] = tavily_results
+        response_dict["results"] = filter_results_by_domains(tavily_results, include_domains)
 
         return response_dict
 

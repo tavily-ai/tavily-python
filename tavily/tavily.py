@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
-from .utils import get_max_items_from_list
+from .utils import filter_results_by_domains, get_max_items_from_list
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -280,6 +280,7 @@ class TavilyClient:
                                      exact_match=exact_match,
                                      **kwargs)
         response_dict.setdefault("results", [])
+        response_dict["results"] = filter_results_by_domains(response_dict["results"], include_domains)
         return response_dict
 
     def _extract(self,

@@ -26,7 +26,7 @@ def validate_default(request, response):
     assert request.json().get('query') == "What is Tavily?"
     assert response == dummy_response
 
-def validate_specific(request, response):
+def validate_specific(request, response, expected_response=dummy_response):
     assert request.method == "POST"
     assert request.url == "https://api.tavily.com/search"
     assert request.headers["Authorization"] == "Bearer tvly-test"
@@ -49,7 +49,7 @@ def validate_specific(request, response):
     }.items():
         assert request_json.get(key) == value
 
-    assert response == dummy_response
+    assert response == expected_response
 
 def test_sync_search_defaults(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_response)
@@ -58,7 +58,17 @@ def test_sync_search_defaults(sync_interceptor, sync_client):
     validate_default(request, response)
 
 def test_sync_search_specific(sync_interceptor, sync_client):
-    sync_interceptor.set_response(200, json=dummy_response)
+    response_with_out_of_scope_results = {
+        **dummy_response,
+        "results": [
+            {"url": "https://tavily.com/allowed", "title": "Root domain"},
+            {"url": "https://docs.tavily.com/allowed", "title": "Subdomain"},
+            {"url": "https://example.com/outside", "title": "Outside domain"},
+            {"url": "https://not-tavily.com/outside", "title": "Similar suffix"},
+            {"url": "not a URL", "title": "Malformed URL"},
+        ],
+    }
+    sync_interceptor.set_response(200, json=response_with_out_of_scope_results)
     response = sync_client.search(
         "What is Tavily?",
         search_depth="advanced",
@@ -75,7 +85,12 @@ def test_sync_search_specific(sync_interceptor, sync_client):
     )
 
     request = sync_interceptor.get_request()
-    validate_specific(request, response)
+    expected_response = {
+        **response_with_out_of_scope_results,
+        "results": response_with_out_of_scope_results["results"][:2],
+    }
+    validate_specific(request, response, expected_response)
+    assert [result["title"] for result in response["results"]] == ["Root domain", "Subdomain"]
 
 def test_async_search_defaults(async_interceptor, async_client):
     async_interceptor.set_response(200, json=dummy_response)
@@ -84,7 +99,17 @@ def test_async_search_defaults(async_interceptor, async_client):
     validate_default(request, response)
 
 def test_async_search_specific(async_interceptor, async_client):
-    async_interceptor.set_response(200, json=dummy_response)
+    response_with_out_of_scope_results = {
+        **dummy_response,
+        "results": [
+            {"url": "https://tavily.com/allowed", "title": "Root domain"},
+            {"url": "https://docs.tavily.com/allowed", "title": "Subdomain"},
+            {"url": "https://example.com/outside", "title": "Outside domain"},
+            {"url": "https://not-tavily.com/outside", "title": "Similar suffix"},
+            {"url": "not a URL", "title": "Malformed URL"},
+        ],
+    }
+    async_interceptor.set_response(200, json=response_with_out_of_scope_results)
     response = asyncio.run(async_client.search(
         "What is Tavily?",
         search_depth="advanced",
@@ -101,7 +126,27 @@ def test_async_search_specific(async_interceptor, async_client):
     ))
 
     request = async_interceptor.get_request()
-    validate_specific(request, response)
+    expected_response = {
+        **response_with_out_of_scope_results,
+        "results": response_with_out_of_scope_results["results"][:2],
+    }
+    validate_specific(request, response, expected_response)
+    assert [result["title"] for result in response["results"]] == ["Root domain", "Subdomain"]
+
+
+def test_sync_search_without_domain_filter_preserves_results(sync_interceptor, sync_client):
+    response_with_out_of_scope_results = {
+        **dummy_response,
+        "results": [
+            {"url": "https://tavily.com/allowed", "title": "Allowed"},
+            {"url": "https://example.com/outside", "title": "Outside"},
+        ],
+    }
+    sync_interceptor.set_response(200, json=response_with_out_of_scope_results)
+
+    response = sync_client.search("What is Tavily?")
+
+    assert response["results"] == response_with_out_of_scope_results["results"]
 
 def test_sync_search_exact_match_not_sent_by_default(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_response)
