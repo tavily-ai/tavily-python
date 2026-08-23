@@ -76,6 +76,23 @@ print(response)
 
 This is equivalent to directly querying our REST API.
 
+### Filtering results by language
+
+```python
+from tavily import TavilyClient
+
+client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# language biases the search results towards the given language (ISO code or English name).
+# filter_by_language=True additionally drops results that don't match it (requires language to be set).
+response = client.search(
+    query="dernières nouvelles technologiques",
+    language="french",
+    filter_by_language=True
+)
+print(response)
+```
+
 ### Generating context for a RAG Application
 
 ```python
