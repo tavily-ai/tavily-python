@@ -214,6 +214,8 @@ class AsyncTavilyClient:
             include_favicon: bool = None,
             include_usage: bool = None,
             exact_match: bool = None,
+            language: str = None,
+            filter_by_language: bool = None,
             **kwargs,
     ) -> dict:
         """
@@ -238,6 +240,8 @@ class AsyncTavilyClient:
             "include_favicon": include_favicon,
             "include_usage": include_usage,
             "exact_match": exact_match,
+            "language": language,
+            "filter_by_language": filter_by_language,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -278,6 +282,8 @@ class AsyncTavilyClient:
                      include_favicon: bool = None,
                      include_usage: bool = None,
                      exact_match: bool = None,
+                     language: str = None,
+                     filter_by_language: bool = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -303,6 +309,8 @@ class AsyncTavilyClient:
                                            include_favicon=include_favicon,
                                            include_usage=include_usage,
                                            exact_match=exact_match,
+                                           language=language,
+                                           filter_by_language=filter_by_language,
                                            **kwargs,
                                            )
 
