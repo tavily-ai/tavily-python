@@ -8,6 +8,7 @@ end-to-end. Skipped unless a real TAVILY_API_KEY is set (CI uses the fake
 
 import asyncio
 import os
+from urllib.parse import urlparse
 
 import pytest
 
@@ -43,7 +44,8 @@ def test_sync_search_with_include_domains_mode_filter_live():
     )
     assert isinstance(response.get("results"), list)
     for result in response["results"]:
-        assert "linkedin.com" in result["url"]
+        host = urlparse(result["url"]).hostname or ""
+        assert host == "linkedin.com" or host.endswith(".linkedin.com")
 
 
 @requires_live_key
