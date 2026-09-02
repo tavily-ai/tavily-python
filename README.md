@@ -269,6 +269,42 @@ for chunk in stream:
     print(chunk.decode('utf-8'))
 ```
 
+# Tavily Feedback
+
+Feedback lets you submit agent or end-user feedback on a search request or session, including per-result scores, so Tavily can improve ranking and relevance over time.
+
+## Usage
+
+Below is a code snippet that demonstrates how to interact with our Feedback API. Each step and component of this code is explained in greater detail in the API Methods section below.
+
+### Scoring a search request
+
+```python
+from tavily import TavilyClient
+
+# Step 1. Instantiating your TavilyClient
+tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
+
+# Step 2. Running a search
+response = tavily_client.search(query="What happened in the latest Burning Man floods?")
+request_id = response["request_id"]
+
+# Step 3. Submitting feedback, including a per-result score for every result
+response = tavily_client.feedback(
+    request_id=request_id,
+    agent_score=0.9,
+    urls_scores=[
+        {"id": result["id"], "agent_score": 0.9}
+        for result in response["results"]
+    ],
+    used_ids=[response["results"][0]["id"]],
+    response_delivered="Heavy rain flooded the Burning Man site, stranding thousands of attendees."
+)
+
+# Step 4. Printing the feedback confirmation
+print(f"Feedback ID: {response['feedback_id']}")
+```
+
 ## Advanced: Custom Session / Client Injection
 
 For enterprise environments that proxy Tavily traffic through an API gateway (e.g., for centralized auth, logging, or policy enforcement), you can pass a pre-configured HTTP session instead of a Tavily API key.

@@ -840,3 +840,105 @@ class AsyncTavilyClient:
             return data
         else:
             self._handle_error_response(response)
+
+    async def _feedback(self,
+                         session_id: str = None,
+                         request_id: str = None,
+                         agent_score: Union[int, float, str] = None,
+                         human_score: Union[int, float, str] = None,
+                         extra_scores: List[dict] = None,
+                         comment: str = None,
+                         response_delivered: str = None,
+                         used_urls: List[str] = None,
+                         used_ids: List[str] = None,
+                         used_citations: List[str] = None,
+                         urls_scores: List[dict] = None,
+                         timeout: float = 60,
+                         **kwargs
+                         ) -> dict:
+        """
+        Internal feedback method to send the request to the API.
+        """
+        data = {
+            "session_id": session_id,
+            "request_id": request_id,
+            "agent_score": agent_score,
+            "human_score": human_score,
+            "extra_scores": extra_scores,
+            "comment": comment,
+            "response_delivered": response_delivered,
+            "used_urls": used_urls,
+            "used_ids": used_ids,
+            "used_citations": used_citations,
+            "urls_scores": urls_scores,
+        }
+
+        override_headers = self._pop_request_headers(kwargs)
+        if kwargs:
+            data.update(kwargs)
+
+        data = {k: v for k, v in data.items() if v is not None}
+
+        try:
+            response = await self._client.post("/feedback", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+        except httpx.TimeoutException:
+            raise TimeoutError(timeout)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            self._handle_error_response(response)
+
+    async def feedback(self,
+                        session_id: str = None,
+                        request_id: str = None,
+                        agent_score: Union[int, float, str] = None,
+                        human_score: Union[int, float, str] = None,
+                        extra_scores: List[dict] = None,
+                        comment: str = None,
+                        response_delivered: str = None,
+                        used_urls: List[str] = None,
+                        used_ids: List[str] = None,
+                        used_citations: List[str] = None,
+                        urls_scores: List[dict] = None,
+                        timeout: float = 60,
+                        **kwargs
+                        ) -> dict:
+        """
+        Submit feedback on a search request or session.
+
+        Args:
+            session_id: The session to give feedback on. Optional if request_id is provided.
+            request_id: The search request to give feedback on. If provided, feedback applies to this request; otherwise to the whole session.
+            agent_score: Overall score for how relevant and useful the search results were (1 perfect, 0 irrelevant, -1 harmful).
+            human_score: Feedback from the end user, if available (e.g. like/dislike).
+            extra_scores: Additional labeled scores, each a dict of {"label": str, "value": number or str}.
+            comment: Free-text explanation of the feedback.
+            response_delivered: The final answer produced using the search results.
+            used_urls: URLs of the results actually used in the answer. Alternative to used_ids.
+            used_ids: IDs of the results actually used in the answer. Alternative to used_urls.
+            used_citations: Specific content snippets used from the results.
+            urls_scores: Per-result feedback, each a dict of {"id": str, "url": str, "agent_score": number or str, "scores": list of {"label", "value"} dicts, "comment": str}. Each item must include id or url.
+            timeout: Optional HTTP request timeout in seconds.
+            **kwargs: Additional custom arguments.
+
+        Returns:
+            dict: Response containing success, feedback_id, and response_time.
+        """
+        self._check_keyless_supported("feedback")
+
+        return await self._feedback(
+            session_id=session_id,
+            request_id=request_id,
+            agent_score=agent_score,
+            human_score=human_score,
+            extra_scores=extra_scores,
+            comment=comment,
+            response_delivered=response_delivered,
+            used_urls=used_urls,
+            used_ids=used_ids,
+            used_citations=used_citations,
+            urls_scores=urls_scores,
+            timeout=timeout,
+            **kwargs
+        )
