@@ -286,13 +286,13 @@ tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
 response = tavily_client.search(query="What happened in the latest Burning Man floods?")
 
-# An agent scores its own search call, including a per-result score for every result
+# An agent scores its own search call — honestly, per result, not one flat number
 tavily_client.feedback(
     request_id=response["request_id"],
-    agent_score=0.9,
+    agent_score=0.7,
     urls_scores=[
-        {"id": result["id"], "agent_score": 0.9}
-        for result in response["results"]
+        {"id": response["results"][0]["id"], "agent_score": 0.9},
+        {"id": response["results"][1]["id"], "agent_score": 0.2, "comment": "Outdated — reports on a 2023 event"},
     ],
     used_ids=[response["results"][0]["id"]],
     response_delivered="Heavy rain flooded the Burning Man site, stranding thousands of attendees."
