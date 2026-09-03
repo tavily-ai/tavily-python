@@ -282,16 +282,13 @@ Below is a code snippet that demonstrates how to interact with our Feedback API.
 ```python
 from tavily import TavilyClient
 
-# Step 1. Instantiating your TavilyClient
 tavily_client = TavilyClient(api_key="tvly-YOUR_API_KEY")
 
-# Step 2. Running a search
 response = tavily_client.search(query="What happened in the latest Burning Man floods?")
-request_id = response["request_id"]
 
-# Step 3. Submitting feedback, including a per-result score for every result
-response = tavily_client.feedback(
-    request_id=request_id,
+# An agent scores its own search call, including a per-result score for every result
+tavily_client.feedback(
+    request_id=response["request_id"],
     agent_score=0.9,
     urls_scores=[
         {"id": result["id"], "agent_score": 0.9}
@@ -300,9 +297,6 @@ response = tavily_client.feedback(
     used_ids=[response["results"][0]["id"]],
     response_delivered="Heavy rain flooded the Burning Man site, stranding thousands of attendees."
 )
-
-# Step 4. Printing the feedback confirmation
-print(f"Feedback ID: {response['feedback_id']}")
 ```
 
 ## Advanced: Custom Session / Client Injection
