@@ -772,7 +772,7 @@ class TavilyClient:
                   used_ids: List[str] = None,
                   used_citations: List[str] = None,
                   urls_scores: List[dict] = None,
-                  timeout: float = 60,
+                  timeout: float = 10,
                   **kwargs
                   ) -> dict:
         """
@@ -820,7 +820,7 @@ class TavilyClient:
                  used_ids: List[str] = None,
                  used_citations: List[str] = None,
                  urls_scores: List[dict] = None,
-                 timeout: float = 60,
+                 timeout: float = 10,
                  **kwargs
                  ) -> dict:
         """
