@@ -31,6 +31,12 @@ class Response:
 
     def json(self):
         return loads(self.body) if self.body else None
+
+    @property
+    def text(self):
+        if self.body is None:
+            return ""
+        return self.body.decode('utf-8') if isinstance(self.body, bytes) else self.body
     
     def raise_for_status(self):
         pass

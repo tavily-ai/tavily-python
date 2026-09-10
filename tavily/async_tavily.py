@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, parse_json_response
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -143,7 +143,7 @@ class AsyncTavilyClient:
             body = body_override
         else:
             try:
-                body = response.json()
+                body = parse_json_response(response.text)
             except Exception:
                 body = None
 
@@ -260,7 +260,7 @@ class AsyncTavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -365,7 +365,7 @@ class AsyncTavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -460,7 +460,7 @@ class AsyncTavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -557,7 +557,7 @@ class AsyncTavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -752,7 +752,7 @@ class AsyncTavilyClient:
 
                             body_override = None
                             try:
-                                body_override = json.loads(error_text)
+                                body_override = parse_json_response(error_text)
                             except Exception:
                                 body_override = error_text
 
@@ -775,7 +775,7 @@ class AsyncTavilyClient:
                     raise TimeoutError(timeout)
 
                 if response.status_code == 200:
-                    return response.json()
+                    return parse_json_response(response.text)
                 else:
                     self._handle_error_response(response)
 
@@ -840,7 +840,7 @@ class AsyncTavilyClient:
             raise Exception(f"Error getting research: {e}")
 
         if response.status_code in (200, 202):
-            data = response.json()
+            data = parse_json_response(response.text)
             return data
         else:
             self._handle_error_response(response)
