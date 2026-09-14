@@ -838,6 +838,8 @@ class AsyncTavilyClient:
         self._check_keyless_supported("get_research")
         request_kwargs = {}
         if include_usage is not None:
+            if not isinstance(include_usage, bool):
+                raise TypeError("include_usage must be a bool or None")
             request_kwargs["params"] = {"include_usage": "true" if include_usage else "false"}
         try:
             response = await self._client.get(

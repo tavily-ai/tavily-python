@@ -178,3 +178,17 @@ def test_async_get_research_usage_absent_from_response(async_interceptor, async_
     payload = {"request_id": "test-request-123", "status": "pending", "response_time": 0.1}
     async_interceptor.set_response(code, json=payload)
     assert asyncio.run(async_client.get_research("test-request-123", include_usage=True)) == payload
+
+
+@pytest.mark.parametrize("flag", ["false", "true", "", 0, 1, 0.0, [], {}, object()])
+def test_sync_get_research_rejects_non_boolean_usage(sync_interceptor, sync_client, flag):
+    with pytest.raises(TypeError, match="include_usage must be a bool or None"):
+        sync_client.get_research("test-request-123", include_usage=flag)
+    assert sync_interceptor.get_request() is None
+
+
+@pytest.mark.parametrize("flag", ["false", "true", "", 0, 1, 0.0, [], {}, object()])
+def test_async_get_research_rejects_non_boolean_usage(async_interceptor, async_client, flag):
+    with pytest.raises(TypeError, match="include_usage must be a bool or None"):
+        asyncio.run(async_client.get_research("test-request-123", include_usage=flag))
+    assert async_interceptor.get_request() is None
