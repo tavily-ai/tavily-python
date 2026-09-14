@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 
 BASE_URL = "https://api.tavily.com"
 
@@ -64,6 +65,7 @@ def validate_get_research(request, response):
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
     assert response == dummy_research_response
+    assert request.params is None
 
 def test_sync_research_defaults(sync_interceptor, sync_client):
     sync_interceptor.set_response(200, json=dummy_queued_response)
@@ -147,3 +149,62 @@ def test_async_get_research(async_interceptor, async_client):
     request = async_interceptor.get_request()
     validate_get_research(request, response)
 
+
+@pytest.mark.parametrize("flag,params", [(None, None), (False, {"include_usage": "false"}), (True, {"include_usage": "true"})])
+@pytest.mark.parametrize("usage", [{"credits": 0}, {"credits": 1.25}, {"credits": 16, "extra": "kept"}, {}])
+def test_sync_get_research_usage(sync_interceptor, sync_client, flag, params, usage):
+    payload = {**dummy_research_response, "usage": usage}
+    sync_interceptor.set_response(200, json=payload)
+    assert sync_client.get_research("test-request-123", include_usage=flag) == payload
+    assert sync_interceptor.get_request().params == params
+
+
+@pytest.mark.parametrize("flag,params", [(None, None), (False, {"include_usage": "false"}), (True, {"include_usage": "true"})])
+@pytest.mark.parametrize("usage", [{"credits": 0}, {"credits": 1.25}, {"credits": 16, "extra": "kept"}, {}])
+def test_async_get_research_usage(async_interceptor, async_client, flag, params, usage):
+    payload = {**dummy_research_response, "usage": usage}
+    async_interceptor.set_response(200, json=payload)
+    assert asyncio.run(async_client.get_research("test-request-123", include_usage=flag)) == payload
+    assert async_interceptor.get_request().params == params
+
+
+@pytest.mark.parametrize("status,code", [("pending", 202), ("in_progress", 202), ("failed", 200), ("completed", 200)])
+def test_sync_get_research_without_usage(sync_interceptor, sync_client, status, code):
+    payload = {"request_id": "test-request-123", "status": status, "response_time": 0.1}
+    sync_interceptor.set_response(code, json=payload)
+    assert sync_client.get_research("test-request-123", include_usage=True) == payload
+
+
+@pytest.mark.parametrize("status,code", [("pending", 202), ("in_progress", 202), ("failed", 200), ("completed", 200)])
+def test_async_get_research_without_usage(async_interceptor, async_client, status, code):
+    payload = {"request_id": "test-request-123", "status": status, "response_time": 0.1}
+    async_interceptor.set_response(code, json=payload)
+    assert asyncio.run(async_client.get_research("test-request-123", include_usage=True)) == payload
+
+
+ENCODED_IDS = [
+    ("r1?include_usage=false", "r1%3Finclude_usage%3Dfalse"),
+    ("r1#frag", "r1%23frag"),
+    ("r1/other", "r1%2Fother"),
+    ("r1%2Fother", "r1%252Fother"),
+    ("r1 space", "r1%20space"),
+    ("r1é", "r1%C3%A9"),
+]
+
+
+@pytest.mark.parametrize("request_id,encoded", ENCODED_IDS)
+def test_sync_get_research_encodes_id(sync_interceptor, sync_client, request_id, encoded):
+    sync_interceptor.set_response(200, json=dummy_research_response)
+    sync_client.get_research(request_id, include_usage=True)
+    request = sync_interceptor.get_request()
+    assert request.url == f"{BASE_URL}/research/{encoded}"
+    assert request.params == {"include_usage": "true"}
+
+
+@pytest.mark.parametrize("request_id,encoded", ENCODED_IDS)
+def test_async_get_research_encodes_id(async_interceptor, async_client, request_id, encoded):
+    async_interceptor.set_response(200, json=dummy_research_response)
+    asyncio.run(async_client.get_research(request_id, include_usage=True))
+    request = async_interceptor.get_request()
+    assert request.url == f"{BASE_URL}/research/{encoded}"
+    assert request.params == {"include_usage": "true"}

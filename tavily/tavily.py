@@ -2,6 +2,7 @@ import requests
 import json
 import os
 import warnings
+from urllib.parse import quote
 from typing import Literal, Sequence, Optional, List, Union, Generator
 from .utils import get_max_items_from_list
 from .errors import (
@@ -742,20 +743,25 @@ class TavilyClient:
         )
 
     def get_research(self,
-                     request_id: str
+                     request_id: str,
+                     include_usage: Optional[bool] = None
                      ) -> dict:
         """
         Get research results by request_id.
         
         Args:
             request_id: The research request ID.
+            include_usage: Request credit usage (off by default).
         
         Returns:
-            dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
+            dict: Research results, with usage when requested and available.
         """
         self._check_keyless_supported("get_research")
         try:
-            response = self.session.get(self.base_url + f"/research/{request_id}")
+            response = self.session.get(
+                self.base_url + f"/research/{quote(request_id, safe='')}",
+                params={"include_usage": str(include_usage).lower()} if include_usage is not None else None
+            )
         except Exception as e:
             raise Exception(f"Error getting research: {e}")
 
