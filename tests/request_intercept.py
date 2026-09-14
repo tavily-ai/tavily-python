@@ -12,13 +12,14 @@ except AttributeError:
     vanilla_async_stream = None
 
 class Request:
-    def __init__(self, method, url, headers=None, body=None, timeout=None, proxies=None):
+    def __init__(self, method, url, headers=None, body=None, timeout=None, proxies=None, params=None):
         self.method = method
         self.url = url
         self.headers = headers
         self.timeout = timeout
         self.proxies = proxies
         self.body = body
+        self.params = params
     
     def json(self):
         return loads(self.body) if self.body else None
@@ -59,11 +60,11 @@ class MockSession:
         merged_proxies = {**self.proxies, **(proxies or {})} if proxies else self.proxies
         return self._interceptor.post(url, data, merged_headers, timeout, merged_proxies, stream)
 
-    def get(self, url, headers=None, timeout=None, proxies=None):
+    def get(self, url, headers=None, timeout=None, proxies=None, params=None):
         # Merge session headers with request headers (request headers take precedence)
         merged_headers = {**self.headers, **(headers or {})}
         merged_proxies = {**self.proxies, **(proxies or {})} if proxies else self.proxies
-        return self._interceptor.get(url, merged_headers, timeout, merged_proxies)
+        return self._interceptor.get(url, merged_headers, timeout, merged_proxies, params)
 
     def close(self):
         pass
@@ -96,8 +97,8 @@ class Interceptor:
         self._request = Request("POST", url, headers, data, timeout, proxies)
         return self._response
 
-    def get(self, url, headers=None, timeout=None, proxies=None):
-        self._request = Request("GET", url, headers, None, timeout, proxies)
+    def get(self, url, headers=None, timeout=None, proxies=None, params=None):
+        self._request = Request("GET", url, headers, None, timeout, proxies, params)
         return self._response
 
 def intercept_requests(tavily):
@@ -122,11 +123,12 @@ def intercept_requests(tavily):
             )
         tavily.httpx.AsyncClient.post = post
 
-        async def get(self, url, timeout=None, headers=None):
+        async def get(self, url, timeout=None, headers=None, params=None):
             return interceptor.get(
                 url=str(self._base_url) + url,
                 headers=merge_headers(self.headers, headers),
-                timeout=timeout
+                timeout=timeout,
+                params=params
             )
         tavily.httpx.AsyncClient.get = get
                 

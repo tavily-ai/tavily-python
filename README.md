@@ -249,6 +249,16 @@ print(f"Content: {result['content']}")
 print(f"Sources: {len(result['sources'])} sources found")
 ```
 
+### Research credit usage
+
+```python
+result = tavily_client.get_research(request_id, include_usage=True)
+print(result.get("usage", {}).get("credits"))
+```
+
+Usage is off by default. Some tasks have no usage data.
+`AsyncTavilyClient` supports the same option.
+
 ### Streaming research results
 
 ```python
