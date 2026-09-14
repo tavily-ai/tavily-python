@@ -1,4 +1,5 @@
 import asyncio
+import pytest
 
 BASE_URL = "https://api.tavily.com"
 
@@ -63,6 +64,7 @@ def validate_get_research(request, response):
     assert request.url == f"{BASE_URL}/research/test-request-123"
     assert request.headers["Authorization"] == "Bearer tvly-test"
     assert request.headers["X-Client-Source"] == "tavily-python"
+    assert request.params is None
     assert response == dummy_research_response
 
 def test_sync_research_defaults(sync_interceptor, sync_client):
@@ -147,3 +149,32 @@ def test_async_get_research(async_interceptor, async_client):
     request = async_interceptor.get_request()
     validate_get_research(request, response)
 
+
+@pytest.mark.parametrize("flag,params", [(None, None), (False, {"include_usage": "false"}), (True, {"include_usage": "true"})])
+def test_sync_get_research_usage(sync_interceptor, sync_client, flag, params):
+    payload = {**dummy_research_response, "usage": {"credits": 1.25, "extra": "kept"}}
+    sync_interceptor.set_response(200, json=payload)
+    assert sync_client.get_research("test-request-123", include_usage=flag) == payload
+    assert sync_interceptor.get_request().params == params
+
+
+@pytest.mark.parametrize("flag,params", [(None, None), (False, {"include_usage": "false"}), (True, {"include_usage": "true"})])
+def test_async_get_research_usage(async_interceptor, async_client, flag, params):
+    payload = {**dummy_research_response, "usage": {"credits": 1.25, "extra": "kept"}}
+    async_interceptor.set_response(200, json=payload)
+    assert asyncio.run(async_client.get_research("test-request-123", include_usage=flag)) == payload
+    assert async_interceptor.get_request().params == params
+
+
+@pytest.mark.parametrize("code", [200, 202])
+def test_sync_get_research_usage_absent_from_response(sync_interceptor, sync_client, code):
+    payload = {"request_id": "test-request-123", "status": "pending", "response_time": 0.1}
+    sync_interceptor.set_response(code, json=payload)
+    assert sync_client.get_research("test-request-123", include_usage=True) == payload
+
+
+@pytest.mark.parametrize("code", [200, 202])
+def test_async_get_research_usage_absent_from_response(async_interceptor, async_client, code):
+    payload = {"request_id": "test-request-123", "status": "pending", "response_time": 0.1}
+    async_interceptor.set_response(code, json=payload)
+    assert asyncio.run(async_client.get_research("test-request-123", include_usage=True)) == payload
