@@ -214,6 +214,8 @@ class AsyncTavilyClient:
             include_favicon: bool = None,
             include_usage: bool = None,
             exact_match: bool = None,
+            fetch_timeout: float = None,
+            cache_fallback: bool = None,
             **kwargs,
     ) -> dict:
         """
@@ -238,6 +240,8 @@ class AsyncTavilyClient:
             "include_favicon": include_favicon,
             "include_usage": include_usage,
             "exact_match": exact_match,
+            "fetch_timeout": fetch_timeout,
+            "cache_fallback": cache_fallback,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -278,6 +282,8 @@ class AsyncTavilyClient:
                      include_favicon: bool = None,
                      include_usage: bool = None,
                      exact_match: bool = None,
+                     fetch_timeout: float = None,
+                     cache_fallback: bool = None,
                      **kwargs,  # Accept custom arguments
                      ) -> dict:
         """
@@ -303,6 +309,8 @@ class AsyncTavilyClient:
                                            include_favicon=include_favicon,
                                            include_usage=include_usage,
                                            exact_match=exact_match,
+                                           fetch_timeout=fetch_timeout,
+                                           cache_fallback=cache_fallback,
                                            **kwargs,
                                            )
 
