@@ -176,6 +176,7 @@ class TavilyClient:
                 max_results: int = None,
                 include_domains: Sequence[str] = None,
                 exclude_domains: Sequence[str] = None,
+                include_domains_mode: Literal["filter", "boost"] = None,
                 include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                 include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                 include_images: bool = None,
@@ -187,6 +188,8 @@ class TavilyClient:
                 exact_match: bool = None,
                 fetch_timeout: float = None,
                 cache_fallback: bool = None,
+                language: str = None,
+                filter_by_language: bool = None,
                 **kwargs
                 ) -> dict:
         """
@@ -206,6 +209,7 @@ class TavilyClient:
             "max_results": max_results,
             "include_domains": include_domains,
             "exclude_domains": exclude_domains,
+            "include_domains_mode": include_domains_mode,
             "include_images": include_images,
             "country": country,
             "auto_parameters": auto_parameters,
@@ -214,6 +218,8 @@ class TavilyClient:
             "exact_match": exact_match,
             "fetch_timeout": fetch_timeout,
             "cache_fallback": cache_fallback,
+            "language": language,
+            "filter_by_language": filter_by_language,
         }
 
         data = {k: v for k, v in data.items() if v is not None}
@@ -248,6 +254,7 @@ class TavilyClient:
                max_results: int = None,
                include_domains: Sequence[str] = None,
                exclude_domains: Sequence[str] = None,
+               include_domains_mode: Literal["filter", "boost"] = None,
                include_answer: Union[bool, Literal["basic", "advanced"]] = None,
                include_raw_content: Union[bool, Literal["markdown", "text"]] = None,
                include_images: bool = None,
@@ -259,6 +266,8 @@ class TavilyClient:
                exact_match: bool = None,
                fetch_timeout: float = None,
                cache_fallback: bool = None,
+               language: str = None,
+               filter_by_language: bool = None,
                **kwargs,  # Accept custom arguments
                ) -> dict:
         """
@@ -275,6 +284,7 @@ class TavilyClient:
                                      max_results=max_results,
                                      include_domains=include_domains,
                                      exclude_domains=exclude_domains,
+                                     include_domains_mode=include_domains_mode,
                                      include_answer=include_answer,
                                      include_raw_content=include_raw_content,
                                      include_images=include_images,
@@ -286,6 +296,8 @@ class TavilyClient:
                                      exact_match=exact_match,
                                      fetch_timeout=fetch_timeout,
                                      cache_fallback=cache_fallback,
+                                     language=language,
+                                     filter_by_language=filter_by_language,
                                      **kwargs)
         response_dict.setdefault("results", [])
         return response_dict
@@ -738,20 +750,30 @@ class TavilyClient:
         )
 
     def get_research(self,
-                     request_id: str
+                     request_id: str,
+                     include_usage: Optional[bool] = None
                      ) -> dict:
         """
         Get research results by request_id.
         
         Args:
             request_id: The research request ID.
+            include_usage: Request credit usage (off by default).
         
         Returns:
-            dict: Research response containing request_id, created_at, completed_at, status, content, and sources.
+            dict: Research results, with usage when requested and available.
         """
         self._check_keyless_supported("get_research")
+        request_kwargs = {}
+        if include_usage is not None:
+            if not isinstance(include_usage, bool):
+                raise TypeError("include_usage must be a bool or None")
+            request_kwargs["params"] = {"include_usage": "true" if include_usage else "false"}
         try:
-            response = self.session.get(self.base_url + f"/research/{request_id}")
+            response = self.session.get(
+                self.base_url + f"/research/{request_id}",
+                **request_kwargs
+            )
         except Exception as e:
             raise Exception(f"Error getting research: {e}")
 
@@ -759,6 +781,108 @@ class TavilyClient:
             return response.json()
         else:
             self._handle_error_response(response)
+
+    def _feedback(self,
+                  session_id: str = None,
+                  request_id: str = None,
+                  agent_score: Union[int, float, str] = None,
+                  human_score: Union[int, float, str] = None,
+                  extra_scores: List[dict] = None,
+                  comment: str = None,
+                  response_delivered: str = None,
+                  used_urls: List[str] = None,
+                  used_ids: List[str] = None,
+                  used_citations: List[str] = None,
+                  urls_scores: List[dict] = None,
+                  timeout: float = 10,
+                  **kwargs
+                  ) -> dict:
+        """
+        Internal feedback method to send the request to the API.
+        """
+        data = {
+            "session_id": session_id,
+            "request_id": request_id,
+            "agent_score": agent_score,
+            "human_score": human_score,
+            "extra_scores": extra_scores,
+            "comment": comment,
+            "response_delivered": response_delivered,
+            "used_urls": used_urls,
+            "used_ids": used_ids,
+            "used_citations": used_citations,
+            "urls_scores": urls_scores,
+        }
+
+        override_headers = self._pop_request_headers(kwargs)
+        if kwargs:
+            data.update(kwargs)
+
+        data = {k: v for k, v in data.items() if v is not None}
+
+        try:
+            response = self.session.post(self.base_url + "/feedback", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+        except requests.exceptions.Timeout:
+            raise TimeoutError(timeout)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            self._handle_error_response(response)
+
+    def feedback(self,
+                 session_id: str = None,
+                 request_id: str = None,
+                 agent_score: Union[int, float, str] = None,
+                 human_score: Union[int, float, str] = None,
+                 extra_scores: List[dict] = None,
+                 comment: str = None,
+                 response_delivered: str = None,
+                 used_urls: List[str] = None,
+                 used_ids: List[str] = None,
+                 used_citations: List[str] = None,
+                 urls_scores: List[dict] = None,
+                 timeout: float = 10,
+                 **kwargs
+                 ) -> dict:
+        """
+        Submit feedback on a search request or session.
+
+        Args:
+            session_id: The session to give feedback on. Optional if request_id is provided.
+            request_id: The search request to give feedback on. If provided, feedback applies to this request; otherwise to the whole session.
+            agent_score: Overall score for how relevant and useful the search results were (1 perfect, 0 irrelevant, -1 harmful).
+            human_score: Feedback from the end user, if available (e.g. like/dislike).
+            extra_scores: Additional labeled scores, each a dict of {"label": str, "value": number or str}.
+            comment: Free-text explanation of the feedback.
+            response_delivered: The final answer produced using the search results.
+            used_urls: URLs of the results actually used in the answer. Alternative to used_ids.
+            used_ids: IDs of the results actually used in the answer. Alternative to used_urls.
+            used_citations: Specific content snippets used from the results.
+            urls_scores: Per-result feedback, each a dict of {"id": str, "url": str, "agent_score": number or str, "scores": list of {"label", "value"} dicts, "comment": str}. Each item must include id or url.
+            timeout: Optional HTTP request timeout in seconds.
+            **kwargs: Additional custom arguments.
+
+        Returns:
+            dict: Response containing success, feedback_id, and response_time.
+        """
+        self._check_keyless_supported("feedback")
+
+        return self._feedback(
+            session_id=session_id,
+            request_id=request_id,
+            agent_score=agent_score,
+            human_score=human_score,
+            extra_scores=extra_scores,
+            comment=comment,
+            response_delivered=response_delivered,
+            used_urls=used_urls,
+            used_ids=used_ids,
+            used_citations=used_citations,
+            urls_scores=urls_scores,
+            timeout=timeout,
+            **kwargs
+        )
 
 
 class Client(TavilyClient):

@@ -182,3 +182,45 @@ def test_async_search_fetch_timeout_cache_fallback(async_interceptor, async_clie
     request = async_interceptor.get_request()
     assert request.json()["fetch_timeout"] == 15
     assert request.json()["cache_fallback"] is True
+
+def test_sync_search_language_not_sent_by_default(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?")
+    request = sync_interceptor.get_request()
+    assert "language" not in request.json()
+    assert "filter_by_language" not in request.json()
+
+def test_sync_search_language(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?", language="french", filter_by_language=True)
+    request = sync_interceptor.get_request()
+    assert request.json()["language"] == "french"
+    assert request.json()["filter_by_language"] is True
+
+def test_async_search_language_not_sent_by_default(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?"))
+    request = async_interceptor.get_request()
+    assert "language" not in request.json()
+    assert "filter_by_language" not in request.json()
+
+def test_async_search_language(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?", language="french", filter_by_language=True))
+    request = async_interceptor.get_request()
+    assert request.json()["language"] == "french"
+    assert request.json()["filter_by_language"] is True
+
+def test_sync_search_language_only_no_filter(sync_interceptor, sync_client):
+    sync_interceptor.set_response(200, json=dummy_response)
+    sync_client.search("What is Tavily?", language="french")
+    request = sync_interceptor.get_request()
+    assert request.json()["language"] == "french"
+    assert "filter_by_language" not in request.json()
+
+def test_async_search_language_only_no_filter(async_interceptor, async_client):
+    async_interceptor.set_response(200, json=dummy_response)
+    asyncio.run(async_client.search("What is Tavily?", language="french"))
+    request = async_interceptor.get_request()
+    assert request.json()["language"] == "french"
+    assert "filter_by_language" not in request.json()
