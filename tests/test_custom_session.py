@@ -20,6 +20,18 @@ def async_interceptor():
 
 # --- Sync TavilyClient tests ---
 
+@pytest.mark.parametrize("options", [{}, {"include_usage": None}])
+def test_get_research_with_legacy_session(sync_interceptor, options):
+    class LegacySession(MockSession):
+        def get(self, url):
+            return super().get(url)
+
+    payload = {"request_id": "r1", "status": "pending"}
+    sync_interceptor.set_response(202, json=payload)
+    client = sync_tavily.TavilyClient(session=LegacySession(sync_interceptor))
+    assert client.get_research("r1", **options) == payload
+
+
 class TestSyncCustomSession:
     def test_default_session_created_when_none_provided(self, sync_interceptor):
         client = sync_tavily.TavilyClient(api_key="tvly-test")
@@ -249,6 +261,23 @@ class TestSyncCustomSession:
 
 
 # --- Async AsyncTavilyClient tests ---
+
+@pytest.mark.parametrize("options", [{}, {"include_usage": None}])
+def test_get_research_with_legacy_async_client(async_interceptor, options):
+    class LegacyAsyncClient(httpx.AsyncClient):
+        async def get(self, url):
+            return await super().get(url)
+
+    payload = {"request_id": "r1", "status": "pending"}
+    async_interceptor.set_response(202, json=payload)
+
+    async def run():
+        async with LegacyAsyncClient(base_url="https://api.tavily.com") as external:
+            client = async_tavily.AsyncTavilyClient(client=external)
+            assert await client.get_research("r1", **options) == payload
+
+    asyncio.run(run())
+
 
 class TestAsyncCustomClient:
     def test_default_client_created_when_none_provided(self):
