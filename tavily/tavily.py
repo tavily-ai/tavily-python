@@ -187,6 +187,8 @@ class TavilyClient:
                 include_favicon: bool = None,
                 include_usage: bool = None,
                 exact_match: bool = None,
+                fetch_timeout: float = None,
+                cache_fallback: bool = None,
                 language: str = None,
                 filter_by_language: bool = None,
                 **kwargs
@@ -216,6 +218,8 @@ class TavilyClient:
             "include_favicon": include_favicon,
             "include_usage": include_usage,
             "exact_match": exact_match,
+            "fetch_timeout": fetch_timeout,
+            "cache_fallback": cache_fallback,
             "language": language,
             "filter_by_language": filter_by_language,
         }
@@ -263,6 +267,8 @@ class TavilyClient:
                include_favicon: bool = None,
                include_usage: bool = None,
                exact_match: bool = None,
+               fetch_timeout: float = None,
+               cache_fallback: bool = None,
                language: str = None,
                filter_by_language: bool = None,
                **kwargs,  # Accept custom arguments
@@ -292,6 +298,8 @@ class TavilyClient:
                                      include_favicon=include_favicon,
                                      include_usage=include_usage,
                                      exact_match=exact_match,
+                                     fetch_timeout=fetch_timeout,
+                                     cache_fallback=cache_fallback,
                                      language=language,
                                      filter_by_language=filter_by_language,
                                      **kwargs)
