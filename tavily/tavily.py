@@ -3,7 +3,7 @@ import json
 import os
 import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, parse_json_response
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -117,7 +117,7 @@ class TavilyClient:
         """Raise an appropriate exception for a non-2xx response."""
         body = None
         try:
-            body = response.json()
+            body = parse_json_response(response.text)
         except Exception:
             body = None
 
@@ -240,7 +240,7 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -345,7 +345,7 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -434,7 +434,7 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -529,7 +529,7 @@ class TavilyClient:
             raise TimeoutError(timeout)
 
         if response.status_code == 200:
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
@@ -713,7 +713,7 @@ class TavilyClient:
                 raise TimeoutError(timeout)
 
             if response.status_code == 200:
-                return response.json()
+                return parse_json_response(response.text)
             else:
                 self._handle_error_response(response)
 
@@ -782,7 +782,7 @@ class TavilyClient:
             raise Exception(f"Error getting research: {e}")
 
         if response.status_code in (200, 202):
-            return response.json()
+            return parse_json_response(response.text)
         else:
             self._handle_error_response(response)
 
