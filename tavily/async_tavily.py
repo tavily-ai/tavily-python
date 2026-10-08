@@ -15,6 +15,7 @@ from .errors import (
     TimeoutError,
     TavilyKeylessLimitError,
     KeylessUnsupportedEndpointError,
+    _parse_retry_after
 )
 
 
@@ -160,7 +161,7 @@ class AsyncTavilyClient:
             detail = body
 
         if response.status_code == 429:
-            raise UsageLimitExceededError(detail)
+            raise UsageLimitExceededError(detail, retry_after=_parse_retry_after(response.headers))
         elif response.status_code in [403, 432, 433]:
             raise ForbiddenError(detail)
         elif response.status_code == 401:
