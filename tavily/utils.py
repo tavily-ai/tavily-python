@@ -9,7 +9,8 @@ def get_total_tokens_from_string(string: str, encoding_name: str = DEFAULT_MODEL
         Get total amount of tokens from string using the specified encoding (based on openai compute)
     """
     encoding = tiktoken.encoding_for_model(encoding_name)
-    tokens = encoding.encode(string)
+    # Retrieved text may contain literal spellings of special tokens.
+    tokens = encoding.encode(string, disallowed_special=())
     return len(tokens)
 
 def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_TOKENS) -> List[Dict[str,str]]:
