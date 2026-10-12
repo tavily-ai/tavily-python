@@ -18,13 +18,11 @@ def get_max_items_from_list(data: Sequence[dict], max_tokens: int = DEFAULT_MAX_
         Get max items from list of items based on defined max tokens (based on openai compute)
     """
     result = []
-    current_tokens = 0
     for item in data:
-        item_str = json.dumps(item)
-        new_total_tokens = current_tokens + get_total_tokens_from_string(item_str)
+        # Count the complete JSON array that will be returned as context.
+        new_total_tokens = get_total_tokens_from_string(json.dumps(result + [item]))
         if new_total_tokens > max_tokens:
             break
         else:
             result.append(item)
-            current_tokens = new_total_tokens
     return result
