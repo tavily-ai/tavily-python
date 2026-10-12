@@ -1,4 +1,6 @@
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import json
 import os
 import warnings
@@ -92,7 +94,21 @@ class TavilyClient:
         }
 
         self._external_session = session is not None
-        self.session = session if session is not None else requests.Session()
+        if session is None:
+            session = requests.Session()
+            # Pooled keep-alive connections can be closed by the server after an idle period;
+            # retry the request on a fresh connection instead of surfacing RemoteDisconnected.
+            retry = Retry(
+                total=2,
+                connect=2,
+                read=2,
+                backoff_factor=0.2,
+                allowed_methods=frozenset({"POST", "GET"}),
+                respect_retry_after_header=False,
+            )
+            session.mount("https://", HTTPAdapter(max_retries=retry))
+            session.mount("http://", HTTPAdapter(max_retries=retry))
+        self.session = session
         # For external sessions, only set headers that aren't already configured
         for key, value in self.headers.items():
             if key not in self.session.headers:

@@ -66,6 +66,9 @@ class MockSession:
         merged_proxies = {**self.proxies, **(proxies or {})} if proxies else self.proxies
         return self._interceptor.get(url, merged_headers, timeout, merged_proxies, params)
 
+    def mount(self, prefix, adapter):
+        pass
+
     def close(self):
         pass
 
