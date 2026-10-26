@@ -755,7 +755,7 @@ class AsyncTavilyClient:
                         timeout=timeout,
                         **({"headers": override_headers} if override_headers else {})
                     ) as response:
-                        if response.status_code != 200:
+                        if response.status_code not in (200, 201):
                             try:
                                 error_text = await response.aread()
                                 error_text = error_text.decode('utf-8') if isinstance(error_text, bytes) else error_text
@@ -786,7 +786,8 @@ class AsyncTavilyClient:
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
 
-                if response.status_code == 200:
+                # The API documents 201 Created for a queued research task; accept 200 as well.
+                if response.status_code in (200, 201):
                     return response.json()
                 else:
                     self._handle_error_response(response)

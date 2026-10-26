@@ -192,3 +192,42 @@ def test_async_get_research_rejects_non_boolean_usage(async_interceptor, async_c
     with pytest.raises(TypeError, match="include_usage must be a bool or None"):
         asyncio.run(async_client.get_research("test-request-123", include_usage=flag))
     assert async_interceptor.get_request() is None
+
+
+# The Research create endpoint documents HTTP 201 Created for the queued task.
+@pytest.mark.parametrize("code", [200, 201])
+def test_sync_research_create_accepts_200_and_201(sync_interceptor, sync_client, code):
+    sync_interceptor.set_response(code, json=dummy_queued_response)
+    response = sync_client.research("Research the latest developments in AI")
+    validate_research_default(sync_interceptor.get_request(), response)
+
+
+@pytest.mark.parametrize("code", [200, 201])
+def test_async_research_create_accepts_200_and_201(async_interceptor, async_client, code):
+    async_interceptor.set_response(code, json=dummy_queued_response)
+    response = asyncio.run(async_client.research("Research the latest developments in AI"))
+    validate_research_default(async_interceptor.get_request(), response)
+
+
+def test_sync_research_stream_accepts_201(sync_interceptor, sync_client):
+    sync_interceptor.set_response(201, body="event: done\ndata: {}\n\n")
+    stream = sync_client.research("Research the latest developments in AI", stream=True)
+    assert b"".join(stream) == b"event: done\ndata: {}\n\n"
+
+
+def test_async_research_stream_accepts_201(async_interceptor, async_client):
+    async_interceptor.set_response(201, body="event: done\ndata: {}\n\n")
+
+    async def collect():
+        stream = await async_client.research("Research the latest developments in AI", stream=True)
+        return b"".join([chunk async for chunk in stream])
+
+    assert asyncio.run(collect()) == b"event: done\ndata: {}\n\n"
+
+
+@pytest.mark.parametrize("code,error", [(401, "InvalidAPIKeyError"), (429, "UsageLimitExceededError"), (400, "BadRequestError")])
+def test_research_create_still_maps_error_statuses(sync_interceptor, sync_client, code, error):
+    import tavily.errors as errors
+    sync_interceptor.set_response(code, json={"detail": {"error": "nope"}})
+    with pytest.raises(getattr(errors, error)):
+        sync_client.research("Research the latest developments in AI")
