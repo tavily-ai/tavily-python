@@ -689,7 +689,7 @@ class TavilyClient:
             except requests.exceptions.Timeout:
                 raise TimeoutError(timeout)
 
-            if response.status_code != 200:
+            if response.status_code not in (200, 201):
                 self._handle_error_response(response)
 
             def stream_generator() -> Generator[bytes, None, None]:
@@ -712,7 +712,8 @@ class TavilyClient:
             except requests.exceptions.Timeout:
                 raise TimeoutError(timeout)
 
-            if response.status_code == 200:
+            # The API documents 201 Created for a queued research task; accept 200 as well.
+            if response.status_code in (200, 201):
                 return response.json()
             else:
                 self._handle_error_response(response)

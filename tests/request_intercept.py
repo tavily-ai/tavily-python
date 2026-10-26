@@ -36,7 +36,7 @@ class Response:
     def raise_for_status(self):
         pass
     
-    def iter_content(self):
+    def iter_content(self, chunk_size=None):
         """For sync streaming"""
         if self.body:
             body_bytes = self.body.encode('utf-8') if isinstance(self.body, str) else self.body
