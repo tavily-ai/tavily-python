@@ -5,7 +5,7 @@ from typing import Literal, Sequence, Optional, List, Union, AsyncGenerator, Awa
 
 import httpx
 
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, retry_delay
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -39,6 +39,9 @@ def _raise_keyless_envelope(body) -> None:
     )
 
 
+RETRYABLE_STATUS_CODES = {429, 502, 503, 504}
+
+
 class AsyncTavilyClient:
     """
     Async Tavily API client class.
@@ -54,7 +57,8 @@ class AsyncTavilyClient:
                  session_id: Optional[str] = None,
                  human_id: Optional[str] = None,
                  client_name: Optional[str] = None,
-                 client: Optional[httpx.AsyncClient] = None):
+                 client: Optional[httpx.AsyncClient] = None,
+                 max_retries: int = 0):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
 
@@ -67,6 +71,8 @@ class AsyncTavilyClient:
 
         self._api_base_url = api_base_url or "https://api.tavily.com"
         self._company_info_tags = company_info_tags
+        # Opt-in automatic retries (default 0 = off, historical behavior).
+        self.max_retries = max(0, int(max_retries))
         self._keyless = api_key is None and client is None
 
         if self._keyless:
@@ -170,6 +176,58 @@ class AsyncTavilyClient:
         else:
             raise response.raise_for_status()
 
+    async def _sleep_before_retry(self, attempt: int, response=None) -> None:
+        """Wait before retry attempt ``attempt``, honoring ``Retry-After``."""
+        await asyncio.sleep(retry_delay(attempt, response.headers if response is not None else None))
+
+    async def _post_with_retry(self, url: str, *, idempotent: bool, **kwargs):
+        """POST through the client, applying the opt-in retry policy.
+
+        With ``max_retries`` at its default of 0 this performs exactly one
+        request, matching the historical behavior. Idempotent endpoints
+        (search, extract, map) are retried on 429/502/503/504 and on
+        connection errors. Job-creating endpoints (crawl, research) are
+        retried on 429 only, so a retry can never silently duplicate a
+        billable job after an ambiguous failure.
+        """
+        retries = 0
+        while True:
+            try:
+                response = await self._client.post(url, **kwargs)
+            except (httpx.ConnectError, httpx.RemoteProtocolError):
+                if not idempotent or retries >= self.max_retries:
+                    raise
+                retries += 1
+                await self._sleep_before_retry(retries)
+                continue
+            if (
+                retries < self.max_retries
+                and response.status_code in RETRYABLE_STATUS_CODES
+                and (idempotent or response.status_code == 429)
+            ):
+                retries += 1
+                await self._sleep_before_retry(retries, response)
+                continue
+            return response
+
+    async def _get_with_retry(self, url: str, **kwargs):
+        """GET through the client with the idempotent retry policy."""
+        retries = 0
+        while True:
+            try:
+                response = await self._client.get(url, **kwargs)
+            except (httpx.ConnectError, httpx.RemoteProtocolError):
+                if retries >= self.max_retries:
+                    raise
+                retries += 1
+                await self._sleep_before_retry(retries)
+                continue
+            if retries < self.max_retries and response.status_code in RETRYABLE_STATUS_CODES:
+                retries += 1
+                await self._sleep_before_retry(retries, response)
+                continue
+            return response
+
     def _check_keyless_supported(self, method: str) -> None:
         """Raise ``KeylessUnsupportedEndpointError`` when running in keyless mode."""
         if self._keyless:
@@ -261,7 +319,7 @@ class AsyncTavilyClient:
         timeout = min(timeout, 120)
 
         try:
-            response = await self._client.post("/search", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = await self._post_with_retry("/search", idempotent=True, content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -372,7 +430,7 @@ class AsyncTavilyClient:
             data.update(kwargs)
 
         try:
-            response = await self._client.post("/extract", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = await self._post_with_retry("/extract", idempotent=True, content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -467,7 +525,7 @@ class AsyncTavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/crawl", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = await self._post_with_retry("/crawl", idempotent=False, content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -564,7 +622,7 @@ class AsyncTavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = await self._client.post("/map", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = await self._post_with_retry("/map", idempotent=True, content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except httpx.TimeoutException:
             raise TimeoutError(timeout)
 
@@ -782,7 +840,7 @@ class AsyncTavilyClient:
         else:
             async def _make_request():
                 try:
-                    response = await self._client.post("/research", content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+                    response = await self._post_with_retry("/research", idempotent=False, content=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
                 except httpx.TimeoutException:
                     raise TimeoutError(timeout)
 
@@ -854,7 +912,7 @@ class AsyncTavilyClient:
                 raise TypeError("include_usage must be a bool or None")
             request_kwargs["params"] = {"include_usage": "true" if include_usage else "false"}
         try:
-            response = await self._client.get(
+            response = await self._get_with_retry(
                 f"/research/{request_id}",
                 **request_kwargs
             )

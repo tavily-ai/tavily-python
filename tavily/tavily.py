@@ -1,9 +1,10 @@
 import requests
 import json
 import os
+import time
 import warnings
 from typing import Literal, Sequence, Optional, List, Union, Generator
-from .utils import get_max_items_from_list
+from .utils import get_max_items_from_list, retry_delay
 from .errors import (
     UsageLimitExceededError,
     InvalidAPIKeyError,
@@ -14,6 +15,9 @@ from .errors import (
     TavilyKeylessLimitError,
     KeylessUnsupportedEndpointError,
 )
+
+
+RETRYABLE_STATUS_CODES = {429, 502, 503, 504}
 
 
 def _is_keyless_envelope(body) -> bool:
@@ -54,6 +58,7 @@ class TavilyClient:
         human_id: Optional[str] = None,
         client_name: Optional[str] = None,
         session: Optional[requests.Session] = None,
+        max_retries: int = 0,
     ):
         if api_key is None:
             api_key = os.getenv("TAVILY_API_KEY")
@@ -71,6 +76,8 @@ class TavilyClient:
 
         self.base_url = api_base_url or "https://api.tavily.com"
         self.api_key = api_key
+        # Opt-in automatic retries (default 0 = off, historical behavior).
+        self.max_retries = max(0, int(max_retries))
         self._keyless = api_key is None and session is None
         self.proxies = resolved_proxies
 
@@ -141,6 +148,58 @@ class TavilyClient:
             raise BadRequestError(detail)
         else:
             raise response.raise_for_status()
+
+    def _sleep_before_retry(self, attempt: int, response=None) -> None:
+        """Wait before retry attempt ``attempt``, honoring ``Retry-After``."""
+        time.sleep(retry_delay(attempt, response.headers if response is not None else None))
+
+    def _post_with_retry(self, url: str, *, idempotent: bool, **kwargs):
+        """POST through the session, applying the opt-in retry policy.
+
+        With ``max_retries`` at its default of 0 this performs exactly one
+        request, matching the historical behavior. Idempotent endpoints
+        (search, extract, map) are retried on 429/502/503/504 and on
+        connection errors. Job-creating endpoints (crawl, research) are
+        retried on 429 only, so a retry can never silently duplicate a
+        billable job after an ambiguous failure.
+        """
+        retries = 0
+        while True:
+            try:
+                response = self.session.post(url, **kwargs)
+            except requests.exceptions.ConnectionError:
+                if not idempotent or retries >= self.max_retries:
+                    raise
+                retries += 1
+                self._sleep_before_retry(retries)
+                continue
+            if (
+                retries < self.max_retries
+                and response.status_code in RETRYABLE_STATUS_CODES
+                and (idempotent or response.status_code == 429)
+            ):
+                retries += 1
+                self._sleep_before_retry(retries, response)
+                continue
+            return response
+
+    def _get_with_retry(self, url: str, **kwargs):
+        """GET through the session with the idempotent retry policy."""
+        retries = 0
+        while True:
+            try:
+                response = self.session.get(url, **kwargs)
+            except requests.exceptions.ConnectionError:
+                if retries >= self.max_retries:
+                    raise
+                retries += 1
+                self._sleep_before_retry(retries)
+                continue
+            if retries < self.max_retries and response.status_code in RETRYABLE_STATUS_CODES:
+                retries += 1
+                self._sleep_before_retry(retries, response)
+                continue
+            return response
 
     def _check_keyless_supported(self, method: str) -> None:
         """Raise ``KeylessUnsupportedEndpointError`` when running in keyless mode."""
@@ -235,7 +294,7 @@ class TavilyClient:
         payload = json.dumps(data)
 
         try:
-            response = self.session.post(url, data=payload, timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = self._post_with_retry(url, idempotent=True, data=payload, timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -340,7 +399,7 @@ class TavilyClient:
             data.update(kwargs)
 
         try:
-            response = self.session.post(self.base_url + "/extract", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = self._post_with_retry(self.base_url + "/extract", idempotent=True, data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -429,7 +488,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = self.session.post(self.base_url + "/crawl", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = self._post_with_retry(self.base_url + "/crawl", idempotent=False, data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -524,7 +583,7 @@ class TavilyClient:
         data = {k: v for k, v in data.items() if v is not None}
 
         try:
-            response = self.session.post(self.base_url + "/map", data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
+            response = self._post_with_retry(self.base_url + "/map", idempotent=True, data=json.dumps(data), timeout=timeout, **({"headers": override_headers} if override_headers else {}))
         except requests.exceptions.Timeout:
             raise TimeoutError(timeout)
 
@@ -703,8 +762,9 @@ class TavilyClient:
             return stream_generator()
         else:
             try:
-                response = self.session.post(
+                response = self._post_with_retry(
                     self.base_url + "/research",
+                    idempotent=False,
                     data=json.dumps(data),
                     timeout=timeout,
                     **({"headers": override_headers} if override_headers else {})
@@ -774,7 +834,7 @@ class TavilyClient:
                 raise TypeError("include_usage must be a bool or None")
             request_kwargs["params"] = {"include_usage": "true" if include_usage else "false"}
         try:
-            response = self.session.get(
+            response = self._get_with_retry(
                 self.base_url + f"/research/{request_id}",
                 **request_kwargs
             )
