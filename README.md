@@ -114,6 +114,8 @@ This is how you get accurate and concise answers to questions, in one line of co
 
 Extract web page content from one or more specified URLs.
 
+To keep extracted Markdown for later search, see [Save a page to Loom](examples/extract_to_loom.md).
+
 ## Usage
 
 Below are some code snippets that demonstrate how to interact with our Extract API. Each step and component of this code is explained in greater detail in the API Methods section below.
